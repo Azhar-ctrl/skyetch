@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sky Tech Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for interactive analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sky-brand': '#044d3a',
+                        'sky-dark': '#02382a',
+                        'sky-menu': '#1D2225',
+                        'sky-teal': '#008767',
+                        'sky-indigo': '#2c295b',
+                        'sky-red': '#dd3737',
+                        'sky-light': '#e6f2ed',
+                        'sky-dropdown': '#155263',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        times: ['"Times New Roman"', 'Times', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+       body { font-family: 'Inter', sans-serif; }
+       aside, aside * { font-family: "Times New Roman", Times, serif !important; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .nav-link { position: relative; }
+        .nav-link.active { color: #6EE7B7; }
+        .nav-link.active::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #34D399;
+        }
+        .cat-btn:hover { background-color: #353E43; }
+        .locked-row:hover { background: #065F46; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin-once { animation: spin .6s ease; }
+        
+        @keyframes logoPulseAdvanced {
+            0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 4px 12px -2px rgba(37, 37, 37, 0.4); filter: brightness(1); }
+            25% { transform: scale(1.05) rotate(-3deg); box-shadow: 0 8px 16px -2px rgba(37, 37, 37, 0.6); filter: brightness(1.2); }
+            50% { transform: scale(1.12) rotate(4deg); box-shadow: 0 12px 20px -2px rgba(37, 37, 37, 0.7); filter: brightness(1.3); }
+            75% { transform: scale(1.05) rotate(-2deg); box-shadow: 0 8px 16px -2px rgba(37, 37, 37, 0.6); filter: brightness(1.15); }
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+        .animated-logo { animation: logoPulseAdvanced 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .animated-logo:hover { animation: logoPulseAdvanced 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .logo-shimmer {
+            position: absolute; top: 0; left: 0; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transform: translateX(-100%);
+        }
+        .animated-logo:hover .logo-shimmer { animation: shimmer 0.8s infinite; }
+        .stat-value-underline { border-bottom: 1px solid #C9CDD3; }
+        .chart-dot { transition: r .12s ease, opacity .12s ease; }
+        select.plain { appearance: none; -webkit-appearance: none; background: transparent; }
+        select option {
+            background-color: #155263 !important;
+            color: #ffffff !important;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1D2225;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #008767;
+            border-radius: 4px;
+        }
+        .submenu-collapse {
+            max-height: 0;
+            opacity: 0;
+            transform: scaleY(0.85) translateY(-6px);
+            transform-origin: top center;
+            overflow: hidden;
+            transition: max-height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        opacity 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .submenu-collapse.is-open {
+            opacity: 1;
+            transform: scaleY(1) translateY(0);
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 h-screen flex flex-col overflow-hidden select-none text-slate-800">
+
+    <header class="bg-white border-b border-slate-200 h-14 flex items-center justify-between px-4 shrink-0 shadow-sm">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center gap-2.5 select-none group cursor-pointer">
+                <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white shadow-md animated-logo relative overflow-hidden">
+                    <div class="logo-shimmer"></div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/>
+                        <path d="M9 9h6v6H9z" fill="currentColor" fill-opacity="0.3"/>
+                        <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+                    </svg>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-900 font-black text-lg tracking-tight leading-none flex items-center">
+                        Sky<span class="text-emerald-700 ml-1">Tech</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-6 text-xs text-gray-600">
+            <div class="hidden lg:block">
+                Helpline: <a href="tel:+91XXXX989804" class="font-semibold text-sky-teal">+91-XXXX 9898 04</a>
+            </div>
+            <button id="auth-btn" onclick="handleAuthAction()" class="bg-black hover:bg-zinc-800 text-white font-medium px-3 py-1.5 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
+                <i class="fa-solid fa-right-from-bracket text-[10px]"></i>
+                <span id="auth-btn-text">Log Out</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <aside class="w-72 bg-[#0C0C0C] text-gray-200 flex flex-col flex-shrink-0 select-none custom-scrollbar overflow-y-auto">
+            <nav class="flex-1 py-2 space-y-0.5" id="sidebar-menu">
+                <div>
+                    <button onclick="toggleSaleMenu(); setActiveNav(this, 'Sale')" class="sidebar-item w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                        <span>Sale</span>
+                    </button>
+                    <div id="sale-submenu" class="submenu-collapse pl-4 pr-2 space-y-1.5 text-xs text-gray-300">
+                        <div>
+                            <button onclick="toggleGroup('grp-invoice')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-bold text-gray-300 hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                                <span>Invoice</span>
+                            </button>
+                            <div id="grp-invoice" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
+                                <a href="#new-invoice" onclick="setActiveNav(this, 'New Invoice'); openActionModal('New Invoice'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Invoice</a>
+                                <a href="#sale-manage-invoices" onclick="setActiveNav(this, 'Search and Manage Invoices'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Invoices</a>
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="toggleGroup('grp-salereturn')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-bold text-gray-300 hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                                <span>Sale Return</span>
+                            </button>
+                            <div id="grp-salereturn" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
+                                <a href="#sale-new-return" onclick="setActiveNav(this, 'New Sale Return'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Sale Return</a>
+                                <a href="#sale-manage-returns" onclick="setActiveNav(this, 'Search and Manage Sale Returns'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Sale Returns</a>
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="toggleGroup('grp-quotation')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-bold text-gray-300 hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                                <span>Quotation</span>
+                            </button>
+                            <div id="grp-quotation" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
+                                <a href="#quotation-new" onclick="setActiveNav(this, 'New Quotation'); openActionModal('Quotation'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Quotation</a>
+                                <a href="#quotation-manage" onclick="setActiveNav(this, 'Search and Manage Quotations'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Quotations</a>
+                                <a href="#quotation-delivery-note" onclick="setActiveNav(this, 'Delivery Note'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Delivery Note</a>
+                                <a href="#quotation-sale-order" onclick="setActiveNav(this, 'Sale Order'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Sale Order</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#purchase" onclick="setActiveNav(this, 'Purchase')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Purchase</span>
+                </a>
+
+                <div>
+                    <button onclick="toggleInventoryMenu(); setActiveNav(this, 'Inventory')" class="sidebar-item w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                        <span>Inventory</span>
+                    </button>
+                    <div id="inventory-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-gray-300">
+                        <a href="#inventory-add-adjustment" onclick="setActiveNav(this, 'Add Stock Adjustment')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Stock Adjustment</a>
+                        <a href="#inventory-manage-adjustments" onclick="setActiveNav(this, 'Search and Manage Stock Adjustments')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Stock Adjustments</a>
+                        <a href="#inventory-reconciliation" onclick="setActiveNav(this, 'Physical Stock Reconciliation')" class="flex items-center py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">
+                            <i class="fa-solid fa-lock text-[10px] mr-1.5 opacity-70"></i>
+                            <span>Physical Stock Reconciliation</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="#manufacture" onclick="setActiveNav(this, 'Manufacture')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Manufacture</span>
+                </a>
+                <a href="#accounts" onclick="setActiveNav(this, 'Accounts')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Accounts</span>
+                </a>
+                <a href="#expense" onclick="setActiveNav(this, 'Expense')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Expense</span>
+                </a>
+                <a href="#customer" onclick="setActiveNav(this, 'Customer')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Customer</span>
+                </a>
+                <a href="#reports" onclick="setActiveNav(this, 'Reports')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Reports</span>
+                </a>
+                <a href="#staff" onclick="setActiveNav(this, 'Staff')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Staff</span>
+                </a>
+                <a href="#tools" onclick="setActiveNav(this, 'Tools')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Tools</span>
+                </a>
+
+                <div>
+                    <button onclick="toggleMasterMenu(); setActiveNav(this, 'Master')" class="sidebar-item w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                        <span>Master</span>
+                    </button>
+                    <div id="master-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-gray-300">
+                        <a href="#master-add-product" onclick="setActiveNav(this, 'Add Product'); openActionModal('Add Product')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Product</a>
+                        <a href="#master-add-service" onclick="setActiveNav(this, 'Add Service'); openActionModal('Add Service')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Service</a>
+                        <a href="#master-manage-items" onclick="setActiveNav(this, 'Search and Manage Items')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Items</a>
+                        <div class="border-t border-gray-700/50 pt-1 space-y-1">
+                            <a href="#master-brand" onclick="setActiveNav(this, 'Brand Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Brand Master</a>
+                            <a href="#master-group" onclick="setActiveNav(this, 'Group Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Group Master</a>
+                            <a href="#master-bank" onclick="setActiveNav(this, 'Bank Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Bank Master</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#settings" onclick="setActiveNav(this, 'Settings')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden bg-gray-100">
+            <div class="w-full md:w-1/2 flex flex-col p-2.5 border-r border-gray-200 overflow-y-auto md:overflow-hidden custom-scrollbar space-y-2.5 h-full">
+                <div class="bg-white p-2.5 rounded-md shadow-sm border border-gray-200 flex justify-between items-center flex-shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <h1 class="font-bold text-gray-800 text-sm md:text-base" id="dashboard-heading">Dashboard</h1>
+                        <button title="Toggle Privacy" class="text-gray-400 hover:text-gray-600 transition">
+                            <i class="fa-regular fa-eye text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <select id="date-filter" onchange="updateDashboardMetrics()" class="border border-[#155263] rounded px-2 py-0.5 text-xs bg-[#155263] text-white outline-none focus:ring-1 focus:ring-sky-teal cursor-pointer font-medium">
+                            <option value="today" selected>Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="this_week">This Week</option>
+                            <option value="this_month">This Month</option>
+                        </select>
+                        <button onclick="refreshDashboard()" title="Refresh" class="text-gray-500 hover:text-sky-teal transition p-1">
+                            <i class="fa-solid fa-rotate text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-3 rounded-md shadow-sm border border-gray-200 flex-shrink-0">
+                    <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 text-xs md:text-sm">
+                        <div>
+                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Gross Sale</div>
+                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-gross-sale">₹0</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">No. of Invoices</div>
+                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-invoices">0</div>
+                        </div>
+                        <div class="pt-1.5 border-t border-gray-100">
+                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Amount Received</div>
+                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-received">₹0</div>
+                        </div>
+                        <div class="pt-1.5 border-t border-gray-100">
+                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Amount Paid</div>
+                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-paid">₹0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1.5 flex-shrink-0">
+                    <button onclick="openActionModal('New Invoice')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-regular fa-file-lines text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">New Invoice</span>
+                    </button>
+                    <button onclick="openActionModal('Quotation')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-regular fa-paste text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">Quotation</span>
+                    </button>
+                    <button onclick="openActionModal('Purchase')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-solid fa-bag-shopping text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">Purchase</span>
+                    </button>
+                    <button onclick="openActionModal('Expense')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-regular fa-receipt text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">Expense</span>
+                    </button>
+                    <button onclick="openActionModal('Customer')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-regular fa-user text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">Customer</span>
+                    </button>
+                    <button onclick="openActionModal('Reminder')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-regular fa-bell text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">Reminder</span>
+                    </button>
+                    <button onclick="openActionModal('Payment In')" class="bg-blue-900 hover:bg-blue-950 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-regular fa-circle-plus text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">Payment In</span>
+                    </button>
+                    <button onclick="openActionModal('Payment Out')" class="bg-[#E53935] hover:bg-[#EF5350] text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
+                        <i class="fa-regular fa-circle-minus text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-center leading-tight">Payment Out</span>
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-md shadow-sm border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
+                    <div class="bg-zinc-800 text-white px-3 py-1.5 text-xs font-semibold rounded-t-md flex justify-between items-center flex-shrink-0">
+                        <span>Business Insights</span>
+                        <i class="fa-solid fa-chart-pie text-xs opacity-75"></i>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center justify-center p-3 text-center overflow-y-auto custom-scrollbar" id="business-insights-body">
+                        <div class="p-3 rounded-full bg-amber-50 text-amber-500 mb-1.5">
+                            <i class="fa-solid fa-folder-open text-2xl"></i>
+                        </div>
+                        <p class="text-gray-400 text-xs font-medium">No data to display</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 flex flex-col p-2.5 border-r border-gray-200 overflow-y-auto md:overflow-hidden custom-scrollbar space-y-2.5 h-full">
+                <div class="flex items-center bg-white rounded border border-gray-300 overflow-hidden shadow-sm flex-shrink-0">
+                    <input type="text" id="invoice-search-input" onkeyup="filterInvoices(this.value)" placeholder="Invoice No or Customer Name or Mobile No" class="flex-1 px-2.5 py-1.5 text-xs text-gray-700 outline-none">
+                    <div class="border-l border-gray-200 px-1.5 py-0.5 text-xs text-white bg-[#155263] cursor-pointer flex items-center space-x-1">
+                        <select class="bg-[#155263] text-white text-xs border-none outline-none cursor-pointer py-0.5 px-1">
+                            <option value="invoice">Search in Invoice</option>
+                            <option value="customer">Search in Customer</option>
+                            <option value="item">Search in Item</option>
+                        </select>
+                    </div>
+                    <button onclick="triggerSearch()" class="bg-sky-teal hover:bg-emerald-700 text-white px-3 py-1.5 transition flex items-center justify-center">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="bg-white p-2.5 rounded-md shadow-sm border border-gray-200 space-y-2 flex-shrink-0">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-1.5">
+                        <span class="text-[11px] font-bold text-gray-700 tracking-wider uppercase">Vital Stats</span>
+                        <button onclick="refreshDashboard()" class="text-gray-400 hover:text-sky-teal transition">
+                            <i class="fa-solid fa-rotate text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-gray-50 p-1.5 md:p-2 rounded border border-gray-100">
+                            <div class="text-xs md:text-sm font-bold text-gray-800" id="stat-outstanding">₹0</div>
+                            <div class="text-[9px] md:text-[10px] text-gray-500 mt-0.5">Amount Outstanding</div>
+                        </div>
+                        <div class="bg-gray-50 p-1.5 md:p-2 rounded border border-gray-100">
+                            <div class="text-xs md:text-sm font-bold text-gray-800" id="stat-unpaid-inv">0</div>
+                            <div class="text-[9px] md:text-[10px] text-gray-500 mt-0.5">Unpaid Invoices</div>
+                        </div>
+                        <div class="bg-gray-50 p-1.5 md:p-2 rounded border border-gray-100">
+                            <div class="text-xs md:text-sm font-bold text-gray-800" id="stat-unpaid-pur">0</div>
+                            <div class="text-[9px] md:text-[10px] text-gray-500 mt-0.5">Unpaid Purchases</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-md shadow-sm border border-gray-200 flex-1 flex flex-col p-2.5 min-h-0 overflow-hidden">
+                    <div class="flex flex-wrap items-center justify-between border-b border-gray-200 pb-1.5 gap-2 text-xs flex-shrink-0">
+                        <div class="flex space-x-2 md:space-x-3 font-medium text-[11px] md:text-xs">
+                            <button onclick="switchChartTab('activity')" id="tab-activity" class="text-sky-teal font-bold border-b-2 border-sky-teal pb-0.5">Recent Activity</button>
+                            <button onclick="switchChartTab('cust-due')" id="tab-cust-due" class="text-gray-500 hover:text-gray-700 pb-0.5">Customer Due</button>
+                            <button onclick="switchChartTab('supp-due')" id="tab-supp-due" class="text-gray-500 hover:text-gray-700 pb-0.5">Supplier Due</button>
+                            <button onclick="switchChartTab('rec-amount')" id="tab-rec-amount" class="text-gray-500 hover:text-gray-700 pb-0.5">Amount Received</button>
+                        </div>
+                        <select id="chart-timeframe" onchange="updateChartData()" class="border border-[#155263] rounded px-1.5 py-0.5 text-[10px] md:text-[11px] text-white bg-[#155263] outline-none cursor-pointer">
+                            <option value="30">Last 30 days</option>
+                            <option value="7">Last 7 days</option>
+                            <option value="90">Last 90 days</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center space-x-4 my-1.5 text-[10px] md:text-[11px] text-gray-600 flex-shrink-0">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                            <span>Sale</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                            <span>Purchase</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
+                            <span>Expense</span>
+                        </div>
+                    </div>
+
+                    <div class="relative flex-1 min-h-0 w-full">
+                        <canvas id="vitalChart"></canvas>
+                    </div>
+
+                    <div id="search-results-list" class="mt-2 hidden border-t border-gray-100 pt-1.5 text-xs max-h-32 overflow-y-auto custom-scrollbar flex-shrink-0">
+                        <div class="font-semibold text-gray-600 mb-1">Search Results</div>
+                        <div id="search-items-container" class="space-y-1"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="actionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden transform transition-all scale-95 opacity-0 duration-200" id="modalContainer">
+            <div class="bg-sky-brand text-white px-4 py-3 flex justify-between items-center">
+                <h3 class="font-semibold text-sm" id="modalTitle">Create Action</h3>
+                <button onclick="closeModal()" class="text-gray-300 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+            <form id="actionForm" onsubmit="handleFormSubmit(event)" class="p-4 space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Party / Customer Name</label>
+                    <input type="text" required id="modal-party" placeholder="e.g. Acme Corp / John Doe" class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:border-sky-teal outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Amount (₹)</label>
+                    <input type="number" required id="modal-amount" placeholder="0.00" class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:border-sky-teal outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Notes / Description</label>
+                    <textarea id="modal-notes" rows="2" placeholder="Optional details..." class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:border-sky-teal outline-none"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal()" class="px-3 py-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 transition">Cancel</button>
+                    <button type="submit" class="px-4 py-1.5 rounded bg-sky-teal hover:bg-emerald-700 text-white font-medium transition shadow-sm">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2.5 rounded-md shadow-lg text-xs flex items-center space-x-2 transform translate-y-10 opacity-0 transition-all duration-300 z-50">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toast-message">Action completed successfully!</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sky-tech-dashboard-default';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        let app, db, auth;
+        let currentUser = null;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (token) {
+                signInWithCustomToken(auth, token).catch(() => signInAnonymously(auth));
+            } else {
+                signInAnonymously(auth);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                const authBtnText = document.getElementById('auth-btn-text');
+                if (user) {
+                    if (authBtnText) authBtnText.innerText = "Log Out";
+                } else {
+                    if (authBtnText) authBtnText.innerText = "Login";
+                }
+            });
+        } catch (e) {
+            console.warn("Firebase initialization fallback active:", e);
+        }
+
+        window.handleAuthAction = function() {
+            if (auth && auth.currentUser) {
+                signOut(auth).then(() => {
+                    triggerSessionOut();
+                }).catch(() => {
+                    triggerSessionOut();
+                });
+            } else {
+                triggerSessionOut();
+            }
+        };
+
+        function triggerSessionOut() {
+            localStorage.removeItem('sky_tech_session');
+            sessionStorage.clear();
+            showToast("Session terminated successfully.");
+            setTimeout(() => {
+                window.location.href = 'e_commerce_billing_login.html';
+            }, 500);
+        }
+    </script>
+
+    <script>
+        let isSampleDataLoaded = false;
+        let chartInstance = null;
+        
+        function closeAllSubmenus() {
+            ['grp-invoice', 'grp-salereturn', 'grp-quotation'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.maxHeight = '0px';
+                    el.classList.remove('is-open');
+                }
+            });
+        }
+
+        function closeAllMenuDropdowns() {
+            closeAllSubmenus();
+            ['sale-submenu', 'inventory-submenu', 'master-submenu'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.maxHeight = '0px';
+                    el.classList.remove('is-open');
+                }
+            });
+        }
+
+        function toggleSaleMenu() {
+            const saleSub = document.getElementById('sale-submenu');
+            if (!saleSub) return;
+            const isOpen = saleSub.classList.contains('is-open');
+            closeAllMenuDropdowns();
+            if (!isOpen) {
+                saleSub.classList.add('is-open');
+                saleSub.style.maxHeight = (saleSub.scrollHeight + 300) + 'px';
+            }
+        }
+
+        function toggleInventoryMenu() {
+            const invSub = document.getElementById('inventory-submenu');
+            if (!invSub) return;
+            const isOpen = invSub.classList.contains('is-open');
+            closeAllMenuDropdowns();
+            if (!isOpen) {
+                invSub.classList.add('is-open');
+                invSub.style.maxHeight = (invSub.scrollHeight + 150) + 'px';
+            }
+        }
+
+        function toggleMasterMenu() {
+            const masterSub = document.getElementById('master-submenu');
+            if (!masterSub) return;
+            const isOpen = masterSub.classList.contains('is-open');
+            closeAllMenuDropdowns();
+            if (!isOpen) {
+                masterSub.classList.add('is-open');
+                masterSub.style.maxHeight = (masterSub.scrollHeight + 200) + 'px';
+            }
+        }
+
+        function toggleGroup(groupId) {
+            const target = document.getElementById(groupId);
+            if (!target) return;
+            const isOpen = target.classList.contains('is-open');
+            closeAllSubmenus();
+            if (!isOpen) {
+                target.classList.add('is-open');
+                target.style.maxHeight = target.scrollHeight + 'px';
+            }
+            const saleSub = document.getElementById('sale-submenu');
+            if (saleSub && saleSub.classList.contains('is-open')) {
+                setTimeout(() => {
+                    saleSub.style.maxHeight = (saleSub.scrollHeight + 300) + 'px';
+                }, 300);
+            }
+        }
+
+        const sampleMetrics = {
+            grossSale: 248500,
+            invoices: 42,
+            received: 185000,
+            paid: 62000,
+            outstanding: 63500,
+            unpaidInv: 8,
+            unpaidPur: 3
+        };
+
+        const mockInvoices = [
+            { id: "INV-2026-001", name: "Rahul Sharma", mobile: "9876543210", amount: "₹12,400", status: "Paid" },
+            { id: "INV-2026-002", name: "Tech Solutions Pvt Ltd", mobile: "9123456789", amount: "₹45,000", status: "Unpaid" },
+            { id: "INV-2026-003", name: "Anita Roy", mobile: "9988776655", amount: "₹8,200", status: "Paid" },
+            { id: "INV-2026-004", name: "Apex Global Traders", mobile: "9443322110", amount: "₹18,900", status: "Unpaid" },
+            { id: "INV-2026-005", name: "Vikram Malhotra", mobile: "9776655443", amount: "₹5,600", status: "Paid" }
+        ];
+
+        const emptyChartPoints = {
+            sale: [12, 8, 15, 11, 14, 10, 13, 12, 15, 8, 11, 14, 9, 12, 16],
+            purchase: [10, 15, 12, 16, 9, 14, 8, 16, 11, 17, 9, 18, 10, 15, 11],
+            expense: [8, 9, 10, 8, 11, 9, 10, 9, 12, 10, 11, 10, 12, 9, 13]
+        };
+
+        window.onload = function() {
+            initChart();
+        };
+
+        function initChart() {
+            const ctx = document.getElementById('vitalChart').getContext('2d');
+            
+            // Custom plugin to draw vertical line on hover
+            const verticalLinePlugin = {
+                id: 'verticalLineOnHover',
+                afterDraw: (chart) => {
+                    if (chart.tooltip._active && chart.tooltip._active.length) {
+                        const ctx = chart.ctx;
+                        const activePoint = chart.tooltip._active[0];
+                        const x = activePoint.element.x;
+                        const topY = chart.scales.y.top;
+                        const bottomY = chart.scales.y.bottom;
+
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.moveTo(x, topY);
+                        ctx.lineTo(x, bottomY);
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
+                        ctx.setLineDash([3, 3]);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            };
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 15}, (_, i) => `Day ${i + 1}`),
+                    datasets: [
+                        { label: 'Sale', data: emptyChartPoints.sale, borderColor: '#10b981', borderWidth: 2, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 },
+                        { label: 'Purchase', data: emptyChartPoints.purchase, borderColor: '#f43f5e', borderWidth: 2, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 },
+                        { label: 'Expense', data: emptyChartPoints.expense, borderColor: '#94a3b8', borderWidth: 1.5, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#1e293b', padding: 8, titleFont: { size: 10 }, bodyFont: { size: 11 } }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false, grid: { display: false } }
+                    }
+                },
+                plugins: [verticalLinePlugin]
+            });
+        }
+
+        function updateMetricsUI(m) {
+            document.getElementById('val-gross-sale').innerText = `₹${m.grossSale.toLocaleString()}`;
+            document.getElementById('val-invoices').innerText = m.invoices;
+            document.getElementById('val-received').innerText = `₹${m.received.toLocaleString()}`;
+            document.getElementById('val-paid').innerText = `₹${m.paid.toLocaleString()}`;
+            document.getElementById('stat-outstanding').innerText = `₹${m.outstanding.toLocaleString()}`;
+            document.getElementById('stat-unpaid-inv').innerText = m.unpaidInv;
+            document.getElementById('stat-unpaid-pur').innerText = m.unpaidPur;
+        }
+
+        function refreshDashboard() {
+            showToast("Dashboard refreshed!");
+            if (chartInstance) chartInstance.update();
+        }
+
+        function setActiveNav(element, title) {
+            document.querySelectorAll('.sidebar-item').forEach(el => {
+                el.classList.remove('active', 'border-emerald-400', 'bg-[#404A50]', 'font-medium', 'text-white');
+                el.classList.add('border-transparent');
+            });
+            element.classList.add('active', 'border-emerald-400', 'bg-[#404A50]', 'font-medium', 'text-white');
+            element.classList.remove('border-transparent');
+            if (title !== 'Sale' && title !== 'Inventory' && title !== 'Master') {
+                closeAllMenuDropdowns();
+            } else {
+                closeAllSubmenus();
+            }
+        }
+
+        function switchChartTab(tab) {
+            const tabs = ['activity', 'cust-due', 'supp-due', 'rec-amount'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    btn.className = "text-sky-teal font-bold border-b-2 border-sky-teal pb-1";
+                } else {
+                    btn.className = "text-gray-500 hover:text-gray-700 pb-1";
+                }
+            });
+            if (chartInstance) {
+                chartInstance.data.datasets.forEach(dataset => {
+                    dataset.data = dataset.data.map(() => Math.floor(Math.random() * 35) + 5);
+                });
+                chartInstance.update();
+            }
+        }
+
+        function filterInvoices(query) {
+            const container = document.getElementById('search-items-container');
+            const wrapper = document.getElementById('search-results-list');
+            if (!query.trim()) {
+                wrapper.classList.add('hidden');
+                return;
+            }
+            const filtered = mockInvoices.filter(inv => 
+                inv.id.toLowerCase().includes(query.toLowerCase()) ||
+                inv.name.toLowerCase().includes(query.toLowerCase()) ||
+                inv.mobile.includes(query)
+            );
+            wrapper.classList.remove('hidden');
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-gray-400 italic py-1">No matching invoices found</div>`;
+            } else {
+                container.innerHTML = filtered.map(inv => `
+                    <div class="flex justify-between items-center p-1.5 bg-gray-50 hover:bg-emerald-50 rounded border border-gray-100 transition">
+                        <div>
+                            <span class="font-bold text-gray-700">${inv.id}</span> - 
+                            <span class="text-gray-600">${inv.name}</span>
+                        </div>
+                        <div class="space-x-2">
+                            <span class="font-semibold text-gray-800">${inv.amount}</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] ${inv.status === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${inv.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function triggerSearch() {
+            const val = document.getElementById('invoice-search-input').value;
+            filterInvoices(val);
+        }
+
+        function openActionModal(actionTitle) {
+            document.getElementById('modalTitle').innerText = "Create " + actionTitle;
+            const modal = document.getElementById('actionModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('actionModal');
+            const container = document.getElementById('modalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.getElementById('actionForm').reset();
+            }, 150);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const party = document.getElementById('modal-party').value;
+            const amount = parseFloat(document.getElementById('modal-amount').value) || 0;
+            if (isSampleDataLoaded) {
+                sampleMetrics.grossSale += amount;
+                sampleMetrics.invoices += 1;
+                sampleMetrics.received += amount;
+                updateMetricsUI(sampleMetrics);
+            }
+            closeModal();
+            showToast(`Entry recorded for ${party} (₹${amount.toLocaleString()})`);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-message');
+            msg.innerText = message;
+            toast.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+            }, 3000);
+        }
+
+        // Lock mouse right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showToast("Right-click is disabled on this platform.");
+        });
+    </script>
+</body>
+</html>
