@@ -85,8 +85,8 @@
             background: #ffffff;
             border: 1px solid rgba(202, 138, 4, 0.3);
             border-radius: 16px;
-            padding: 39px 33px;
-            min-height: 410px;
+            padding: 30px 33px 0px 33px;
+            min-height: 230px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -178,7 +178,7 @@
         }
 
         .forgot-password-container {
-            margin-top: 14px;
+            margin-top: 20px;
             text-align: right;
             animation: fadeIn 1s ease-in-out;
         }
@@ -345,72 +345,6 @@
         .brand-logo-card {
             display: flex;
             align-items: center;
-            gap: 32px;
-            background: transparent;
-            padding: 24px 0;
-            border-radius: 24px;
-            border: none;
-            box-shadow: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .brand-icon {
-            width: 110px;
-            height: 110px;
-            background: #0b2545;
-            border-radius: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 58px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .brand-text {
-            font-size: 68px;
-            font-weight: 800;
-            letter-spacing: -2px;
-            display: flex;
-            gap: 14px;
-        }
-
-        .brand-logo-card {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            background: transparent;
-            padding: 24px 0;
-            border-radius: 24px;
-            border: none;
-            box-shadow: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .brand-icon {
-            width: 104px;
-            height: 104px;
-            background: #0b2545;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 52px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .brand-text {
-            font-size: 60px;
-            font-weight: 800;
-            letter-spacing: -2px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .brand-logo-card {
-            display: flex;
-            align-items: center;
             gap: 26px;
             background: transparent;
             padding: 24px 0;
@@ -505,19 +439,20 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
+
     <div class="top-right-auth">
         <div class="login-card" id="loginCardContainer">
             <div id="loggedOutView">
                 <h2>Sign In</h2>
-                <p>Access your enterprise portal</p>
+                <p>Access your E-Commerce Online Billing Portal</p>
                 <form id="loginForm" onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" class="form-control" placeholder="name@company.com" required>
+                        <input type="email" id="email" class="form-control" placeholder="name@gmail.com" value="" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" value="" required>
                     </div>
                     <button type="submit" class="btn-submit" id="submitBtn">Sign In</button>
                     <div class="forgot-password-container">
@@ -529,7 +464,6 @@
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgotPasswordModal">
         <div class="modal-card">
             <h3>Reset Password</h3>
@@ -590,7 +524,7 @@
             });
         }
 
-        // Pixel Shatter & Floating Hover Effect for SkyTech Logo
+        // Pixel Shatter & Floating Hover Effect for SkyTech Logo matched to current position & layout
         window.addEventListener('load', () => {
             const container = document.getElementById('brandLogoContainer');
             const staticLogo = document.getElementById('staticLogo');
@@ -603,8 +537,8 @@
 
             function resizeCanvas() {
                 const rect = container.getBoundingClientRect();
-                const width = rect.width > 0 ? rect.width : 440;
-                const height = rect.height > 0 ? rect.height : 160;
+                const width = rect.width > 0 ? rect.width : 820;
+                const height = rect.height > 0 ? rect.height : 280;
 
                 canvas.width = width * window.devicePixelRatio;
                 canvas.height = height * window.devicePixelRatio;
@@ -669,18 +603,30 @@
 
                 offCtx.clearRect(0, 0, width, height);
                 
-                // Draw exact match of the logo text and icon scaled up (covering the full left side / complete logo area)
-                offCtx.fillStyle = '#0b2545';
-                offCtx.fillRect(10, (height - 110) / 2, 110, 110);
-                
-                offCtx.fillStyle = '#ffffff';
-                offCtx.font = `900 60px 'Inter', sans-serif`;
-                offCtx.textBaseline = 'middle';
-                offCtx.fillText('Sky', 145, height / 2);
+                // Align exact match with the rendered brand logo card positioning (icon + text)
+                const startX = (width - 340) / 2;
+                const startY = (height - 84) / 2;
 
+                // Draw background icon box (#0b2545) with rounded corner simulation
+                offCtx.fillStyle = '#0b2545';
+                offCtx.beginPath();
+                offCtx.roundRect(startX, startY, 84, 84, 20);
+                offCtx.fill();
+
+                // Draw microchip icon bars inside box in white
+                offCtx.fillStyle = '#ffffff';
+                offCtx.fillRect(startX + 28, startY + 28, 28, 28);
+                
+                // Draw text "Sky"
+                offCtx.fillStyle = '#0b2545';
+                offCtx.font = `900 48px 'Inter', sans-serif`;
+                offCtx.textBaseline = 'middle';
+                offCtx.fillText('Sky', startX + 110, startY + 42);
+
+                // Draw text "Tech"
                 offCtx.fillStyle = '#059669';
-                offCtx.font = `900 60px 'Inter', sans-serif`;
-                offCtx.fillText('Tech', 255, height / 2);
+                offCtx.font = `900 48px 'Inter', sans-serif`;
+                offCtx.fillText('Tech', startX + 210, startY + 42);
 
                 const imgData = offCtx.getImageData(0, 0, width, height);
                 const data = imgData.data;
@@ -700,8 +646,8 @@
             let time = 0;
             function animate() {
                 const rect = container.getBoundingClientRect();
-                const width = rect.width > 0 ? rect.width : 440;
-                const height = rect.height > 0 ? rect.height : 160;
+                const width = rect.width > 0 ? rect.width : 820;
+                const height = rect.height > 0 ? rect.height : 280;
                 
                 ctx.clearRect(0, 0, width, height);
                 time += 0.05;
@@ -774,22 +720,7 @@
                 });
             }
 
-            onAuthStateChanged(auth, async (user) => {
-                if (user && db) {
-                    try {
-                        const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'credentials');
-                        const userSnap = await getDoc(userDocRef);
-                        if (userSnap.exists()) {
-                            const data = userSnap.data();
-                            if (data.email) {
-                                document.getElementById('email').value = data.email;
-                            }
-                        }
-                    } catch (e) {
-                        console.log("Could not fetch database profile:", e);
-                    }
-                }
-            });
+            // Removed automatic database email pre-population so inputs remain completely blank on load
         } catch (e) {
             console.log("Firebase database initialization fallback:", e);
         }
