@@ -212,9 +212,20 @@
                 <a href="javascript:void(0)" onclick="setActiveNav(this, 'Manufacture')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Manufacture</span>
                 </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Accounts')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Accounts</span>
-                </a>
+                <div>
+                    <button onclick="toggleAccountsMenu(); setActiveNav(this, 'Accounts')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                        <span>Accounts</span>
+                    </button>
+                    <div id="accounts-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add bank'); openActionModal('Add Bank'); closeAllMenuDropdowns()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Add bank</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Bank account'); closeAllMenuDropdowns(); showToast('Opening Bank account...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Bank account</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Loan account'); closeAllMenuDropdowns(); showToast('Opening Loan account...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Loan account</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Asset account'); closeAllMenuDropdowns(); showToast('Opening Asset account...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Asset account</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Capital account'); closeAllMenuDropdowns(); showToast('Opening Capital account...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Capital account</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'other Income Account'); closeAllMenuDropdowns(); showToast('Opening other Income Account...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">other Income Account</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Tax Payment'); closeAllMenuDropdowns(); showToast('Opening Tax Payment...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Tax Payment</a>
+                    </div>
+                </div>
                 <a href="javascript:void(0)" onclick="setActiveNav(this, 'Expense')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Expense</span>
                 </a>
@@ -874,7 +885,7 @@
 
         function closeAllMenuDropdowns() {
             closeAllSubmenus();
-            ['sale-submenu', 'inventory-submenu', 'master-submenu'].forEach(id => {
+            ['sale-submenu', 'inventory-submenu', 'accounts-submenu', 'master-submenu'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.style.maxHeight = '0px';
@@ -902,6 +913,17 @@
             if (!isOpen) {
                 invSub.classList.add('is-open');
                 invSub.style.maxHeight = (invSub.scrollHeight + 200) + 'px';
+            }
+        }
+
+        function toggleAccountsMenu() {
+            const accSub = document.getElementById('accounts-submenu');
+            if (!accSub) return;
+            const isOpen = accSub.classList.contains('is-open');
+            closeAllMenuDropdowns();
+            if (!isOpen) {
+                accSub.classList.add('is-open');
+                accSub.style.maxHeight = (accSub.scrollHeight + 250) + 'px';
             }
         }
 
@@ -965,7 +987,7 @@
             const verticalLinePlugin = {
                 id: 'verticalLineOnHover',
                 afterDraw: (chart) => {
-                    if (chart.tooltip._active && chart.tooltip._active.length) {
+                    if (chart && chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
                         const ctx = chart.ctx;
                         const activePoint = chart.tooltip._active[0];
                         const x = activePoint.element.x;
@@ -1041,7 +1063,7 @@
             });
             element.classList.add('active', 'border-emerald-400', 'bg-[#404A50]', 'font-medium', 'text-white');
             element.classList.remove('border-transparent');
-            if (title !== 'Sale' && title !== 'Inventory' && title !== 'Master') {
+            if (title !== 'Sale' && title !== 'Inventory' && title !== 'Accounts' && title !== 'Master') {
                 closeAllMenuDropdowns();
             } else {
                 closeAllSubmenus();
