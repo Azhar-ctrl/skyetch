@@ -390,12 +390,14 @@
             auth = getAuth(app);
             db = getFirestore(app);
 
-            // Automatically sign in anonymously as baseline security if custom token isn't present
+            // Safely attempt anonymous or token sign in with error catching
             const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
             if (token) {
-                signInWithCustomToken(auth, token).catch(() => signInAnonymously(auth));
+                signInWithCustomToken(auth, token).catch((err) => console.log("Custom token auth notice:", err));
             } else {
-                signInAnonymously(auth).catch((err) => console.log("Auth notice:", err));
+                signInAnonymously(auth).catch((err) => {
+                    console.log("Anonymous auth not enabled in Firebase Console yet. Please enable Email/Password or Anonymous auth in your Firebase Console if required:", err.message);
+                });
             }
 
             onAuthStateChanged(auth, async (user) => {
@@ -437,20 +439,12 @@
                     // Attempt sign in with email/password
                     userCred = await signInWithEmailAndPassword(auth, email, password);
                 } catch (signInErr) {
-                    // Handle configuration-not-found or operation-not-allowed gracefully
                     if (signInErr.code === 'auth/configuration-not-found' || signInErr.code === 'auth/operation-not-allowed') {
-                        throw new Error("Email/Password auth is not enabled yet in your Firebase Console. Go to Firebase Console -> Authentication -> Sign-in method and enable 'Email/Password'.");
+                        throw new Error("Email/Password authentication is not enabled in your Firebase Console. Go to Firebase Console -> Authentication -> Sign-in method and enable 'Email/Password'.");
                     }
-                    // If user doesn't exist, automatically create the account
+                    // Handle wrong password, invalid credential, or user not found explicitly
                     if (signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password' || signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-email') {
-                        try {
-                            userCred = await createUserWithEmailAndPassword(auth, email, password);
-                        } catch (createErr) {
-                            if (createErr.code === 'auth/configuration-not-found' || createErr.code === 'auth/operation-not-allowed') {
-                                throw new Error("Email/Password auth is not enabled yet in your Firebase Console. Go to Firebase Console -> Authentication -> Sign-in method and enable 'Email/Password'.");
-                            }
-                            throw createErr;
-                        }
+                        throw new Error("wrong Email Address or Password entred");
                     } else {
                         throw signInErr;
                     }
@@ -475,9 +469,10 @@
                 msgEl.textContent = "Success! Authenticated and saved to Firestore.";
                 msgEl.className = "auth-message success";
                 
+                // Redirect to dashboard upon successful login
                 setTimeout(() => {
-                    msgEl.textContent = "Welcome to Sky Tech Enterprise Portal.";
-                }, 900);
+                    window.location.href = './sky_tech_dashboard.html';
+                }, 800);
 
             } catch (err) {
                 msgEl.textContent = err.message || "Authentication failed";
