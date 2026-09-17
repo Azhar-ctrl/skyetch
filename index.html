@@ -51,7 +51,7 @@
         .top-right-auth {
             position: absolute;
             top: 70px;
-            right: 104px;
+            right: 24px;
             z-index: 10;
             width: 100%;
             max-width: 340px;
@@ -83,36 +83,22 @@
 
         .login-card {
             background: #ffffff;
-            border: 1px solid rgba(180, 138, 4, 0.3);
+            border: 1px solid rgba(202, 138, 4, 0.3);
             border-radius: 16px;
-            padding: 50px 24px;
-            min-height: 300px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: 
-                0 12px 35px -5px rgba(202, 138, 4, 0.3), 
-                0 8px 15px -6px rgba(202, 138, 4, 0.2),
-                0 25px 50px -12px rgba(234, 179, 8, 0.45),
-                inset 0 1px 2px rgba(255, 255, 255, 0.8),
-                inset 0 -3px 6px rgba(202, 138, 4, 0.2);
+            padding: 24px;
+            box-shadow: 0 12px 35px -5px rgba(202, 138, 4, 0.2), 0 8px 15px -6px rgba(202, 138, 4, 0.1);
             transition: transform 0.1s ease-out, box-shadow 0.3s ease;
             transform-style: preserve-3d;
             will-change: transform;
         }
 
         .login-card:hover {
-            box-shadow: 
-                0 22px 45px -5px rgba(202, 138, 4, 0.45), 
-                0 12px 20px -6px rgba(202, 138, 4, 0.3),
-                0 35px 60px -15px rgba(234, 179, 8, 0.6),
-                inset 0 1px 2px rgba(255, 255, 255, 0.9),
-                inset 0 -4px 8px rgba(202, 138, 4, 0.3);
+            box-shadow: 0 22px 45px -5px rgba(202, 138, 4, 0.35), 0 12px 20px -6px rgba(202, 138, 4, 0.2);
             animation-play-state: paused;
         }
 
         .login-card h2 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--text-main);
             margin-bottom: 4px;
@@ -123,7 +109,7 @@
         .login-card p {
             font-size: 13px;
             color: var(--text-muted);
-            margin-bottom: 18px;
+            margin-bottom: 16px;
             text-align: center;
             animation: fadeIn 0.7s ease-in-out;
         }
@@ -144,14 +130,14 @@
             font-size: 12px;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .form-control {
             width: 100%;
-            padding: 14px 14px;
+            padding: 10px 14px;
             font-size: 13px;
-            border: 2px solid #cbd5e1;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             outline: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -208,7 +194,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            padding: 40px 70px;
+            padding: 40px 60px;
         }
 
         @keyframes zoomInOut {
@@ -302,14 +288,9 @@
 </head>
 <body>
 <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
     apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
     authDomain: "skytech-f813b.firebaseapp.com",
@@ -320,7 +301,6 @@
     measurementId: "G-K3DVHBBDMM"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
@@ -339,31 +319,9 @@
                         <input type="password" id="password" class="form-control" placeholder="••••••••" required>
                     </div>
                     <button type="submit" class="btn-submit" id="submitBtn">Sign In</button>
-                    <div style="text-align: right; margin-top: 10px;">
-                        <a href="#" onclick="openForgotPasswordModal(event)" style="font-size: 12px; color: var(--gold-accent); text-decoration: none; font-weight: 600;">Forgot Password?</a>
-                    </div>
                     <div id="authMessage" class="auth-message"></div>
                 </form>
             </div>
-        </div>
-    </div>
-
-    <!-- Forgot Password Modal Overlay -->
-    <div id="forgotPasswordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 100; backdrop-filter: blur(4px); align-items: center; justify-content: center;">
-        <div style="background: #ffffff; border: 1px solid rgba(202, 138, 4, 0.3); border-radius: 20px; padding: 40px 28px; width: 100%; max-width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; animation: slideInDown 0.4s ease;">
-            <h3 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; text-align: center;">Reset Password</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center;">Enter your email to receive a secure recovery link.</p>
-            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
-                <div class="form-group">
-                    <label for="resetEmail">Email Address</label>
-                    <input type="email" id="resetEmail" class="form-control" placeholder="name@company.com" required>
-                </div>
-                <button type="submit" class="btn-submit" id="resetSubmitBtn">Send Recovery Link</button>
-                <div id="resetAuthMessage" class="auth-message"></div>
-                <div style="text-align: center; margin-top: 15px;">
-                    <a href="#" onclick="closeForgotPasswordModal(event)" style="font-size: 12px; color: var(--text-muted); text-decoration: none; font-weight: 500;"><i class="fa-solid fa-arrow-left"></i> Back to Sign In</a>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -411,29 +369,39 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sky-tech-default-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = "1:300030506328:web:d3494afa60759d4dc7612d";
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
+            authDomain: "skytech-f813b.firebaseapp.com",
+            projectId: "skytech-f813b",
+            storageBucket: "skytech-f813b.firebasestorage.app",
+            messagingSenderId: "300030506328",
+            appId: "1:300030506328:web:d3494afa60759d4dc7612d",
+            measurementId: "G-K3DVHBBDMM"
+        };
 
         let app, auth, db;
-        let isEmailAuthEnabled = true;
 
         try {
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
 
+            // Safely attempt anonymous or token sign in with error catching
             const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
             if (token) {
-                signInWithCustomToken(auth, token).catch(() => signInAnonymously(auth));
+                signInWithCustomToken(auth, token).catch((err) => console.log("Custom token auth notice:", err));
             } else {
-                signInAnonymously(auth).catch((err) => console.log("Auth notice:", err));
+                signInAnonymously(auth).catch((err) => {
+                    console.log("Anonymous auth not enabled in Firebase Console yet. Please enable Email/Password or Anonymous auth in your Firebase Console if required:", err.message);
+                });
             }
 
             onAuthStateChanged(auth, async (user) => {
-                if (user && !user.isAnonymous && db) {
+                if (user && db) {
                     try {
                         const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'credentials');
                         const userSnap = await getDoc(userDocRef);
@@ -452,53 +420,6 @@
             console.log("Firebase database initialization fallback:", e);
         }
 
-        window.openForgotPasswordModal = function(event) {
-            event.preventDefault();
-            const modal = document.getElementById('forgotPasswordModal');
-            const currentEmail = document.getElementById('email').value;
-            if (currentEmail) {
-                document.getElementById('resetEmail').value = currentEmail;
-            }
-            modal.style.display = 'flex';
-        };
-
-        window.closeForgotPasswordModal = function(event) {
-            event.preventDefault();
-            const modal = document.getElementById('forgotPasswordModal');
-            modal.style.display = 'none';
-            document.getElementById('resetAuthMessage').textContent = '';
-        };
-
-        window.handleForgotPassword = async function(event) {
-            event.preventDefault();
-            const email = document.getElementById('resetEmail').value;
-            const msgEl = document.getElementById('resetAuthMessage');
-            const btn = document.getElementById('resetSubmitBtn');
-
-            msgEl.textContent = "Sending recovery email...";
-            msgEl.className = "auth-message";
-            btn.disabled = true;
-
-            try {
-                if (!auth) throw new Error("Backend not initialized");
-                
-                await sendPasswordResetEmail(auth, email);
-                
-                msgEl.textContent = "Success! Password reset instructions sent to your email.";
-                msgEl.className = "auth-message success";
-                btn.disabled = false;
-
-                setTimeout(() => {
-                    closeForgotPasswordModal(event);
-                }, 3000);
-
-            } catch (err) {
-                msgEl.textContent = err.message || "Failed to send reset email";
-                msgEl.className = "auth-message error";
-                btn.disabled = false;
-            }
-        };
-
         window.handleLogin = async function(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
@@ -506,35 +427,24 @@
             const msgEl = document.getElementById('authMessage');
             const btn = document.getElementById('submitBtn');
 
-            msgEl.textContent = "Connecting to user database...";
+            msgEl.textContent = "Connecting to Firebase Database & Auth...";
             msgEl.className = "auth-message";
             btn.disabled = true;
 
             try {
-                if (!auth) throw new Error("Backend not initialized");
+                if (!auth) throw new Error("Firebase Auth not initialized");
                 
                 let userCred;
                 try {
+                    // Attempt sign in with email/password
                     userCred = await signInWithEmailAndPassword(auth, email, password);
                 } catch (signInErr) {
-                    if (signInErr.code === 'auth/operation-not-allowed') {
-                        isEmailAuthEnabled = false;
-                        if (!auth.currentUser) {
-                            await signInAnonymously(auth);
-                        }
-                    } else if (signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password' || signInErr.code === 'auth/user-not-found') {
-                        try {
-                            userCred = await createUserWithEmailAndPassword(auth, email, password);
-                        } catch (createErr) {
-                            if (createErr.code === 'auth/operation-not-allowed') {
-                                isEmailAuthEnabled = false;
-                                if (!auth.currentUser) {
-                                    await signInAnonymously(auth);
-                                }
-                            } else {
-                                throw createErr;
-                            }
-                        }
+                    if (signInErr.code === 'auth/configuration-not-found' || signInErr.code === 'auth/operation-not-allowed') {
+                        throw new Error("Email/Password authentication is not enabled in your Firebase Console. Go to Firebase Console -> Authentication -> Sign-in method and enable 'Email/Password'.");
+                    }
+                    // Handle wrong password, invalid credential, or user not found explicitly
+                    if (signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password' || signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-email') {
+                        throw new Error("wrong Email Address or Password entred");
                     } else {
                         throw signInErr;
                     }
@@ -549,22 +459,23 @@
                             email: email, 
                             lastAccess: new Date().toISOString(),
                             connectedDatabase: true,
-                            authMode: isEmailAuthEnabled ? 'email' : 'anonymous-secure'
+                            authMode: 'email-password'
                         }, { merge: true });
                     } catch (dbErr) {
-                        console.log("Database sync notice:", dbErr);
+                        console.log("Firestore database sync notice:", dbErr);
                     }
                 }
 
-                msgEl.textContent = "Success! Authenticated successfully.";
+                msgEl.textContent = "Success! Authenticated and saved to Firestore.";
                 msgEl.className = "auth-message success";
                 
+                // Redirect to dashboard upon successful login with robust fallback URL
                 setTimeout(() => {
-                    msgEl.textContent = "Welcome to Sky Tech Enterprise Portal.";
-                }, 900);
+                    window.location.replace("./sky_tech_dashboard.html");
+                }, 800);
 
             } catch (err) {
-                msgEl.textContent = err.message || "Database connection failed";
+                msgEl.textContent = err.message || "Authentication failed";
                 msgEl.className = "auth-message error";
                 btn.disabled = false;
             }
