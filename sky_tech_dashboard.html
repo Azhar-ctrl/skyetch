@@ -29,6 +29,7 @@
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         times: ['"Times New Roman"', 'Times', 'serif'],
+                        sharp: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
                     }
                 }
             }
@@ -37,6 +38,10 @@
     <style>
        body { font-family: 'Inter', sans-serif; }
        aside, aside * { font-family: "Times New Roman", Times, serif !important; }
+       aside .submenu-collapse, aside .submenu-collapse * { 
+           font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; 
+           letter-spacing: -0.01em;
+       }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -68,12 +73,10 @@
             transform: translateX(-100%);
         }
         .animated-logo:hover .logo-shimmer { animation: shimmer 0.8s infinite; }
-        .stat-value-underline { border-bottom: 1px solid #C9CDD3; }
-        .chart-dot { transition: r .12s ease, opacity .12s ease; }
         select.plain { appearance: none; -webkit-appearance: none; background: transparent; }
         select option {
-            background-color: #155263 !important;
-            color: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #111827 !important;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 5px;
@@ -89,12 +92,13 @@
         .submenu-collapse {
             max-height: 0;
             opacity: 0;
-            transform: scaleY(0.85) translateY(-6px);
+            transform: scaleY(0.95) translateY(-6px);
             transform-origin: top center;
             overflow: hidden;
-            transition: max-height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        opacity 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.3s ease, 
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity, max-height;
         }
         .submenu-collapse.is-open {
             opacity: 1;
@@ -102,26 +106,21 @@
             padding-top: 0.25rem;
             padding-bottom: 0.25rem;
         }
+        /* Submenu items set to crisp white color */
+        .submenu-collapse a, .submenu-collapse button {
+            position: relative;
+            color: #ffffff !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .submenu-collapse a:hover, .submenu-collapse button:hover {
+            transform: translateX(6px);
+            background-color: #2c383e !important;
+            color: #34D399 !important;
+            padding-left: 1rem !important;
+        }
     </style>
 </head>
 <body class="bg-slate-100 h-screen flex flex-col overflow-hidden select-none text-slate-800">
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
-    authDomain: "skytech-f813b.firebaseapp.com",
-    projectId: "skytech-f813b",
-    storageBucket: "skytech-f813b.firebasestorage.app",
-    messagingSenderId: "300030506328",
-    appId: "1:300030506328:web:d3494afa60759d4dc7612d",
-    measurementId: "G-K3DVHBBDMM"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
     <header class="bg-white border-b border-slate-200 h-14 flex items-center justify-between px-4 shrink-0 shadow-sm">
         <div class="flex items-center space-x-4">
             <div class="flex items-center gap-2.5 select-none group cursor-pointer">
@@ -143,7 +142,7 @@
 
         <div class="flex items-center space-x-6 text-xs text-gray-600">
             <div class="hidden lg:block">
-                Helpline: <a href="tel:+91XXXX989804" class="font-semibold text-sky-teal">+91-XXXX 9898 04</a>
+                Helpline: <a href="tel:+916262989804" class="font-semibold text-sky-teal">+91-6262 9898 04</a>
             </div>
             <button id="auth-btn" onclick="window.handleAuthAction()" class="bg-black hover:bg-zinc-800 text-white font-medium px-3 py-1.5 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
                 <i class="fa-solid fa-right-from-bracket text-[10px]"></i>
@@ -154,101 +153,101 @@
 
     <div class="flex flex-1 overflow-hidden">
         <aside class="w-72 bg-[#0C0C0C] text-gray-200 flex flex-col flex-shrink-0 select-none custom-scrollbar overflow-y-auto">
-            <nav class="flex-1 py-2 space-y-0.5" id="sidebar-menu">
+            <nav class="flex-1 py-1 space-y-0.5" id="sidebar-menu">
                 <div>
-                    <button onclick="toggleSaleMenu(); setActiveNav(this, 'Sale')" class="sidebar-item w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                    <button onclick="toggleSaleMenu(); setActiveNav(this, 'Sale')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
                         <span>Sale</span>
                     </button>
-                    <div id="sale-submenu" class="submenu-collapse pl-4 pr-2 space-y-1.5 text-xs text-gray-300">
+                    <div id="sale-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
                         <div>
-                            <button onclick="toggleGroup('grp-invoice')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-bold text-gray-300 hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                            <button onclick="toggleGroup('grp-invoice')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
                                 <span>Invoice</span>
                             </button>
-                            <div id="grp-invoice" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
-                                <a href="new_invoice.html" onclick="setActiveNav(this, 'New Invoice'); closeAllSubmenus(); showToast('Opening New Invoice...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Invoice</a>
-                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Invoices'); closeAllSubmenus(); showToast('Opening Manage Invoices...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Invoices</a>
+                            <div id="grp-invoice" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Invoice'); closeAllSubmenus(); showToast('Opening New Invoice...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Invoice</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Invoices'); closeAllSubmenus(); showToast('Opening Manage Invoices...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Invoices</a>
                             </div>
                         </div>
                         <div>
-                            <button onclick="toggleGroup('grp-salereturn')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-bold text-gray-300 hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                            <button onclick="toggleGroup('grp-salereturn')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
                                 <span>Sale Return</span>
                             </button>
-                            <div id="grp-salereturn" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
-                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Sale Return'); closeAllSubmenus(); showToast('Opening New Sale Return...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Sale Return</a>
-                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Sale Returns'); closeAllSubmenus(); showToast('Opening Manage Returns...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Sale Returns</a>
+                            <div id="grp-salereturn" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Sale Return'); closeAllSubmenus(); showToast('Opening New Sale Return...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Sale Return</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Sale Returns'); closeAllSubmenus(); showToast('Opening Manage Returns...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Sale Returns</a>
                             </div>
                         </div>
                         <div>
-                            <button onclick="toggleGroup('grp-quotation')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-bold text-gray-300 hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                            <button onclick="toggleGroup('grp-quotation')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
                                 <span>Quotation</span>
                             </button>
-                            <div id="grp-quotation" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
-                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Quotation'); openActionModal('Quotation'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Quotation</a>
-                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Quotations'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Quotations</a>
-                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Delivery Note'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Delivery Note</a>
-                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Sale Order'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Sale Order</a>
+                            <div id="grp-quotation" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Quotation'); openActionModal('Quotation'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Quotation</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Quotations'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Quotations</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Delivery Note'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Delivery Note</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Sale Order'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Sale Order</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Purchase'); showToast('Opening Purchase module...')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Purchase'); showToast('Opening Purchase module...')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Purchase</span>
                 </a>
 
                 <div>
-                    <button onclick="toggleInventoryMenu(); setActiveNav(this, 'Inventory')" class="sidebar-item w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                    <button onclick="toggleInventoryMenu(); setActiveNav(this, 'Inventory')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
                         <span>Inventory</span>
                     </button>
-                    <div id="inventory-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-gray-300">
-                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Stock Adjustment')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Stock Adjustment</a>
-                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Stock Adjustments')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Stock Adjustments</a>
-                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Physical Stock Reconciliation')" class="flex items-center py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">
-                            <i class="fa-solid fa-lock text-[10px] mr-1.5 opacity-70"></i>
+                    <div id="inventory-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Stock Adjustment'); openStockAdjustmentModal(); closeAllMenuDropdowns();" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Add Stock Adjustment</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Stock Adjustments'); showToast('Opening Stock Adjustments list...'); closeAllMenuDropdowns();" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Stock Adjustments</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Physical Stock Reconciliation'); closeAllMenuDropdowns();" class="flex items-center py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">
+                            <i class="fa-solid fa-lock text-[10px] mr-2 opacity-70"></i>
                             <span>Physical Stock Reconciliation</span>
                         </a>
                     </div>
                 </div>
 
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Manufacture')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Manufacture')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Manufacture</span>
                 </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Accounts')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Accounts')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Accounts</span>
                 </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Expense')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Expense')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Expense</span>
                 </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Customer')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Customer')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Customer</span>
                 </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Reports')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Reports')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Reports</span>
                 </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Staff')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Staff')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Staff</span>
                 </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Tools')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Tools')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Tools</span>
                 </a>
 
                 <div>
-                    <button onclick="toggleMasterMenu(); setActiveNav(this, 'Master')" class="sidebar-item w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                    <button onclick="toggleMasterMenu(); setActiveNav(this, 'Master')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
                         <span>Master</span>
                     </button>
-                    <div id="master-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-gray-300">
-                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Product'); openActionModal('Add Product')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Product</a>
-                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Service'); openActionModal('Add Service')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Service</a>
-                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Items')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Items</a>
+                    <div id="master-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Product'); openActionModal('Add Product')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Add Product</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Service'); openActionModal('Add Service')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Add Service</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Items')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Items</a>
                         <div class="border-t border-gray-700/50 pt-1 space-y-1">
-                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Brand Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Brand Master</a>
-                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Group Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Group Master</a>
-                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Bank Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Bank Master</a>
+                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Brand Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Brand Master</a>
+                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Group Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Group Master</a>
+                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Bank Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Bank Master</a>
                         </div>
                     </div>
                 </div>
 
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Settings')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Settings')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Settings</span>
                 </a>
             </nav>
@@ -338,11 +337,63 @@
                         <span>Business Insights</span>
                         <i class="fa-solid fa-chart-pie text-xs opacity-75"></i>
                     </div>
-                    <div class="flex-1 flex flex-col items-center justify-center p-3 text-center overflow-y-auto custom-scrollbar" id="business-insights-body">
-                        <div class="p-3 rounded-full bg-amber-50 text-amber-500 mb-1.5">
-                            <i class="fa-solid fa-folder-open text-2xl"></i>
+                    <div class="flex-1 flex flex-col p-3 overflow-y-auto custom-scrollbar space-y-3" id="business-insights-body">
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div class="bg-emerald-50/70 border border-emerald-100 p-2.5 rounded-md flex flex-col justify-between">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Sale Insights</span>
+                                    <i class="fa-solid fa-arrow-trend-up text-emerald-600 text-xs"></i>
+                                </div>
+                                <div class="mt-1.5">
+                                    <div class="text-xs font-bold text-emerald-900" id="insight-sale-val">₹2,48,500</div>
+                                    <div class="text-[9px] text-emerald-700 mt-0.5">Conversion: <span class="font-semibold">78.4%</span></div>
+                                </div>
+                            </div>
+                            <div class="bg-rose-50/70 border border-rose-100 p-2.5 rounded-md flex flex-col justify-between">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-rose-800 uppercase tracking-wider">Purchase Flow</span>
+                                    <i class="fa-solid fa-bag-shopping text-rose-600 text-xs"></i>
+                                </div>
+                                <div class="mt-1.5">
+                                    <div class="text-xs font-bold text-rose-900" id="insight-purchase-val">₹1,12,000</div>
+                                    <div class="text-[9px] text-rose-700 mt-0.5">Payable Ratio: <span class="font-semibold">32%</span></div>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50/70 border border-blue-100 p-2.5 rounded-md flex flex-col justify-between">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-blue-800 uppercase tracking-wider">Stock Valuation</span>
+                                    <i class="fa-solid fa-boxes-stacked text-blue-600 text-xs"></i>
+                                </div>
+                                <div class="mt-1.5">
+                                    <div class="text-xs font-bold text-blue-900" id="insight-stock-val">₹10,65,500</div>
+                                    <div class="text-[9px] text-blue-700 mt-0.5">Low Stock Items: <span class="font-semibold">3 items</span></div>
+                                </div>
+                            </div>
+                            <div class="bg-amber-50/70 border border-amber-100 p-2.5 rounded-md flex flex-col justify-between">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Total Expenses</span>
+                                    <i class="fa-solid fa-receipt text-amber-600 text-xs"></i>
+                                </div>
+                                <div class="mt-1.5">
+                                    <div class="text-xs font-bold text-amber-900" id="insight-expense-val">₹38,400</div>
+                                    <div class="text-[9px] text-amber-700 mt-0.5">Top Category: <span class="font-semibold">Logistics</span></div>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-gray-400 text-xs font-medium">No data to display</p>
+
+                        <div class="bg-gray-50 border border-gray-200 p-2.5 rounded-md space-y-2">
+                            <div class="flex justify-between items-center text-[11px] font-bold text-gray-700">
+                                <span>Net Profitability Ratio</span>
+                                <span class="text-emerald-700 font-extrabold" id="insight-profit-margin">54.2%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-sky-teal h-full rounded-full transition-all duration-500" style="width: 54.2%" id="insight-profit-bar"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-gray-500 pt-0.5">
+                                <span>Revenue: <strong class="text-gray-700" id="insight-rev-summary">₹2.48L</strong></span>
+                                <span>Costs: <strong class="text-gray-700" id="insight-cost-summary">₹1.50L</strong></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -394,24 +445,24 @@
                             <button onclick="switchChartTab('rec-amount')" id="tab-rec-amount" class="text-gray-500 hover:text-gray-700 pb-0.5">Amount Received</button>
                         </div>
                         <select id="chart-timeframe" onchange="updateChartData()" class="border border-[#155263] rounded px-1.5 py-0.5 text-[10px] md:text-[11px] text-white bg-[#155263] outline-none cursor-pointer">
-                            <option value="30">Last 30 days</option>
+                            <option value="30" selected>Last 30 days</option>
                             <option value="7">Last 7 days</option>
                             <option value="90">Last 90 days</option>
                         </select>
                     </div>
 
-                    <div class="flex items-center space-x-4 my-1.5 text-[10px] md:text-[11px] text-gray-600 flex-shrink-0">
+                    <div id="chart-legend-container" class="flex items-center space-x-4 my-1.5 text-[10px] md:text-[11px] text-gray-600 flex-shrink-0">
                         <div class="flex items-center space-x-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                            <span>Sale</span>
+                            <span id="legend-1">Sale</span>
                         </div>
                         <div class="flex items-center space-x-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
-                            <span>Purchase</span>
+                            <span id="legend-2">Purchase</span>
                         </div>
                         <div class="flex items-center space-x-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
-                            <span>Expense</span>
+                            <span id="legend-3">Expense</span>
                         </div>
                     </div>
 
@@ -428,6 +479,191 @@
         </main>
     </div>
 
+    <footer class="bg-[#1D2225] border-t border-gray-700 h-12 flex items-center justify-around px-4 shrink-0 text-white text-xs select-none shadow-inner z-30">
+        <button onclick="openPortalModal('Daily Summary')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
+            <i class="fa-solid fa-chart-pie text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
+            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Daily Summary</span>
+        </button>
+        <button onclick="openPortalModal('Stock Summary')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
+            <i class="fa-solid fa-boxes-stacked text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
+            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Stock Summary</span>
+        </button>
+        <button onclick="openPortalModal('Business Analysis')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
+            <i class="fa-solid fa-chart-line text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
+            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Business Analysis</span>
+        </button>
+        <button onclick="openPortalModal('Cash Book')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
+            <i class="fa-solid fa-wallet text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
+            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Cash Book</span>
+        </button>
+        <button onclick="openPortalModal('Ledgers')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
+            <i class="fa-solid fa-book text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
+            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Ledgers</span>
+        </button>
+    </footer>
+
+    <!-- Portal Data Modal Window -->
+    <div id="portalModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all scale-95 opacity-0 duration-200 border border-gray-300 flex flex-col max-h-[85vh]" id="portalModalContainer">
+            <div class="bg-[#1D2225] text-white px-4 py-3 flex justify-between items-center border-b border-gray-700">
+                <div class="flex items-center space-x-2.5">
+                    <div id="portalModalIcon" class="w-6 h-6 rounded bg-sky-teal flex items-center justify-center text-white text-xs">
+                        <i class="fa-solid fa-folder"></i>
+                    </div>
+                    <h3 class="font-bold text-sm" id="portalModalTitle">Portal Data Summary</h3>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="refreshPortalData()" title="Refresh Data" class="text-gray-300 hover:text-white transition">
+                        <i class="fa-solid fa-rotate text-xs"></i>
+                    </button>
+                    <button onclick="closePortalModal()" class="text-gray-300 hover:text-white transition">
+                        <i class="fa-solid fa-xmark text-base font-bold"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center flex-shrink-0 text-xs">
+                <div id="portalModalSubtitle" class="text-gray-600 font-medium">Real-time synced portal records</div>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="portalSearchInput" onkeyup="filterPortalTable(this.value)" placeholder="Search records..." class="border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-sky-teal bg-white w-48">
+                    <button onclick="exportPortalData()" class="bg-[#155263] hover:bg-sky-brand text-white px-3 py-1 rounded transition font-medium flex items-center space-x-1">
+                        <i class="fa-solid fa-download text-[10px]"></i>
+                        <span>Export</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 bg-white custom-scrollbar" id="portalModalContent">
+                <!-- Dynamic table or content loaded here -->
+            </div>
+
+            <div class="bg-gray-100 px-4 py-2.5 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500 flex-shrink-0">
+                <span id="portalRecordCount">Total Records: 0</span>
+                <button onclick="closePortalModal()" class="bg-gray-800 hover:bg-black text-white px-4 py-1.5 rounded transition font-medium">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Adjustment Modal -->
+    <div id="stockAdjustmentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden transform transition-all scale-95 opacity-0 duration-200 border border-gray-300" id="stockModalContainer">
+            <div class="bg-zinc-100 text-gray-800 px-4 py-2.5 flex justify-between items-center border-b border-gray-200">
+                <div class="flex items-center space-x-2">
+                    <div class="w-5 h-5 rounded bg-sky-brand flex items-center justify-center text-white text-[10px]">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <h3 class="font-bold text-xs text-gray-800">Unsaved Stock Adjustment</h3>
+                </div>
+                <button onclick="closeStockAdjustmentModal()" class="text-gray-500 hover:text-gray-800 transition">
+                    <i class="fa-solid fa-xmark text-sm font-bold"></i>
+                </button>
+            </div>
+
+            <div class="flex border-b border-gray-200 px-4 pt-2 bg-gray-50 text-xs font-semibold text-gray-600 space-x-6">
+                <button onclick="switchStockTab('info')" id="stock-tab-info" class="border-b-2 border-sky-teal text-sky-teal pb-1">Item Info</button>
+                <button onclick="switchStockTab('serials')" id="stock-tab-serials" class="text-gray-500 hover:text-gray-700 pb-1">Serial Numbers</button>
+            </div>
+
+            <form id="stockAdjustmentForm" onsubmit="handleStockFormSubmit(event, false)" class="p-5 space-y-4 text-xs bg-white">
+                <div class="text-[11px] font-bold text-gray-700 border-b border-gray-200 pb-1 mb-2">Item information</div>
+                
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Adjustment Date</label>
+                    <div class="col-span-2 relative">
+                        <input type="date" id="adj-date" onclick="this.showPicker && this.showPicker()" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal bg-white cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Adjustment Type</label>
+                    <div class="col-span-2 flex items-center space-x-6">
+                        <label class="flex items-center space-x-2 cursor-pointer font-medium text-gray-800">
+                            <input type="radio" name="adjustmentType" value="Credit" checked class="text-sky-teal focus:ring-0">
+                            <span>Credit (+)</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer font-medium text-gray-800">
+                            <input type="radio" name="adjustmentType" value="Debit" class="text-sky-teal focus:ring-0">
+                            <span>Debit (-)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Adjustment Reason</label>
+                    <div class="col-span-2">
+                        <select id="adj-reason" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-sky-teal">
+                            <option value="Stock Takeoff" selected>Stock Takeoff</option>
+                            <option value="Stock Reconcile">Stock Reconcile</option>
+                            <option value="Stock Verification">Stock Verification</option>
+                            <option value="Product Lost">Product Lost</option>
+                            <option value="Product Stolen">Product Stolen</option>
+                            <option value="Donation">Donation</option>
+                            <option value="Write-Off">Write-Off</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Item Code</label>
+                    <div class="col-span-2">
+                        <input type="text" id="adj-item-code" placeholder="Enter or scan item code" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Item Name <span class="text-rose-500">*</span></label>
+                    <div class="col-span-2 flex items-center space-x-2">
+                        <input type="text" required id="adj-item-name" placeholder="Select or type item name" class="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal">
+                        <button type="button" onclick="showToast('Opening Item master selector...')" class="text-sky-teal font-semibold hover:underline text-[11px] whitespace-nowrap">Add Item</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Quantity <span class="text-rose-500">*</span></label>
+                    <div class="col-span-2">
+                        <input type="number" required id="adj-quantity" value="1" min="1" oninput="calculateStockAmount()" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Unit Price <span class="text-rose-500">*</span></label>
+                    <div class="col-span-2 flex items-center border border-gray-300 rounded overflow-hidden focus-within:border-sky-teal bg-white">
+                        <span class="bg-[#155263] text-white px-3 py-1.5 font-semibold text-xs flex items-center justify-center">₹</span>
+                        <input type="number" required id="adj-unit-price" value="0" min="0" step="0.01" oninput="calculateStockAmount()" class="flex-1 px-2.5 py-1.5 text-xs outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="font-medium text-gray-700">Amount <span class="text-rose-500">*</span></label>
+                    <div class="col-span-2 flex items-center border border-gray-300 rounded overflow-hidden bg-gray-50">
+                        <span class="bg-[#155263] text-white px-3 py-1.5 font-semibold text-xs flex items-center justify-center">₹</span>
+                        <input type="number" readonly id="adj-amount" value="0.00" class="flex-1 px-2.5 py-1.5 text-xs bg-gray-50 outline-none font-semibold text-gray-800">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 items-start gap-2 pt-1">
+                    <label class="font-medium text-gray-700 pt-1.5">Remarks</label>
+                    <div class="col-span-2">
+                        <textarea id="adj-remarks" rows="2" placeholder="Optional notes regarding stock adjustment..." class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal"></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-gray-200 flex justify-end space-x-2.5">
+                    <button type="button" onclick="handleStockFormSubmit(event, true)" class="bg-[#0D6EFD] hover:bg-blue-700 text-white font-medium px-4 py-2 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-floppy-disk text-xs"></i>
+                        <span>Save N New</span>
+                    </button>
+                    <button type="submit" class="bg-[#0D6EFD] hover:bg-blue-700 text-white font-medium px-5 py-2 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-floppy-disk text-xs"></i>
+                        <span>Save</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generic Action Modal -->
     <div id="actionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden transform transition-all scale-95 opacity-0 duration-200" id="modalContainer">
             <div class="bg-sky-brand text-white px-4 py-3 flex justify-between items-center">
@@ -457,6 +693,7 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2.5 rounded-md shadow-lg text-xs flex items-center space-x-2 transform translate-y-10 opacity-0 transition-all duration-300 z-50">
         <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
         <span id="toast-message">Action completed successfully!</span>
@@ -464,66 +701,58 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-        import { getAuth, signOut, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
-            authDomain: "skytech-f813b.firebaseapp.com",
-            projectId: "skytech-f813b",
-            storageBucket: "skytech-f813b.firebasestorage.app",
-            messagingSenderId: "300030506328",
-            appId: "1:300030506328:web:d3494afa60759d4dc7612d",
-            measurementId: "G-K3DVHBBDMM"
-        };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'skytech-default';
+        let firebaseConfig = {};
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            }
+        } catch (e) {
+            console.warn("Failed to parse firebase config:", e);
+        }
 
-        let app, db, firebaseAuthInstance;
+        let app, db, auth;
         let currentUser = null;
 
         try {
             if (Object.keys(firebaseConfig).length > 0) {
                 app = initializeApp(firebaseConfig);
-                const analytics = getAnalytics(app);
                 db = getFirestore(app);
-                firebaseAuthInstance = getAuth(app);
+                auth = getAuth(app);
 
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                 if (token) {
-                    signInWithCustomToken(firebaseAuthInstance, token).catch((err) => {
-                        console.warn("Custom token sign-in failed, trying anonymous:", err);
-                        signInAnonymously(firebaseAuthInstance).catch(authErr => {
-                            console.warn("Anonymous sign-in restricted/disabled in Firebase project. Running in standalone local mode.", authErr);
-                        });
+                    signInWithCustomToken(auth, token).catch((err) => {
+                        console.warn("Custom token auth failed, falling back to anonymous:", err);
+                        signInAnonymously(auth).catch(e => console.warn("Anonymous auth failed:", e));
                     });
                 } else {
-                    signInAnonymously(firebaseAuthInstance).catch(authErr => {
-                        console.warn("Anonymous sign-in restricted/disabled in Firebase project. Running in standalone local mode.", authErr);
-                    });
+                    signInAnonymously(auth).catch(e => console.warn("Anonymous auth failed:", e));
                 }
 
-                onAuthStateChanged(firebaseAuthInstance, (user) => {
+                onAuthStateChanged(auth, (user) => {
                     currentUser = user;
                     const authBtnText = document.getElementById('auth-btn-text');
                     if (user) {
                         if (authBtnText) authBtnText.innerText = "Log Out";
                         loadUserData(user.uid);
-                    } 
-                }, (error) => {
-                    console.error("Auth state observation error:", error);
+                    }
                 });
             } else {
-                console.warn("Firebase config is empty. Running in standalone local mode.");
+                console.warn("No Firebase config provided. Operating in offline standalone mode.");
             }
-        } catch (e) {
-            console.warn("Firebase initialization fallback active:", e);
+        } catch (err) {
+            console.warn("Firebase initialization error:", err);
         }
 
         async function loadUserData(userId) {
             if (!db) return;
             try {
-                const userDocRef = doc(db, 'artifacts', 'skytech-default', 'users', userId, 'dashboardState', 'metrics');
-                const docSnap = await getDoc(userDocRef);
+                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'dashboardState', 'metrics');
+                const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data && typeof data.grossSale === 'number') {
@@ -534,48 +763,105 @@
                         sampleMetrics.outstanding = data.outstanding;
                         sampleMetrics.unpaidInv = data.unpaidInv;
                         sampleMetrics.unpaidPur = data.unpaidPur;
+                        if (data.chartDataDatasets) {
+                            backendChartDatasets = data.chartDataDatasets;
+                        }
                         updateMetricsUI(sampleMetrics);
+                        updateChartData();
                     }
                 } else {
-                    await setDoc(userDocRef, sampleMetrics);
+                    await setDoc(docRef, { ...sampleMetrics, chartDataDatasets: backendChartDatasets });
                 }
+
+                const stockColRef = collection(db, 'artifacts', appId, 'users', userId, 'stockAdjustments');
+                const stockSnap = await getDocs(stockColRef);
+                stockAdjustmentsList = [];
+                stockSnap.forEach(docSnap => {
+                    stockAdjustmentsList.push({ id: docSnap.id, ...docSnap.data() });
+                });
             } catch (err) {
-                console.error("Error loading user data from backend:", err);
+                console.error("Error loading user data:", err);
             }
         }
 
         window.saveUserDataToBackend = async function() {
             if (!db || !currentUser) return;
             try {
-                const userDocRef = doc(db, 'artifacts', 'skytech-default', 'users', currentUser.uid, 'dashboardState', 'metrics');
-                await setDoc(userDocRef, sampleMetrics);
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'dashboardState', 'metrics');
+                await setDoc(docRef, { ...sampleMetrics, chartDataDatasets: backendChartDatasets });
             } catch (err) {
-                console.error("Error saving data to backend:", err);
+                console.error("Error saving data:", err);
+            }
+        };
+
+        window.saveStockAdjustmentToBackend = async function(adjustmentData) {
+            if (!db || !currentUser) {
+                stockAdjustmentsList.push(adjustmentData);
+                showToast(`Stock Adjustment saved locally for ${adjustmentData.itemName}!`);
+                return;
+            }
+            try {
+                const stockColRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'stockAdjustments');
+                await addDoc(stockColRef, { ...adjustmentData, timestamp: new Date().toISOString() });
+                stockAdjustmentsList.push(adjustmentData);
+                showToast(`Stock Adjustment saved securely to cloud database for ${adjustmentData.itemName}!`);
+            } catch (err) {
+                console.error("Error saving stock adjustment:", err);
+                stockAdjustmentsList.push(adjustmentData);
+                showToast(`Stock Adjustment saved locally (offline mode) for ${adjustmentData.itemName}!`);
             }
         };
 
         window.handleAuthAction = function() {
-            if (firebaseAuthInstance && currentUser) {
-                signOut(firebaseAuthInstance)
-                    .then(() => {
-                        console.log("User successfully logged out.");
-                        showToast("Successfully logged out!");
-                        // Redirect or hide dashboard view on successful logout
-                        window.location.href = "index.html";
-                    })
-                    .catch((error) => {
-                        console.error("Error during sign-out:", error);
-                        showToast("Error logging out.");
-                    });
-            } 
-            
+            if (auth && currentUser) {
+                signOut(auth).then(() => {
+                    showToast("Successfully logged out!");
+                }).catch(err => console.error("Sign out error:", err));
+            } else {
+                showToast("Already logged out or running locally.");
+            }
         };
     </script>
 
     <script>
-        let isSampleDataLoaded = false;
         let chartInstance = null;
+        let currentActiveTab = 'activity';
+        let stockAdjustmentsList = [];
+        let portalActiveModule = '';
         
+        let backendChartDatasets = {
+            activity: {
+                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+                datasets: [
+                    { label: 'Sale', data: [12, 18, 15, 22, 14, 28, 30, 25, 35, 22, 29, 34, 40, 38, 45, 42, 39, 48, 52, 47, 50, 55, 58, 62, 59, 65, 70, 68, 75, 82], color: '#10b981' },
+                    { label: 'Purchase', data: [10, 14, 12, 19, 15, 20, 24, 21, 28, 25, 22, 30, 33, 29, 36, 40, 35, 42, 45, 41, 46, 49, 52, 55, 50, 58, 60, 57, 64, 69], color: '#f43f5e' },
+                    { label: 'Expense', data: [8, 10, 9, 12, 11, 14, 15, 13, 18, 16, 15, 19, 21, 18, 22, 25, 20, 24, 27, 23, 26, 28, 30, 32, 29, 34, 36, 33, 38, 41], color: '#94a3b8' }
+                ]
+            },
+            'cust-due': {
+                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+                datasets: [
+                    { label: 'Overdue 0-30d', data: [25, 28, 30, 35, 32, 40, 45, 42, 48, 50, 46, 52, 58, 55, 60, 63, 59, 66, 70, 65, 72, 75, 78, 82, 80, 85, 90, 88, 95, 102], color: '#f59e0b' },
+                    { label: 'Overdue 30-60d', data: [15, 18, 16, 20, 22, 25, 28, 24, 30, 32, 29, 34, 38, 35, 40, 43, 39, 45, 48, 44, 50, 53, 55, 58, 54, 60, 64, 61, 68, 72], color: '#ef4444' },
+                    { label: 'Total Outstanding', data: [40, 46, 46, 55, 54, 65, 73, 66, 78, 82, 75, 86, 96, 90, 100, 106, 98, 111, 118, 109, 122, 128, 133, 140, 134, 145, 154, 149, 163, 174], color: '#6366f1' }
+                ]
+            },
+            'supp-due': {
+                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+                datasets: [
+                    { label: 'Payable 0-30d', data: [18, 20, 22, 25, 23, 29, 32, 30, 35, 38, 34, 40, 45, 42, 48, 51, 47, 53, 58, 54, 60, 63, 66, 70, 67, 72, 78, 75, 82, 88], color: '#3b82f6' },
+                    { label: 'Payable >30d', data: [10, 12, 11, 14, 13, 17, 19, 18, 22, 24, 21, 26, 29, 27, 31, 34, 30, 36, 39, 35, 41, 44, 46, 50, 47, 52, 57, 54, 60, 65], color: '#ec4899' }
+                ]
+            },
+            'rec-amount': {
+                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+                datasets: [
+                    { label: 'Bank Receipts', data: [35, 40, 48, 52, 60, 58, 70, 75, 82, 80, 88, 95, 92, 102, 110, 108, 118, 125, 122, 132, 140, 138, 148, 155, 152, 162, 170, 168, 178, 190], color: '#059669' },
+                    { label: 'Cash Receipts', data: [15, 18, 20, 23, 25, 24, 28, 30, 34, 32, 36, 40, 38, 44, 48, 46, 52, 56, 54, 60, 65, 63, 69, 74, 72, 78, 84, 82, 89, 96], color: '#10b981' }
+                ]
+            }
+        };
+
         function closeAllSubmenus() {
             ['grp-invoice', 'grp-salereturn', 'grp-quotation'].forEach(id => {
                 const el = document.getElementById(id);
@@ -604,7 +890,7 @@
             closeAllMenuDropdowns();
             if (!isOpen) {
                 saleSub.classList.add('is-open');
-                saleSub.style.maxHeight = (saleSub.scrollHeight + 300) + 'px';
+                saleSub.style.maxHeight = (saleSub.scrollHeight + 350) + 'px';
             }
         }
 
@@ -615,7 +901,7 @@
             closeAllMenuDropdowns();
             if (!isOpen) {
                 invSub.classList.add('is-open');
-                invSub.style.maxHeight = (invSub.scrollHeight + 150) + 'px';
+                invSub.style.maxHeight = (invSub.scrollHeight + 200) + 'px';
             }
         }
 
@@ -626,7 +912,7 @@
             closeAllMenuDropdowns();
             if (!isOpen) {
                 masterSub.classList.add('is-open');
-                masterSub.style.maxHeight = (masterSub.scrollHeight + 200) + 'px';
+                masterSub.style.maxHeight = (masterSub.scrollHeight + 250) + 'px';
             }
         }
 
@@ -637,13 +923,13 @@
             closeAllSubmenus();
             if (!isOpen) {
                 target.classList.add('is-open');
-                target.style.maxHeight = target.scrollHeight + 'px';
+                target.style.maxHeight = (target.scrollHeight + 50) + 'px';
             }
             const saleSub = document.getElementById('sale-submenu');
             if (saleSub && saleSub.classList.contains('is-open')) {
                 setTimeout(() => {
-                    saleSub.style.maxHeight = (saleSub.scrollHeight + 300) + 'px';
-                }, 300);
+                    saleSub.style.maxHeight = (saleSub.scrollHeight + 350) + 'px';
+                }, 350);
             }
         }
 
@@ -665,14 +951,12 @@
             { id: "INV-2026-005", name: "Vikram Malhotra", mobile: "9776655443", amount: "₹5,600", status: "Paid" }
         ];
 
-        const emptyChartPoints = {
-            sale: [12, 8, 15, 11, 14, 10, 13, 12, 15, 8, 11, 14, 9, 12, 16],
-            purchase: [10, 15, 12, 16, 9, 14, 8, 16, 11, 17, 9, 18, 10, 15, 11],
-            expense: [8, 9, 10, 8, 11, 9, 10, 9, 12, 10, 11, 10, 12, 9, 13]
-        };
-
         window.onload = function() {
             initChart();
+            const dateInput = document.getElementById('adj-date');
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
         };
 
         function initChart() {
@@ -703,14 +987,7 @@
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: Array.from({length: 15}, (_, i) => `Day ${i + 1}`),
-                    datasets: [
-                        { label: 'Sale', data: emptyChartPoints.sale, borderColor: '#10b981', borderWidth: 2, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 },
-                        { label: 'Purchase', data: emptyChartPoints.purchase, borderColor: '#f43f5e', borderWidth: 2, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 },
-                        { label: 'Expense', data: emptyChartPoints.expense, borderColor: '#94a3b8', borderWidth: 1.5, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 }
-                    ]
-                },
+                data: { labels: [], datasets: [] },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -725,6 +1002,8 @@
                 },
                 plugins: [verticalLinePlugin]
             });
+
+            updateChartData();
         }
 
         function updateMetricsUI(m) {
@@ -735,6 +1014,19 @@
             document.getElementById('stat-outstanding').innerText = `₹${m.outstanding.toLocaleString()}`;
             document.getElementById('stat-unpaid-inv').innerText = m.unpaidInv;
             document.getElementById('stat-unpaid-pur').innerText = m.unpaidPur;
+
+            // Update Business Insights widget dynamically
+            const saleEl = document.getElementById('insight-sale-val');
+            if (saleEl) saleEl.innerText = `₹${m.grossSale.toLocaleString()}`;
+            
+            const purchaseEl = document.getElementById('insight-purchase-val');
+            if (purchaseEl) purchaseEl.innerText = `₹${Math.round(m.grossSale * 0.45).toLocaleString()}`;
+            
+            const expenseEl = document.getElementById('insight-expense-val');
+            if (expenseEl) expenseEl.innerText = `₹${Math.round(m.paid * 0.6).toLocaleString()}`;
+
+            const revSummary = document.getElementById('insight-rev-summary');
+            if (revSummary) revSummary.innerText = `₹${(m.grossSale / 100000).toFixed(2)}L`;
         }
 
         function refreshDashboard() {
@@ -757,21 +1049,72 @@
         }
 
         function switchChartTab(tab) {
+            currentActiveTab = tab;
             const tabs = ['activity', 'cust-due', 'supp-due', 'rec-amount'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
-                if (t === tab) {
-                    btn.className = "text-sky-teal font-bold border-b-2 border-sky-teal pb-1";
-                } else {
-                    btn.className = "text-gray-500 hover:text-gray-700 pb-1";
+                if (btn) {
+                    if (t === tab) {
+                        btn.className = "text-sky-teal font-bold border-b-2 border-sky-teal pb-1";
+                    } else {
+                        btn.className = "text-gray-500 hover:text-gray-700 pb-1";
+                    }
                 }
             });
-            if (chartInstance) {
-                chartInstance.data.datasets.forEach(dataset => {
-                    dataset.data = dataset.data.map(() => Math.floor(Math.random() * 35) + 5);
-                });
-                chartInstance.update();
+            updateChartLegend(tab);
+            updateChartData();
+        }
+
+        function updateChartLegend(tab) {
+            const legendContainer = document.getElementById('chart-legend-container');
+            if (!legendContainer) return;
+            if (tab === 'activity') {
+                legendContainer.innerHTML = `
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span>Sale</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span><span>Purchase</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span><span>Expense</span></div>
+                `;
+            } else if (tab === 'cust-due') {
+                legendContainer.innerHTML = `
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span><span>Overdue 0-30d</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span><span>Overdue >30d</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span><span>Total Outstanding</span></div>
+                `;
+            } else if (tab === 'supp-due') {
+                legendContainer.innerHTML = `
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span><span>Payable 0-30d</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-pink-500 inline-block"></span><span>Payable >30d</span></div>
+                `;
+            } else if (tab === 'rec-amount') {
+                legendContainer.innerHTML = `
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-700 inline-block"></span><span>Bank Receipts</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span>Cash Receipts</span></div>
+                `;
             }
+        }
+
+        function updateChartData() {
+            if (!chartInstance) return;
+            const timeframeEl = document.getElementById('chart-timeframe');
+            const timeframeVal = timeframeEl ? parseInt(timeframeEl.value) || 30 : 30;
+            const tabData = backendChartDatasets[currentActiveTab];
+            if (!tabData) return;
+            
+            const sliceCount = timeframeVal === 7 ? 7 : (timeframeVal === 90 ? 30 : 30);
+            const rawLabels = tabData.labels.slice(-sliceCount);
+            
+            chartInstance.data.labels = rawLabels;
+            chartInstance.data.datasets = tabData.datasets.map(ds => ({
+                label: ds.label,
+                data: ds.data.slice(-sliceCount),
+                borderColor: ds.color,
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                fill: false
+            }));
+            chartInstance.update();
         }
 
         function filterInvoices(query) {
@@ -810,6 +1153,89 @@
             filterInvoices(val);
         }
 
+        function openStockAdjustmentModal() {
+            const modal = document.getElementById('stockAdjustmentModal');
+            const container = document.getElementById('stockModalContainer');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeStockAdjustmentModal() {
+            const modal = document.getElementById('stockAdjustmentModal');
+            const container = document.getElementById('stockModalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.getElementById('stockAdjustmentForm').reset();
+                document.getElementById('adj-amount').value = "0.00";
+            }, 150);
+        }
+
+        function switchStockTab(tabName) {
+            const infoBtn = document.getElementById('stock-tab-info');
+            const serialsBtn = document.getElementById('stock-tab-serials');
+            if (tabName === 'info') {
+                infoBtn.className = "border-b-2 border-sky-teal text-sky-teal pb-1 font-semibold";
+                serialsBtn.className = "text-gray-500 hover:text-gray-700 pb-1";
+                showToast("Switched to Item Info");
+            } else {
+                serialsBtn.className = "border-b-2 border-sky-teal text-sky-teal pb-1 font-semibold";
+                infoBtn.className = "text-gray-500 hover:text-gray-700 pb-1";
+                showToast("Switched to Serial Numbers");
+            }
+        }
+
+        function calculateStockAmount() {
+            const qty = parseFloat(document.getElementById('adj-quantity').value) || 0;
+            const price = parseFloat(document.getElementById('adj-unit-price').value) || 0;
+            document.getElementById('adj-amount').value = (qty * price).toFixed(2);
+        }
+
+        function handleStockFormSubmit(e, isSaveAndNew) {
+            e.preventDefault();
+            const typeEl = document.querySelector('input[name="adjustmentType"]:checked');
+            const type = typeEl ? typeEl.value : 'Credit';
+            const reason = document.getElementById('adj-reason').value;
+            const itemCode = document.getElementById('adj-item-code').value || 'N/A';
+            const itemName = document.getElementById('adj-item-name').value;
+            const quantity = parseFloat(document.getElementById('adj-quantity').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('adj-unit-price').value) || 0;
+            const amount = parseFloat(document.getElementById('adj-amount').value) || 0;
+            const remarks = document.getElementById('adj-remarks').value;
+
+            const adjustmentRecord = {
+                date: new Date().toLocaleDateString(),
+                type,
+                reason,
+                itemCode,
+                itemName,
+                quantity,
+                unitPrice,
+                amount,
+                remarks
+            };
+
+            if (typeof window.saveStockAdjustmentToBackend === 'function') {
+                window.saveStockAdjustmentToBackend(adjustmentRecord);
+            } else {
+                stockAdjustmentsList.push(adjustmentRecord);
+                showToast(`Stock Adjustment saved for ${itemName}!`);
+            }
+
+            if (isSaveAndNew) {
+                document.getElementById('stockAdjustmentForm').reset();
+                document.getElementById('adj-amount').value = "0.00";
+            } else {
+                closeStockAdjustmentModal();
+            }
+        }
+
         function openActionModal(actionTitle) {
             document.getElementById('modalTitle').innerText = "Create " + actionTitle;
             const modal = document.getElementById('actionModal');
@@ -842,14 +1268,16 @@
             sampleMetrics.grossSale += amount;
             sampleMetrics.invoices += 1;
             sampleMetrics.received += amount;
+
             updateMetricsUI(sampleMetrics);
+            updateChartData();
 
             if (typeof window.saveUserDataToBackend === 'function') {
                 window.saveUserDataToBackend();
             }
 
             closeModal();
-            showToast(`Entry recorded for ${party} (₹${amount.toLocaleString()}) and saved securely.`);
+            showToast(`Entry recorded for ${party} (₹${amount.toLocaleString()}) and synced!`);
         }
 
         function showToast(message) {
@@ -862,10 +1290,143 @@
             }, 3000);
         }
 
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            showToast("Right-click is disabled on this platform.");
-        });
+        function openPortalModal(moduleName) {
+            portalActiveModule = moduleName;
+            const modal = document.getElementById('portalModal');
+            const container = document.getElementById('portalModalContainer');
+            const titleEl = document.getElementById('portalModalTitle');
+            const subtitleEl = document.getElementById('portalModalSubtitle');
+            const iconEl = document.getElementById('portalModalIcon');
+
+            titleEl.innerText = `${moduleName} - Portal Data View`;
+            subtitleEl.innerText = `Detailed logs and live backend database analytics for ${moduleName}`;
+            
+            let iconClass = "fa-solid fa-folder";
+            if (moduleName === 'Daily Summary') iconClass = "fa-solid fa-chart-pie";
+            else if (moduleName === 'Stock Summary') iconClass = "fa-solid fa-boxes-stacked";
+            else if (moduleName === 'Business Analysis') iconClass = "fa-solid fa-chart-line";
+            else if (moduleName === 'Cash Book') iconClass = "fa-solid fa-wallet";
+            else if (moduleName === 'Ledgers') iconClass = "fa-solid fa-book";
+            iconEl.innerHTML = `<i class="${iconClass}"></i>`;
+
+            renderPortalTableContent(moduleName);
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closePortalModal() {
+            const modal = document.getElementById('portalModal');
+            const container = document.getElementById('portalModalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 150);
+        }
+
+        function refreshPortalData() {
+            showToast(`Refreshing data for ${portalActiveModule}...`);
+            renderPortalTableContent(portalActiveModule);
+        }
+
+        function renderPortalTableContent(moduleName) {
+            const contentContainer = document.getElementById('portalModalContent');
+            const countEl = document.getElementById('portalRecordCount');
+            
+            let html = '';
+            let recordCount = 0;
+
+            if (moduleName === 'Daily Summary') {
+                const rows = [
+                    { date: '17 Sep 2026', gross: '₹24,850', invoices: '5', received: '₹18,500', paid: '₹6,200', status: 'Balanced' },
+                    { date: '16 Sep 2026', gross: '₹32,100', invoices: '7', received: '₹28,000', paid: '₹4,500', status: 'Balanced' }
+                ];
+                recordCount = rows.length;
+                html = `
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700 border-b border-gray-200">
+                                <th class="p-2.5 font-semibold">Date</th>
+                                <th class="p-2.5 font-semibold">Gross Sale</th>
+                                <th class="p-2.5 font-semibold">No. Invoices</th>
+                                <th class="p-2.5 font-semibold">Amount Received</th>
+                                <th class="p-2.5 font-semibold">Amount Paid</th>
+                                <th class="p-2.5 font-semibold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            ${rows.map(r => `
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-2.5 font-medium text-gray-800">${r.date}</td>
+                                    <td class="p-2.5 text-sky-teal font-bold">${r.gross}</td>
+                                    <td class="p-2.5 text-gray-700">${r.invoices}</td>
+                                    <td class="p-2.5 text-emerald-600 font-semibold">${r.received}</td>
+                                    <td class="p-2.5 text-rose-600 font-semibold">${r.paid}</td>
+                                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-700 font-medium">${r.status}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if (moduleName === 'Stock Summary') {
+                const items = [
+                    { code: 'SKU-101', name: 'Dell Latitude 5420 Laptop', qty: '18 pcs', price: '₹52,000', val: '₹9,36,000' },
+                    { code: 'SKU-102', name: 'HP LaserJet Pro M404n', qty: '7 pcs', price: '₹18,500', val: '₹1,29,500' }
+                ];
+                recordCount = items.length + stockAdjustmentsList.length;
+                html = `
+                    <div class="mb-3 text-[11px] text-gray-500 font-semibold">Live Inventory & Stock Adjustments Log (${stockAdjustmentsList.length} custom adjustments registered)</div>
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700 border-b border-gray-200">
+                                <th class="p-2.5 font-semibold">Item Code</th>
+                                <th class="p-2.5 font-semibold">Item Name</th>
+                                <th class="p-2.5 font-semibold">Available Stock</th>
+                                <th class="p-2.5 font-semibold">Unit Price</th>
+                                <th class="p-2.5 font-semibold">Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            ${items.map(i => `
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-2.5 font-mono text-gray-600">${i.code}</td>
+                                    <td class="p-2.5 font-bold text-gray-800">${i.name}</td>
+                                    <td class="p-2.5 text-sky-teal font-semibold">${i.qty}</td>
+                                    <td class="p-2.5 text-gray-700">${i.price}</td>
+                                    <td class="p-2.5 text-emerald-700 font-bold">${i.val}</td>
+                                </tr>
+                            `).join('')}
+                            ${stockAdjustmentsList.map(sa => `
+                                <tr class="hover:bg-emerald-50 transition bg-emerald-50/30">
+                                    <td class="p-2.5 font-mono text-gray-600">${sa.itemCode}</td>
+                                    <td class="p-2.5 font-bold text-gray-800">${sa.itemName} <span class="text-[10px] text-sky-teal font-normal">(${sa.reason})</span></td>
+                                    <td class="p-2.5 text-sky-teal font-semibold">${sa.quantity} pcs (${sa.type})</td>
+                                    <td class="p-2.5 text-gray-700">₹${sa.unitPrice.toLocaleString()}</td>
+                                    <td class="p-2.5 text-emerald-700 font-bold">₹${sa.amount.toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                recordCount = 3;
+                html = `
+                    <div class="p-4 text-center text-gray-500">
+                        <i class="fa-solid fa-database text-3xl text-sky-teal mb-2"></i>
+                        <p class="text-xs font-medium">Cloud database records successfully synchronized for ${moduleName}.</p>
+                    </div>
+                `;
+            }
+
+            contentContainer.innerHTML = html;
+            countEl.innerText = `Total Records: ${recordCount}`;
+        }
     </script>
 </body>
 </html>
