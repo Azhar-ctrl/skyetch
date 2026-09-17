@@ -223,7 +223,6 @@
             transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease;
         }
 
-        /* Hover dissolve effect */
         .brand-logo-card:hover {
             opacity: 0.15;
             filter: blur(4px);
@@ -257,51 +256,7 @@
         }
 
         .brand-text span:nth-child(2) {
-            color: #059669; /* Green 'Tech' */
-        }
-
-        #dashboardView {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #fef08a;
-        }
-
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-box {
-            background: #fefce8;
-            border: 1px solid #fef08a;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-box h4 {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .stat-box p {
-            font-size: 16px;
-            font-weight: 700;
-            color: #ca8a04;
-            margin-bottom: 0;
+            color: #059669;
         }
 
         footer {
@@ -332,7 +287,29 @@
     </style>
 </head>
 <body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
+    authDomain: "skytech-f813b.firebaseapp.com",
+    projectId: "skytech-f813b",
+    storageBucket: "skytech-f813b.firebasestorage.app",
+    messagingSenderId: "300030506328",
+    appId: "1:300030506328:web:d3494afa60759d4dc7612d",
+    measurementId: "G-K3DVHBBDMM"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
     <div class="top-right-auth">
         <div class="login-card" id="loginCardContainer">
             <div id="loggedOutView">
@@ -496,11 +473,11 @@
                     }
                 }
 
-                msgEl.textContent = "Success! Redirecting to billing system...";
+                msgEl.textContent = "Success! Authenticated successfully.";
                 msgEl.className = "auth-message success";
                 
                 setTimeout(() => {
-                    window.location.href = 'sky_tech_dashboard.html';
+                    msgEl.textContent = "Welcome to Sky Tech Enterprise Portal.";
                 }, 900);
 
             } catch (err) {
