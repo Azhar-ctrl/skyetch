@@ -499,6 +499,12 @@
     </footer>
 
     <script>
+        // Disable browser navigation buttons (back/forward and history manipulation)
+        history.pushState(null, null, location.href);
+        window.addEventListener('popstate', function(event) {
+            history.pushState(null, null, location.href);
+        });
+
         const card = document.getElementById('loginCardContainer');
         const cardWrapper = document.querySelector('.top-right-auth');
 

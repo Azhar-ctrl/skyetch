@@ -190,9 +190,41 @@
                     </div>
                 </div>
 
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Purchase'); showToast('Opening Purchase module...')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Purchase</span>
-                </a>
+                <div>
+                    <button onclick="togglePurchaseMenu(); setActiveNav(this, 'Purchase')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
+                        <span>Purchase</span>
+                    </button>
+                    <div id="purchase-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
+                        <div>
+                            <button onclick="toggleGroup('grp-purchase-bill')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                                <span>Purchase Bill</span>
+                            </button>
+                            <div id="grp-purchase-bill" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Purchase Bill'); openActionModal('Purchase'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Purchase Bill</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Purchase Bills'); closeAllSubmenus(); showToast('Opening Manage Purchase Bills...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Purchase Bills</a>
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="toggleGroup('grp-purchase-return')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                                <span>Purchase Return</span>
+                            </button>
+                            <div id="grp-purchase-return" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Purchase Return'); closeAllSubmenus(); showToast('Opening New Purchase Return...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Purchase Return</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Purchase Returns'); closeAllSubmenus(); showToast('Opening Manage Purchase Returns...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Purchase Returns</a>
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="toggleGroup('grp-purchase-order')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
+                                <span>Purchase Order</span>
+                            </button>
+                            <div id="grp-purchase-order" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Purchase Order'); closeAllSubmenus(); showToast('Opening New Purchase Order...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Purchase Order</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Purchase Orders'); closeAllSubmenus(); showToast('Opening Manage Purchase Orders...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Purchase Orders</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'GRN (Goods Receipt Note)'); closeAllSubmenus(); showToast('Opening GRN...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">GRN (Goods Receipt Note)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div>
                     <button onclick="toggleInventoryMenu(); setActiveNav(this, 'Inventory')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
@@ -891,7 +923,7 @@
         };
 
         function closeAllSubmenus() {
-            ['grp-invoice', 'grp-salereturn', 'grp-quotation'].forEach(id => {
+            ['grp-invoice', 'grp-salereturn', 'grp-quotation', 'grp-purchase-bill', 'grp-purchase-return', 'grp-purchase-order'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.style.maxHeight = '0px';
@@ -902,7 +934,7 @@
 
         function closeAllMenuDropdowns() {
             closeAllSubmenus();
-            ['sale-submenu', 'inventory-submenu', 'master-submenu'].forEach(id => {
+            ['sale-submenu', 'purchase-submenu', 'inventory-submenu', 'master-submenu'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.style.maxHeight = '0px';
@@ -919,6 +951,17 @@
             if (!isOpen) {
                 saleSub.classList.add('is-open');
                 saleSub.style.maxHeight = (saleSub.scrollHeight + 350) + 'px';
+            }
+        }
+
+        function togglePurchaseMenu() {
+            const purchaseSub = document.getElementById('purchase-submenu');
+            if (!purchaseSub) return;
+            const isOpen = purchaseSub.classList.contains('is-open');
+            closeAllMenuDropdowns();
+            if (!isOpen) {
+                purchaseSub.classList.add('is-open');
+                purchaseSub.style.maxHeight = (purchaseSub.scrollHeight + 350) + 'px';
             }
         }
 
@@ -957,6 +1000,12 @@
             if (saleSub && saleSub.classList.contains('is-open')) {
                 setTimeout(() => {
                     saleSub.style.maxHeight = (saleSub.scrollHeight + 350) + 'px';
+                }, 350);
+            }
+            const purchaseSub = document.getElementById('purchase-submenu');
+            if (purchaseSub && purchaseSub.classList.contains('is-open')) {
+                setTimeout(() => {
+                    purchaseSub.style.maxHeight = (purchaseSub.scrollHeight + 350) + 'px';
                 }, 350);
             }
         }
@@ -1068,7 +1117,7 @@
             });
             element.classList.add('active', 'border-emerald-400', 'bg-[#404A50]', 'font-medium', 'text-white');
             element.classList.remove('border-transparent');
-            if (title !== 'Sale' && title !== 'Inventory' && title !== 'Master') {
+            if (title !== 'Sale' && title !== 'Purchase' && title !== 'Inventory' && title !== 'Master') {
                 closeAllMenuDropdowns();
             } else {
                 closeAllSubmenus();
