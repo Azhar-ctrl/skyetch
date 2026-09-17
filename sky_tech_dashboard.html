@@ -105,7 +105,23 @@
     </style>
 </head>
 <body class="bg-slate-100 h-screen flex flex-col overflow-hidden select-none text-slate-800">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
+    authDomain: "skytech-f813b.firebaseapp.com",
+    projectId: "skytech-f813b",
+    storageBucket: "skytech-f813b.firebasestorage.app",
+    messagingSenderId: "300030506328",
+    appId: "1:300030506328:web:d3494afa60759d4dc7612d",
+    measurementId: "G-K3DVHBBDMM"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
     <header class="bg-white border-b border-slate-200 h-14 flex items-center justify-between px-4 shrink-0 shadow-sm">
         <div class="flex items-center space-x-4">
             <div class="flex items-center gap-2.5 select-none group cursor-pointer">
@@ -129,7 +145,7 @@
             <div class="hidden lg:block">
                 Helpline: <a href="tel:+91XXXX989804" class="font-semibold text-sky-teal">+91-XXXX 9898 04</a>
             </div>
-            <button id="auth-btn" onclick="handleAuthAction()" class="bg-black hover:bg-zinc-800 text-white font-medium px-3 py-1.5 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
+            <button id="auth-btn" onclick="window.handleAuthAction()" class="bg-black hover:bg-zinc-800 text-white font-medium px-3 py-1.5 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
                 <i class="fa-solid fa-right-from-bracket text-[10px]"></i>
                 <span id="auth-btn-text">Log Out</span>
             </button>
@@ -149,8 +165,8 @@
                                 <span>Invoice</span>
                             </button>
                             <div id="grp-invoice" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
-                                <a href="#new-invoice" onclick="setActiveNav(this, 'New Invoice'); openActionModal('New Invoice'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Invoice</a>
-                                <a href="#sale-manage-invoices" onclick="setActiveNav(this, 'Search and Manage Invoices'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Invoices</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Invoice'); closeAllSubmenus(); showToast('Opening New Invoice...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Invoice</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Invoices'); closeAllSubmenus(); showToast('Opening Manage Invoices...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Invoices</a>
                             </div>
                         </div>
                         <div>
@@ -158,8 +174,8 @@
                                 <span>Sale Return</span>
                             </button>
                             <div id="grp-salereturn" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
-                                <a href="#sale-new-return" onclick="setActiveNav(this, 'New Sale Return'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Sale Return</a>
-                                <a href="#sale-manage-returns" onclick="setActiveNav(this, 'Search and Manage Sale Returns'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Sale Returns</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Sale Return'); closeAllSubmenus(); showToast('Opening New Sale Return...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Sale Return</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Sale Returns'); closeAllSubmenus(); showToast('Opening Manage Returns...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Sale Returns</a>
                             </div>
                         </div>
                         <div>
@@ -167,16 +183,16 @@
                                 <span>Quotation</span>
                             </button>
                             <div id="grp-quotation" class="submenu-collapse pl-2 space-y-1 text-xs text-gray-300">
-                                <a href="#quotation-new" onclick="setActiveNav(this, 'New Quotation'); openActionModal('Quotation'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Quotation</a>
-                                <a href="#quotation-manage" onclick="setActiveNav(this, 'Search and Manage Quotations'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Quotations</a>
-                                <a href="#quotation-delivery-note" onclick="setActiveNav(this, 'Delivery Note'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Delivery Note</a>
-                                <a href="#quotation-sale-order" onclick="setActiveNav(this, 'Sale Order'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Sale Order</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'New Quotation'); openActionModal('Quotation'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">New Quotation</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Quotations'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Quotations</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Delivery Note'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Delivery Note</a>
+                                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Sale Order'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Sale Order</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <a href="#purchase" onclick="setActiveNav(this, 'Purchase')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Purchase'); showToast('Opening Purchase module...')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Purchase</span>
                 </a>
 
@@ -185,34 +201,34 @@
                         <span>Inventory</span>
                     </button>
                     <div id="inventory-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-gray-300">
-                        <a href="#inventory-add-adjustment" onclick="setActiveNav(this, 'Add Stock Adjustment')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Stock Adjustment</a>
-                        <a href="#inventory-manage-adjustments" onclick="setActiveNav(this, 'Search and Manage Stock Adjustments')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Stock Adjustments</a>
-                        <a href="#inventory-reconciliation" onclick="setActiveNav(this, 'Physical Stock Reconciliation')" class="flex items-center py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Stock Adjustment')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Stock Adjustment</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Stock Adjustments')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Stock Adjustments</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Physical Stock Reconciliation')" class="flex items-center py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">
                             <i class="fa-solid fa-lock text-[10px] mr-1.5 opacity-70"></i>
                             <span>Physical Stock Reconciliation</span>
                         </a>
                     </div>
                 </div>
 
-                <a href="#manufacture" onclick="setActiveNav(this, 'Manufacture')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Manufacture')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Manufacture</span>
                 </a>
-                <a href="#accounts" onclick="setActiveNav(this, 'Accounts')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Accounts')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Accounts</span>
                 </a>
-                <a href="#expense" onclick="setActiveNav(this, 'Expense')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Expense')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Expense</span>
                 </a>
-                <a href="#customer" onclick="setActiveNav(this, 'Customer')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Customer')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Customer</span>
                 </a>
-                <a href="#reports" onclick="setActiveNav(this, 'Reports')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Reports')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Reports</span>
                 </a>
-                <a href="#staff" onclick="setActiveNav(this, 'Staff')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Staff')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Staff</span>
                 </a>
-                <a href="#tools" onclick="setActiveNav(this, 'Tools')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Tools')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Tools</span>
                 </a>
 
@@ -221,18 +237,18 @@
                         <span>Master</span>
                     </button>
                     <div id="master-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-gray-300">
-                        <a href="#master-add-product" onclick="setActiveNav(this, 'Add Product'); openActionModal('Add Product')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Product</a>
-                        <a href="#master-add-service" onclick="setActiveNav(this, 'Add Service'); openActionModal('Add Service')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Service</a>
-                        <a href="#master-manage-items" onclick="setActiveNav(this, 'Search and Manage Items')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Items</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Product'); openActionModal('Add Product')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Product</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Add Service'); openActionModal('Add Service')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Add Service</a>
+                        <a href="javascript:void(0)" onclick="setActiveNav(this, 'Search and Manage Items')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Search and Manage Items</a>
                         <div class="border-t border-gray-700/50 pt-1 space-y-1">
-                            <a href="#master-brand" onclick="setActiveNav(this, 'Brand Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Brand Master</a>
-                            <a href="#master-group" onclick="setActiveNav(this, 'Group Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Group Master</a>
-                            <a href="#master-bank" onclick="setActiveNav(this, 'Bank Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Bank Master</a>
+                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Brand Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Brand Master</a>
+                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Group Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Group Master</a>
+                            <a href="javascript:void(0)" onclick="setActiveNav(this, 'Bank Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-bold transition duration-150">Bank Master</a>
                         </div>
                     </div>
                 </div>
 
-                <a href="#settings" onclick="setActiveNav(this, 'Settings')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
+                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Settings')" class="sidebar-item flex items-center justify-between px-4 py-2.5 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
                     <span>Settings</span>
                 </a>
             </nav>
@@ -448,60 +464,112 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { getAuth, signOut, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sky-tech-dashboard-default';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
+            authDomain: "skytech-f813b.firebaseapp.com",
+            projectId: "skytech-f813b",
+            storageBucket: "skytech-f813b.firebasestorage.app",
+            messagingSenderId: "300030506328",
+            appId: "1:300030506328:web:d3494afa60759d4dc7612d",
+            measurementId: "G-K3DVHBBDMM"
+        };
 
-        let app, db, auth;
+        let app, db, firebaseAuthInstance;
         let currentUser = null;
 
         try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
+            if (Object.keys(firebaseConfig).length > 0) {
+                app = initializeApp(firebaseConfig);
+                const analytics = getAnalytics(app);
+                db = getFirestore(app);
+                firebaseAuthInstance = getAuth(app);
 
-            const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-            if (token) {
-                signInWithCustomToken(auth, token).catch(() => signInAnonymously(auth));
-            } else {
-                signInAnonymously(auth);
-            }
-
-            onAuthStateChanged(auth, (user) => {
-                currentUser = user;
-                const authBtnText = document.getElementById('auth-btn-text');
-                if (user) {
-                    if (authBtnText) authBtnText.innerText = "Log Out";
+                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (token) {
+                    signInWithCustomToken(firebaseAuthInstance, token).catch((err) => {
+                        console.warn("Custom token sign-in failed, trying anonymous:", err);
+                        signInAnonymously(firebaseAuthInstance).catch(authErr => {
+                            console.warn("Anonymous sign-in restricted/disabled in Firebase project. Running in standalone local mode.", authErr);
+                        });
+                    });
                 } else {
-                    if (authBtnText) authBtnText.innerText = "Login";
+                    signInAnonymously(firebaseAuthInstance).catch(authErr => {
+                        console.warn("Anonymous sign-in restricted/disabled in Firebase project. Running in standalone local mode.", authErr);
+                    });
                 }
-            });
+
+                onAuthStateChanged(firebaseAuthInstance, (user) => {
+                    currentUser = user;
+                    const authBtnText = document.getElementById('auth-btn-text');
+                    if (user) {
+                        if (authBtnText) authBtnText.innerText = "Log Out";
+                        loadUserData(user.uid);
+                    } 
+                }, (error) => {
+                    console.error("Auth state observation error:", error);
+                });
+            } else {
+                console.warn("Firebase config is empty. Running in standalone local mode.");
+            }
         } catch (e) {
             console.warn("Firebase initialization fallback active:", e);
         }
 
-        window.handleAuthAction = function() {
-            if (auth && auth.currentUser) {
-                signOut(auth).then(() => {
-                    triggerSessionOut();
-                }).catch(() => {
-                    triggerSessionOut();
-                });
-            } else {
-                triggerSessionOut();
+        async function loadUserData(userId) {
+            if (!db) return;
+            try {
+                const userDocRef = doc(db, 'artifacts', 'skytech-default', 'users', userId, 'dashboardState', 'metrics');
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && typeof data.grossSale === 'number') {
+                        sampleMetrics.grossSale = data.grossSale;
+                        sampleMetrics.invoices = data.invoices;
+                        sampleMetrics.received = data.received;
+                        sampleMetrics.paid = data.paid;
+                        sampleMetrics.outstanding = data.outstanding;
+                        sampleMetrics.unpaidInv = data.unpaidInv;
+                        sampleMetrics.unpaidPur = data.unpaidPur;
+                        updateMetricsUI(sampleMetrics);
+                    }
+                } else {
+                    await setDoc(userDocRef, sampleMetrics);
+                }
+            } catch (err) {
+                console.error("Error loading user data from backend:", err);
+            }
+        }
+
+        window.saveUserDataToBackend = async function() {
+            if (!db || !currentUser) return;
+            try {
+                const userDocRef = doc(db, 'artifacts', 'skytech-default', 'users', currentUser.uid, 'dashboardState', 'metrics');
+                await setDoc(userDocRef, sampleMetrics);
+            } catch (err) {
+                console.error("Error saving data to backend:", err);
             }
         };
 
-        function triggerSessionOut() {
-            localStorage.removeItem('sky_tech_session');
-            sessionStorage.clear();
-            showToast("Session terminated successfully.");
-            setTimeout(() => {
-                window.location.href = 'e_commerce_billing_login.html';
-            }, 500);
-        }
+        window.handleAuthAction = function() {
+            if (firebaseAuthInstance && currentUser) {
+                signOut(firebaseAuthInstance)
+                    .then(() => {
+                        console.log("User successfully logged out.");
+                        showToast("Successfully logged out!");
+                        // Redirect or hide dashboard view on successful logout
+                        window.location.href = "index.html";
+                    })
+                    .catch((error) => {
+                        console.error("Error during sign-out:", error);
+                        showToast("Error logging out.");
+                    });
+            } 
+            
+        };
     </script>
 
     <script>
@@ -610,7 +678,6 @@
         function initChart() {
             const ctx = document.getElementById('vitalChart').getContext('2d');
             
-            // Custom plugin to draw vertical line on hover
             const verticalLinePlugin = {
                 id: 'verticalLineOnHover',
                 afterDraw: (chart) => {
@@ -771,14 +838,18 @@
             e.preventDefault();
             const party = document.getElementById('modal-party').value;
             const amount = parseFloat(document.getElementById('modal-amount').value) || 0;
-            if (isSampleDataLoaded) {
-                sampleMetrics.grossSale += amount;
-                sampleMetrics.invoices += 1;
-                sampleMetrics.received += amount;
-                updateMetricsUI(sampleMetrics);
+            
+            sampleMetrics.grossSale += amount;
+            sampleMetrics.invoices += 1;
+            sampleMetrics.received += amount;
+            updateMetricsUI(sampleMetrics);
+
+            if (typeof window.saveUserDataToBackend === 'function') {
+                window.saveUserDataToBackend();
             }
+
             closeModal();
-            showToast(`Entry recorded for ${party} (₹${amount.toLocaleString()})`);
+            showToast(`Entry recorded for ${party} (₹${amount.toLocaleString()}) and saved securely.`);
         }
 
         function showToast(message) {
@@ -791,7 +862,6 @@
             }, 3000);
         }
 
-        // Lock mouse right-click context menu
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             showToast("Right-click is disabled on this platform.");
