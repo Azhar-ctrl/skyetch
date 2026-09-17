@@ -50,11 +50,11 @@
 
         .top-right-auth {
             position: absolute;
-            top: 70px;
-            right: 24px;
+            top: 80px;
+            right: 90px;
             z-index: 10;
             width: 100%;
-            max-width: 340px;
+            max-width: 390px;
             animation: slideInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards, floatSmoothCard 6s ease-in-out infinite;
         }
 
@@ -85,15 +85,19 @@
             background: #ffffff;
             border: 1px solid rgba(202, 138, 4, 0.3);
             border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 12px 35px -5px rgba(202, 138, 4, 0.2), 0 8px 15px -6px rgba(202, 138, 4, 0.1);
+            padding: 39px 33px;
+            min-height: 410px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             transition: transform 0.1s ease-out, box-shadow 0.3s ease;
             transform-style: preserve-3d;
             will-change: transform;
+            box-shadow: 0 15px 38px -2px rgba(202, 138, 4, 0.4), 0 0 15px 0px rgba(234, 179, 8, 0.3);
         }
 
         .login-card:hover {
-            box-shadow: 0 22px 45px -5px rgba(202, 138, 4, 0.35), 0 12px 20px -6px rgba(202, 138, 4, 0.2);
+            box-shadow: 0 25px 48px -2px rgba(202, 138, 4, 0.6), 0 0 20px 0px rgba(234, 179, 8, 0.5);
             animation-play-state: paused;
         }
 
@@ -120,7 +124,7 @@
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 18px;
             text-align: left;
             animation: fadeIn 0.9s ease-in-out;
         }
@@ -130,12 +134,12 @@
             font-size: 12px;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .form-control {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px 14px;
             font-size: 13px;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
@@ -153,7 +157,7 @@
 
         .btn-submit {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: #0b2545;
             color: #ffffff;
             border: none;
@@ -162,7 +166,7 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 4px;
+            margin-top: 8px;
             position: relative;
             overflow: hidden;
         }
@@ -197,58 +201,116 @@
             padding: 40px 60px;
         }
 
-        @keyframes zoomInOut {
-            0% {
-                transform: scale(0.9);
-            }
-            50% {
-                transform: scale(1.12);
-            }
-            100% {
-                transform: scale(0.9);
-            }
+        .brand-logo-container {
+            position: relative;
+            cursor: pointer;
+            width: 820px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            margin-left: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+            filter: drop-shadow(0px 2px 2px rgba(202, 138, 4, 0.95));
         }
 
         .brand-logo-card {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 32px;
             background: transparent;
             padding: 24px 0;
             border-radius: 24px;
-            animation: zoomInOut 3s infinite ease-in-out;
             border: none;
             box-shadow: none;
-            cursor: pointer;
-            transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease;
-        }
-
-        .brand-logo-card:hover {
-            opacity: 0.15;
-            filter: blur(4px);
-            transform: scale(0.96);
-            animation-play-state: paused;
+            transition: opacity 0.3s ease;
         }
 
         .brand-icon {
-            width: 64px;
-            height: 64px;
+            width: 110px;
+            height: 110px;
             background: #0b2545;
-            border-radius: 16px;
+            border-radius: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
-            font-size: 32px;
+            font-size: 58px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .brand-text {
+            font-size: 68px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            display: flex;
+            gap: 14px;
+        }
+
+        .brand-logo-card {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            background: transparent;
+            padding: 24px 0;
+            border-radius: 24px;
+            border: none;
+            box-shadow: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .brand-icon {
+            width: 104px;
+            height: 104px;
+            background: #0b2545;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 52px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .brand-text {
+            font-size: 60px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .brand-logo-card {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+            background: transparent;
+            padding: 24px 0;
+            border-radius: 24px;
+            border: none;
+            box-shadow: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .brand-icon {
+            width: 84px;
+            height: 84px;
+            background: #0b2545;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 42px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .brand-text {
-            font-size: 36px;
+            font-size: 48px;
             font-weight: 800;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
 
         .brand-text span:nth-child(1) {
@@ -257,6 +319,17 @@
 
         .brand-text span:nth-child(2) {
             color: #059669;
+        }
+
+        #logoCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         footer {
@@ -326,13 +399,16 @@
     </div>
 
     <section class="hero" id="heroSection">
-        <div class="brand-logo-card" title="Hover to dissolve">
-            <div class="brand-icon">
-                <i class="fa-solid fa-microchip"></i>
+        <div class="brand-logo-container" id="brandLogoContainer" title="Sky Tech Portal">
+            <div class="brand-logo-card" id="staticLogo">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+                <div class="brand-text">
+                    <span>Sky</span><span>Tech</span>
+                </div>
             </div>
-            <div class="brand-text">
-                <span>Sky</span><span>Tech</span>
-            </div>
+            <canvas id="logoCanvas"></canvas>
         </div>
     </section>
 
@@ -365,6 +441,156 @@
                 card.style.transition = 'transform 0.1s ease-out';
             });
         }
+
+        // Pixel Shatter & Floating Hover Effect for SkyTech Logo
+        window.addEventListener('load', () => {
+            const container = document.getElementById('brandLogoContainer');
+            const staticLogo = document.getElementById('staticLogo');
+            const canvas = document.getElementById('logoCanvas');
+            const ctx = canvas.getContext('2d');
+
+            let particles = [];
+            let animationFrameId;
+            let mouse = { x: -9999, y: -9999, radius: 70, isHovering: false };
+
+            function resizeCanvas() {
+                const rect = container.getBoundingClientRect();
+                const width = rect.width > 0 ? rect.width : 440;
+                const height = rect.height > 0 ? rect.height : 160;
+
+                canvas.width = width * window.devicePixelRatio;
+                canvas.height = height * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                initLogoPixels(width, height);
+            }
+
+            class Particle {
+                constructor(x, y, color) {
+                    this.originX = x;
+                    this.originY = y;
+                    this.x = x;
+                    this.y = y;
+                    this.vx = (Math.random() - 0.5) * 2;
+                    this.vy = (Math.random() - 0.5) * 2;
+                    this.color = color;
+                    this.size = Math.random() * 2 + 1.5;
+                    this.friction = 0.88;
+                    this.springFactor = 0.09;
+                }
+
+                update(mouseX, mouseY, floatingOffset) {
+                    let targetX = this.originX;
+                    let targetY = this.originY + floatingOffset;
+
+                    let dx = mouseX - this.x;
+                    let dy = mouseY - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    let force = -mouse.radius / distance;
+
+                    if (distance < mouse.radius && mouse.isHovering) {
+                        let angle = Math.atan2(dy, dx);
+                        this.vx += (force * Math.cos(angle)) * 2.5;
+                        this.vy += (force * Math.sin(angle)) * 2.5;
+                    }
+
+                    let targetDx = targetX - this.x;
+                    let targetDy = targetY - this.y;
+
+                    this.vx += targetDx * this.springFactor;
+                    this.vy += targetDy * this.springFactor;
+
+                    this.vx *= this.friction;
+                    this.vy *= this.friction;
+
+                    this.x += this.vx;
+                    this.y += this.vy;
+                }
+
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.size, this.size);
+                }
+            }
+
+            function initLogoPixels(width, height) {
+                particles = [];
+                const offCanvas = document.createElement('canvas');
+                const offCtx = offCanvas.getContext('2d');
+                offCanvas.width = width;
+                offCanvas.height = height;
+
+                offCtx.clearRect(0, 0, width, height);
+                
+                // Draw exact match of the logo text and icon scaled up
+                offCtx.fillStyle = '#0b2545';
+                offCtx.fillRect(10, (height - 90) / 2, 90, 90);
+                
+                offCtx.fillStyle = '#ffffff';
+                offCtx.font = `900 48px 'Inter', sans-serif`;
+                offCtx.textBaseline = 'middle';
+                offCtx.fillText('SKYT', 134, height / 2);
+
+                offCtx.fillStyle = '#059669';
+                offCtx.font = `900 48px 'Inter', sans-serif`;
+                offCtx.fillText('ECH', 274, height / 2);
+
+                const imgData = offCtx.getImageData(0, 0, width, height);
+                const data = imgData.data;
+                const gap = 3;
+
+                for (let y = 0; y < height; y += gap) {
+                    for (let x = 0; x < width; x += gap) {
+                        const index = (y * width + x) * 4;
+                        if (data[index + 3] > 128) {
+                            const color = `rgb(${data[index]},${data[index+1]},${data[index+2]})`;
+                            particles.push(new Particle(x, y, color));
+                        }
+                    }
+                }
+            }
+
+            let time = 0;
+            function animate() {
+                const rect = container.getBoundingClientRect();
+                const width = rect.width > 0 ? rect.width : 440;
+                const height = rect.height > 0 ? rect.height : 160;
+                
+                ctx.clearRect(0, 0, width, height);
+                time += 0.05;
+                const floatingOffset = mouse.isHovering ? Math.sin(time) * 4 : 0;
+
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update(mouse.x, mouse.y, floatingOffset);
+                    particles[i].draw();
+                }
+
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            container.addEventListener('mouseenter', () => {
+                mouse.isHovering = true;
+                staticLogo.style.opacity = '0';
+                canvas.style.opacity = '1';
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                mouse.isHovering = false;
+                mouse.x = -9999;
+                mouse.y = -9999;
+                staticLogo.style.opacity = '1';
+                canvas.style.opacity = '0';
+            });
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            animate();
+        });
     </script>
 
     <script type="module">
@@ -427,7 +653,7 @@
             const msgEl = document.getElementById('authMessage');
             const btn = document.getElementById('submitBtn');
 
-            msgEl.textContent = "Connecting to Firebase Database & Auth...";
+            msgEl.textContent = "";
             msgEl.className = "auth-message";
             btn.disabled = true;
 
@@ -444,7 +670,7 @@
                     }
                     // Handle wrong password, invalid credential, or user not found explicitly
                     if (signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password' || signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-email') {
-                        throw new Error("wrong Email Address or Password entred");
+                        throw new Error("Wrong Email Address or Password Entered");
                     } else {
                         throw signInErr;
                     }
@@ -466,16 +692,18 @@
                     }
                 }
 
-                msgEl.textContent = "Success! Authenticated and saved to Firestore.";
-                msgEl.className = "auth-message success";
+                // No message needed on success, redirect immediately
+                msgEl.textContent = "";
                 
                 // Redirect to dashboard upon successful login with robust fallback URL
                 setTimeout(() => {
                     window.location.replace("./sky_tech_dashboard.html");
-                }, 800);
+                }, 300);
 
             } catch (err) {
-                msgEl.textContent = err.message || "Authentication failed";
+                // If it's our custom auth error or general failure, display clean message
+                const displayMsg = err.message.includes("Wrong Email Address") ? "Wrong Email Address or Password Entered" : (err.message || "Authentication failed");
+                msgEl.textContent = displayMsg;
                 msgEl.className = "auth-message error";
                 btn.disabled = false;
             }
