@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sky Tech</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+        #sidebar-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+        #sidebar-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+        #sidebar-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        #sidebar-menu {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .nav-link { position: relative; }
+        .nav-link.active { color: #6EE7B7; }
+        .nav-link.active::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #34D399;
+        }
+        .cat-btn:hover { background-color: #353E43; }
+        .locked-row:hover { background: #065F46; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin-once { animation: spin .6s ease; }
+        
+        @keyframes logoPulseAdvanced {
+            0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 4px 12px -2px rgba(37, 37, 37, 0.4); filter: brightness(1); }
+            25% { transform: scale(1.05) rotate(-3deg); box-shadow: 0 8px 16px -2px rgba(37, 37, 37, 0.6); filter: brightness(1.2); }
+            50% { transform: scale(1.12) rotate(4deg); box-shadow: 0 12px 20px -2px rgba(37, 37, 37, 0.7); filter: brightness(1.3); }
+            75% { transform: scale(1.05) rotate(-2deg); box-shadow: 0 8px 16px -2px rgba(37, 37, 37, 0.6); filter: brightness(1.15); }
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+        .animated-logo { animation: logoPulseAdvanced 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .animated-logo:hover { animation: logoPulseAdvanced 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .logo-shimmer {
+            position: absolute; top: 0; left: 0; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transform: translateX(-100%);
+        }
+        .animated-logo:hover .logo-shimmer { animation: shimmer 0.8s infinite; }
+        select.plain { appearance: none; -webkit-appearance: none; background: transparent; }
+        select option {
+            background-color: #ffffff !important;
+            color: #111827 !important;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        .status-dot-active {
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        /* Water drop ripple effect */
+        .water-drop-container {
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes waterRipple {
+            0% {
+                width: 0px;
+                height: 0px;
+                opacity: 0.8;
+            }
+            100% {
+                width: 220px;
+                height: 220px;
+                opacity: 0;
+            }
+        }
+        .water-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(52, 211, 153, 0.7) 0%, rgba(16, 185, 129, 0.2) 60%, transparent 100%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: waterRipple 0.6s cubic-bezier(0, 0.2, 0.8, 1) forwards;
+        }
+
+        /* Smooth water-drop style accordion transition for submenus */
+        .submenu-accordion {
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s ease, padding 0.3s ease;
+            overflow: hidden;
+            transform-origin: top;
+        }
+        .submenu-accordion.is-closed {
+            max-height: 0 !important;
+            opacity: 0;
+            transform: scaleY(0.92);
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            pointer-events: none;
+        }
+        .submenu-accordion.is-open {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        .sidebar-item.active,
+        .submenu-link.active {
+            background-color: #374151 !important; /* Gray background */
+            color: #ffffff !important; /* White text */
+        }
+        .sidebar-item.active i,
+        .submenu-link.active i,
+        .sidebar-item.active .sidebar-text,
+        .submenu-link.active .sidebar-text {
+            color: #ffffff !important;
+        }
+        .submenu-link.active::before {
+            transform: translateY(-50%) scale(1) !important;
+            opacity: 1 !important;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.8) !important;
+        }
+        .submenu-link.active {
+            padding-left: 3.25rem !important;
+        }
+
+        /* Enable vertical scrolling on the sale submenu if content exceeds available height */
+        #sale-submenu {
+            max-height: 220px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        #sale-submenu::-webkit-scrollbar {
+            width: 3px;
+        }
+        #sale-submenu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #sale-submenu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        /* Smooth sidebar collapse & expand animation */
+        #sidebar-menu {
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #sidebar-menu.is-collapsed {
+            width: 4rem; /* 64px mini sidebar */
+        }
+        .sidebar-text {
+            display: inline-block;
+            transition: opacity 0.25s ease, max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
+            max-width: 160px;
+            opacity: 1;
+            white-space: nowrap;
+        }
+        #sidebar-menu.is-collapsed .sidebar-text {
+            opacity: 0;
+            max-width: 0px;
+            transform: translateX(-8px);
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .sidebar-item {
+            transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, color 0.2s ease;
+        }
+        #sidebar-menu.is-collapsed .sidebar-item {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .submenu-link {
+            position: relative;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .submenu-link::before {
+            content: '';
+            position: absolute;
+            left: 1.75rem;
+            top: 50%;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #34D399;
+            transform: translateY(-50%) scale(0);
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, box-shadow 0.25s ease;
+        }
+        .submenu-link:hover::before {
+            transform: translateY(-50%) scale(1);
+            opacity: 1;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+        }
+        .submenu-link:hover {
+            background-color: #1f2937;
+            color: #ffffff !important;
+            padding-left: 3.25rem;
+        }
+        .submenu-link .sidebar-text {
+            display: inline-block;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .submenu-link:hover .sidebar-text {
+            transform: translateX(3px);
+        }
+
+        /* Gold animated text effect for Log Out button */
+        @keyframes goldShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gold-animated-text {
+            background: linear-gradient(90deg, #d4af37, #fff1a8, #f59e0b, #ffd700, #d4af37);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShimmer 2.5s ease-in-out infinite;
+            font-weight: 700;
+            display: inline-block;
+            filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4));
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #auth-btn:hover .gold-animated-text {
+            animation: goldShimmer 0.7s ease-in-out infinite;
+            letter-spacing: 0.05em;
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+        }
+
+        /* Footer hover gold animation & focus effects */
+        .footer-gold-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: linear-gradient(90deg, #b8860b, #d4af37, #fff1a8, #ffd700, #d4af37, #b8860b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .footer-gold-link {
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: initial;
+            color: #94a3b8; /* Default slate color for footer text */
+        }
+        .footer-gold-link:hover, .footer-gold-link:focus {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShimmer 1.5s linear infinite;
+            font-weight: 600;
+            transform: translateY(-1px) scale(1.05);
+            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7));
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 h-screen w-screen overflow-hidden font-['Inter'] antialiased text-slate-800 flex flex-col justify-between">
+
+    <header class="bg-white border-b border-slate-200 h-12 flex items-center justify-between px-3.5 shrink-0 shadow-sm relative z-50 w-full">
+        <div class="flex items-center space-x-3">
+            <button id="menu-toggle-btn" onclick="window.toggleSidebar()" class="text-slate-700 hover:text-black focus:outline-none p-1 rounded-md hover:bg-slate-100 transition" title="Toggle Menu">
+                <i class="fa-solid fa-bars text-base"></i>
+            </button>
+            <div onclick="window.showView('dashboard-view')" class="flex items-center gap-2 select-none group cursor-pointer" title="Go to Dashboard">
+                <div class="w-7 h-7 rounded-lg bg-black flex items-center justify-center text-white shadow-md animated-logo relative overflow-hidden">
+                    <div class="logo-shimmer"></div>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/>
+                        <path d="M9 9h6v6H9z" fill="currentColor" fill-opacity="0.3"/>
+                        <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+                    </svg>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                    <span class="text-slate-900 font-black text-base tracking-tight leading-none flex items-center">
+                        Sky<span class="text-emerald-700 ml-0.5">Tech</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4 text-xs text-gray-600">
+            <div class="hidden sm:block">
+                Helpline: <a href="tel:+916262989804" class="font-semibold text-emerald-700 hover:underline">+91-6262 98904</a>
+            </div>
+              
+            <button id="auth-btn" onclick="window.handleAuthAction()" class="group bg-black hover:bg-zinc-900 text-white font-medium px-3.5 py-1.5 rounded-full text-xs transition-all duration-300 shadow-sm flex items-center space-x-2 border border-amber-500/30 hover:border-amber-400 hover:shadow-amber-500/20 hover:shadow-lg">
+                <i class="fa-solid fa-right-from-bracket text-[11px] text-amber-400 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:rotate-12"></i>
+                <span id="auth-btn-text" class="gold-animated-text">Log Out</span>
+            </button>
+        </div>         
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative w-full">
+        <aside id="sidebar-menu" class="w-52 bg-black text-slate-300 flex-shrink-0 flex flex-col py-2 space-y-0 text-[13px] font-medium tracking-normal shadow-xl transition-all duration-300 ease-in-out select-none overflow-y-auto relative z-40 max-h-full">
+            <a href="#" id="menu-dashboard" title="Dashboard" onclick="window.showView('dashboard-view'); window.handleOtherMenuClick(event)" class="sidebar-item active water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-chart-pie w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate font-medium">Dashboard</span>
+            </a>
+
+            <!-- Sale Menu Group with Submenu -->
+            <div class="w-full">
+                <button id="sale-menu-btn" onclick="window.toggleSaleSubmenu(event)" title="Sale" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 flex items-center justify-between w-full text-left text-slate-300 hover:bg-gray-800 border-l-[3px] border-transparent">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-cart-shopping w-5 text-center text-sm shrink-0"></i>
+                        <span class="sidebar-text truncate font-medium text-[13px]">Sale</span>
+                    </div>
+                </button>
+
+                <div id="sale-submenu" class="submenu-accordion is-closed bg-black py-0 flex flex-col w-full">
+                    <a href="new_invoice.html" id="menu-create-invoice" title="Create New Invoice" onclick="window.smoothLoadPage(event, this.href)" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-2 block w-full text-slate-300 hover:text-emerald-400 font-medium text-[12px]">
+                        <i class="fa-solid fa-plus text-[10px] text-emerald-400"></i>
+                        <span class="sidebar-text truncate">Create New Invoice</span>
+                    </a>
+                    <a href="#" id="menu-manage-invoice" title="Search & Manage Invoices" onclick="window.showView('manage-invoice-view'); window.createWaterDrop(event)" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-2 block w-full text-slate-300 hover:text-sky-400 font-medium text-[12px]">
+                        <i class="fa-solid fa-list-check text-[10px] text-sky-400"></i>
+                        <span class="sidebar-text truncate">Search & Manage</span>
+                    </a>
+                    <a href="#" id="menu-sale-return" title="Sale Return" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event)" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-3 block w-full text-slate-300 font-medium text-[13px]">
+                        <span class="sidebar-text truncate">Sale Return</span>
+                    </a>
+                    <a href="#" id="menu-quotation" title="Quotation" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event)" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-3 block w-full text-slate-300 font-medium text-[13px]">
+                        <span class="sidebar-text truncate">Quotation</span>
+                    </a>
+                </div>
+            </div>
+            <a href="#" title="Purchase" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-bag-shopping w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Purchase</span>
+            </a>
+            <a href="#" title="Inventory" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-boxes-stacked w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Inventory</span>
+            </a>
+            <a href="#" title="Manufacture" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-industry w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Manufacture</span>
+            </a>
+            <a href="#" title="Accounts" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-calculator w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Accounts</span>
+            </a>
+            <a href="#" title="Expense" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-receipt w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Expense</span>
+            </a>
+            <a href="#" title="Customer" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-users w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Customer</span>
+            </a>
+            <a href="#" title="Reports" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-chart-column w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Reports</span>
+            </a>
+            <a href="#" title="Staff" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-user-tie w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Staff</span>
+            </a>
+            <a href="#" title="Tools" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-wrench w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Tools</span>
+            </a>
+            <a href="#" title="Master" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-database w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Master</span>
+            </a>
+            <a href="#" title="Settings" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-gear w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Settings</span>
+            </a>
+        </aside>
+
+        <main class="flex-1 p-3 lg:p-4 bg-slate-100/70 overflow-y-auto h-full flex flex-col justify-between">
+            <div class="space-y-3.5 w-full">
+            <div id="dashboard-view" class="view-section grid grid-cols-1 lg:grid-cols-12 gap-3.5 max-w-[1600px] mx-auto">
+                <!-- Left Column -->
+                <div class="lg:col-span-6 space-y-3">
+                    <!-- Dashboard Header Card -->
+                    <div class="bg-white rounded-lg border border-slate-200/80 p-2.5 shadow-sm flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <h2 class="text-sm font-bold text-slate-900 tracking-tight">Dashboard</h2>
+                            <button id="toggle-privacy-btn" onclick="window.toggleDashboardPrivacy()" title="Toggle Visibility" class="text-slate-400 hover:text-slate-600 transition p-0.5 rounded-full">
+                                <i id="privacy-icon" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <select id="time-filter-select" onchange="window.updateDashboardData()" class="bg-slate-800 text-white text-[11px] font-medium px-2.5 py-1 rounded focus:outline-none cursor-pointer">
+                                <option value="today" selected>Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="year">This Year</option>
+                            </select>
+                            <button onclick="window.updateDashboardData()" class="text-slate-500 hover:text-slate-800 p-1 rounded hover:bg-slate-100 transition" title="Refresh Data">
+                                <i class="fa-solid fa-rotate text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Gross Sale & Invoice Summary Box -->
+                    <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm">
+                        <div class="grid grid-cols-2 gap-y-2.5 gap-x-4">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">GROSS SALE</span>
+                                <span id="stat-gross-sale" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">₹2,48,500</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">NO. OF INVOICES</span>
+                                <span id="stat-no-invoices" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">18</span>
+                            </div>
+                            <div class="pt-2 border-t border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">AMOUNT RECEIVED</span>
+                                <span id="stat-amount-received" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">₹1,95,000</span>
+                            </div>
+                            <div class="pt-2 border-t border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">AMOUNT PAID</span>
+                                <span id="stat-amount-paid" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">₹82,400</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Grid (2 rows x 4 columns) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        <a href="new_invoice.html" onclick="window.smoothLoadPage(event, this.href)" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group no-underline">
+                            <i class="fa-solid fa-file-circle-plus text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">New Invoice</span>
+                        </a>
+                        <button onclick="window.triggerQuickAction('Quotation')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                            <i class="fa-solid fa-file-lines text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">Quotation</span>
+                        </button>
+                        <button onclick="window.triggerQuickAction('Purchase')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                            <i class="fa-solid fa-bag-shopping text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">Purchase</span>
+                        </button>
+                        <button onclick="window.triggerQuickAction('Expense')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                            <i class="fa-solid fa-receipt text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">Expense</span>
+                        </button>
+                        
+                        <button onclick="window.triggerQuickAction('Customer')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                            <i class="fa-solid fa-user text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">Customer</span>
+                        </button>
+                        <button onclick="window.triggerQuickAction('Reminder')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                            <i class="fa-solid fa-bell text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">Reminder</span>
+                        </button>
+                        <button onclick="window.triggerQuickAction('Payment In')" class="bg-indigo-900 hover:bg-indigo-950 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                            <i class="fa-solid fa-money-bill-wave text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">Payment In</span>
+                        </button>
+                        <button onclick="window.triggerQuickAction('Payment Out')" class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                            <i class="fa-solid fa-hand-holding-dollar text-xs group-hover:scale-110 transition-transform"></i>
+                            <span class="text-[11px] font-medium">Payment Out</span>
+                        </button>
+                    </div>
+
+                    <!-- Business Insights Panel -->
+                    <div class="bg-white rounded-lg border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div class="bg-slate-900 text-white px-3 py-2 flex items-center justify-between">
+                            <h3 class="text-xs font-bold tracking-tight">Business Insights</h3>
+                            <i class="fa-solid fa-chart-pie text-slate-300 text-xs"></i>
+                        </div>
+                        <div class="p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="bg-emerald-50/60 border border-emerald-100/80 p-2.5 rounded-lg flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-[10px] font-bold text-emerald-800 tracking-wider uppercase">SALE INSIGHTS</span>
+                                    <i class="fa-solid fa-arrow-trend-up text-emerald-600 text-xs"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-value text-base font-black text-slate-800 block">₹2,48,500</span>
+                                    <span class="text-[10px] font-medium text-emerald-700">Conversion: 78.4%</span>
+                                </div>
+                            </div>
+                            <div class="bg-rose-50/60 border border-rose-100/80 p-2.5 rounded-lg flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-[10px] font-bold text-rose-800 tracking-wider uppercase">PURCHASE FLOW</span>
+                                    <i class="fa-solid fa-bag-shopping text-rose-500 text-xs"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-value text-base font-black text-slate-800 block">₹1,12,000</span>
+                                    <span class="text-[10px] font-medium text-rose-700">Payout Rate: 62.1%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 space-y-3">
+                    <!-- Search Bar Section -->
+                    <div class="flex rounded-md shadow-sm">
+                        <input type="text" id="invoice-search-input" placeholder="Invoice No or Customer Name or Mobile No" class="flex-1 bg-white border border-slate-300 border-r-0 rounded-l-md px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        <select id="search-type-select" class="bg-slate-800 text-white text-[11px] px-2.5 py-1.5 border-y border-slate-800 focus:outline-none cursor-pointer">
+                            <option>Search in Invoice</option>
+                            <option>Search in Customer</option>
+                            <option>Search in Item</option>
+                        </select>
+                        <button onclick="window.showView('manage-invoice-view')" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-r-md flex items-center justify-center transition">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Vital Stats Box -->
+                    <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">VITAL STATS</h3>
+                            <button onclick="window.refreshVitalStats()" class="text-slate-400 hover:text-slate-600 transition" title="Refresh Vital Stats">
+                                <i class="fa-solid fa-rotate text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-lg p-2">
+                                <div id="vital-amount-outstanding" class="stat-value text-sm font-extrabold text-slate-900">₹53,500</div>
+                                <div class="text-[10px] text-slate-500 mt-0.5">Amount Outstanding</div>
+                            </div>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-lg p-2">
+                                <div id="vital-unpaid-invoices" class="stat-value text-sm font-extrabold text-slate-900">4</div>
+                                <div class="text-[10px] text-slate-500 mt-0.5">Unpaid Invoices</div>
+                            </div>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-lg p-2">
+                                <div id="vital-unpaid-purchases" class="stat-value text-sm font-extrabold text-slate-900">2</div>
+                                <div class="text-[10px] text-slate-500 mt-0.5">Unpaid Purchases</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Curve Analytics Graph Card -->
+                    <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <!-- Tabs -->
+                            <div class="flex items-center space-x-4 border-b border-slate-200 pb-2 text-[11px] overflow-x-auto">
+                                <button onclick="window.switchAnalyticsTab('activity')" id="tab-activity" class="text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap">Recent Activity</button>
+                                <button onclick="window.switchAnalyticsTab('customer')" id="tab-customer" class="text-emerald-700 font-semibold border-b-2 border-emerald-600 pb-1 transition whitespace-nowrap">Customer Due</button>
+                                <button onclick="window.switchAnalyticsTab('supplier')" id="tab-supplier" class="text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap">Supplier Due</button>
+                                <button onclick="window.switchAnalyticsTab('received')" id="tab-received" class="text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap">Amount Received</button>
+                            </div>
+
+                            <!-- Filter & Legends -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 mt-2 mb-1">
+                                <select id="graph-period-select" onchange="window.drawCurveChart()" class="bg-slate-800 text-white text-[10px] font-medium px-2 py-0.5 rounded focus:outline-none cursor-pointer">
+                                    <option value="30">Last 30 days</option>
+                                    <option value="7">Last 7 days</option>
+                                    <option value="90">Last 90 days</option>
+                                </select>
+                                <div class="flex items-center space-x-3 text-[10px] text-slate-600">
+                                    <div class="flex items-center space-x-1">
+                                        <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
+                                        <span>Overdue 0-30d</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>
+                                        <span>Overdue &gt;30d</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span>
+                                        <span>Total Outstanding</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Curve Chart -->
+                        <div class="relative w-full h-36 lg:h-44 mt-1">
+                            <canvas id="curveChartCanvas" class="w-full h-full block"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic add_product_form container view -->
+            <div id="add-product-form-view" class="view-section hidden max-w-[1400px] mx-auto space-y-3 pb-8">
+                <!-- Page Top Navigation Header -->
+                <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="window.showView('dashboard-view')" class="text-slate-500 hover:text-slate-900 bg-slate-100 p-1.5 rounded-md transition" title="Back to Dashboard">
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                        <div>
+                            <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                <i class="fa-solid fa-file-circle-plus text-emerald-600"></i> Add Product Form
+                            </h2>
+                            <p class="text-[11px] text-slate-500">Loaded from add_product_form.html inside the main content area</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="window.showView('manage-invoice-view')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-list-check text-xs"></i>
+                            <span>Search & Manage Invoices</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Product Form Dynamic Container -->
+                <div id="add-product-form-container" class="bg-white rounded-lg border border-slate-200/80 p-4 shadow-sm space-y-4">
+                    <!-- Loaded dynamically via fetch or graceful fallback -->
+                </div>
+            </div>
+
+            <div id="manage-invoice-view" class="view-section hidden max-w-[1600px] mx-auto space-y-3 pb-8">
+                <!-- Page Top Navigation Header -->
+                <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="window.showView('dashboard-view')" class="text-slate-500 hover:text-slate-900 bg-slate-100 p-1.5 rounded-md transition" title="Back to Dashboard">
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                        <div>
+                            <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-sky-600"></i> Search & Manage Invoices
+                            </h2>
+                            <p class="text-[11px] text-slate-500">Filter, search, view, edit, and print customer sales invoices</p>
+                        </div>
+                    </div>
+                    <a href="new_invoice.html" onclick="window.smoothLoadPage(event, this.href)" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded-md text-xs font-semibold transition shadow-sm flex items-center space-x-1.5 no-underline">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Create New Invoice</span>
+                    </a>
+                </div>
+
+                <!-- Filters & Search Toolbar Card -->
+                <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm space-y-2.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <!-- Search input box -->
+                        <div class="relative flex-1 min-w-[240px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="manage-search-input" onkeyup="window.filterManageInvoices()" placeholder="Search by Invoice #, Customer Name, or Phone..." class="w-full bg-slate-50 border border-slate-300 rounded-md pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        </div>
+
+                        <!-- Filter Status Pills -->
+                        <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-md text-xs">
+                            <button onclick="window.setStatusFilter('ALL')" id="filter-btn-ALL" class="px-2.5 py-1 rounded font-semibold bg-white text-slate-900 shadow-xs">All</button>
+                            <button onclick="window.setStatusFilter('Paid')" id="filter-btn-Paid" class="px-2.5 py-1 rounded font-medium text-slate-600 hover:text-slate-900">Paid</button>
+                            <button onclick="window.setStatusFilter('Unpaid')" id="filter-btn-Unpaid" class="px-2.5 py-1 rounded font-medium text-slate-600 hover:text-slate-900">Unpaid</button>
+                            <button onclick="window.setStatusFilter('Overdue')" id="filter-btn-Overdue" class="px-2.5 py-1 rounded font-medium text-slate-600 hover:text-slate-900">Overdue</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoices Data Table Card -->
+                <div class="bg-white rounded-lg border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
+                            <thead>
+                                <tr class="bg-slate-900 text-white text-[11px] font-semibold uppercase tracking-wider">
+                                    <th class="py-2.5 px-3">Invoice No</th>
+                                    <th class="py-2.5 px-3">Customer</th>
+                                    <th class="py-2.5 px-3">Date</th>
+                                    <th class="py-2.5 px-3 text-right">Amount (₹)</th>
+                                    <th class="py-2.5 px-3 text-center">Status</th>
+                                    <th class="py-2.5 px-3 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manage-invoices-tbody" class="divide-y divide-slate-200 text-xs text-slate-800">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="py-2.5 px-3 font-mono font-bold text-slate-900">INV-2026-0891</td>
+                                    <td class="py-2.5 px-3 font-medium">Sky High Academy <span class="block text-[10px] text-slate-400">Mob: 9876543210</span></td>
+                                    <td class="py-2.5 px-3 text-slate-600">2026-09-20</td>
+                                    <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">₹42,800.00</td>
+                                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Paid</span></td>
+                                    <td class="py-2.5 px-3 text-center space-x-2">
+                                        <button onclick="window.viewInvoiceModal('INV-2026-0891', 'Sky High Academy', '42,800.00')" class="text-slate-500 hover:text-emerald-600 p-1" title="View"><i class="fa-solid fa-eye"></i></button>
+                                        <button onclick="window.printInvoice('INV-2026-0891')" class="text-slate-500 hover:text-sky-600 p-1" title="Print"><i class="fa-solid fa-print"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="py-2.5 px-3 font-mono font-bold text-slate-900">INV-2026-0890</td>
+                                    <td class="py-2.5 px-3 font-medium">Apex Computer Center <span class="block text-[10px] text-slate-400">Mob: 9832104567</span></td>
+                                    <td class="py-2.5 px-3 text-slate-600">2026-09-18</td>
+                                    <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">₹18,500.00</td>
+                                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">Unpaid</span></td>
+                                    <td class="py-2.5 px-3 text-center space-x-2">
+                                        <button onclick="window.viewInvoiceModal('INV-2026-0890', 'Apex Computer Center', '18,500.00')" class="text-slate-500 hover:text-emerald-600 p-1" title="View"><i class="fa-solid fa-eye"></i></button>
+                                        <button onclick="window.printInvoice('INV-2026-0890')" class="text-slate-500 hover:text-sky-600 p-1" title="Print"><i class="fa-solid fa-print"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="py-2.5 px-3 font-mono font-bold text-slate-900">INV-2026-0889</td>
+                                    <td class="py-2.5 px-3 font-medium">Modern Learning Institute <span class="block text-[10px] text-slate-400">Mob: 8901234567</span></td>
+                                    <td class="py-2.5 px-3 text-slate-600">2026-09-15</td>
+                                    <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">₹35,000.00</td>
+                                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Overdue</span></td>
+                                    <td class="py-2.5 px-3 text-center space-x-2">
+                                        <button onclick="window.viewInvoiceModal('INV-2026-0889', 'Modern Learning Institute', '35,000.00')" class="text-slate-500 hover:text-emerald-600 p-1" title="View"><i class="fa-solid fa-eye"></i></button>
+                                        <button onclick="window.printInvoice('INV-2026-0889')" class="text-slate-500 hover:text-sky-600 p-1" title="Print"><i class="fa-solid fa-print"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <footer class="mt-4 pt-3 border-t border-slate-200/80 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between px-1">
+                <div class="footer-gold-link cursor-pointer px-1 rounded">&copy; 2026 Sky Tech Elementary. All rights reserved.</div>
+                <div class="mt-1 sm:mt-0 space-x-4">
+                    <a href="#" class="footer-gold-link transition">Privacy Policy</a>
+                    <a href="#" class="footer-gold-link transition">Terms of Service</a>
+                    <a href="#" class="footer-gold-link transition">Support</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <div id="invoice-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-4 space-y-3 relative">
+            <button onclick="document.getElementById('invoice-modal').classList.add('hidden')" class="absolute top-3 right-3 text-slate-400 hover:text-slate-700">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            <div class="border-b border-slate-200 pb-2">
+                <h3 class="font-bold text-slate-900 text-sm" id="modal-inv-id">Invoice INV-2026-0891</h3>
+                <p class="text-xs text-slate-500" id="modal-inv-customer">Sky High Academy</p>
+            </div>
+            <div class="space-y-1.5 text-xs text-slate-700">
+                <div class="flex justify-between"><span>Status:</span> <span class="font-bold text-emerald-600">Paid</span></div>
+                <div class="flex justify-between"><span>Total Amount:</span> <span class="font-extrabold text-slate-900" id="modal-inv-amount">₹42,800.00</span></div>
+            </div>
+            <div class="pt-2 flex justify-end space-x-2 border-t border-slate-200">
+                <button onclick="document.getElementById('invoice-modal').classList.add('hidden')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">Close</button>
+                <button onclick="alert('Printing Invoice...')" class="px-3 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-bold">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden / Modular Container Divs -->
+    <div id="div1" class="hidden">
+        <div class="p-4 bg-white rounded border border-slate-200 shadow-sm text-sm">HTML Content 1 Loaded</div>
+    </div>
+    <div id="div2" class="hidden">
+        <div class="p-4 bg-white rounded border border-slate-200 shadow-sm text-sm">HTML Content 2 Loaded</div>
+    </div>
+    <!-- Footer Container Divs -->
+ <footer class="bg-[#0C0C0C] text-white h-12 flex items-center justify-around px-2 text-[11px] font-medium shrink-0 border-t border-neutral-800 shadow-inner">
+        <button onclick="showInfoModal('History', 'View past transactions and receipts history.')" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300 ml-[190px]">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-clock-rotate-left hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>History</span></span>
+        </button>
+        <button onclick="clearCart()" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-xmark hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Cancel</span></span>
+        </button>
+        <button onclick="showInfoModal('Closing Report', 'Daily sales closing and cash drawer reconciliation report.')" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-file-lines hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Closing Report</span></span>
+        </button>
+        <button onclick="showInfoModal('Cash-in-Hand', 'Manage cash drawer denomination balance and float.')" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-wallet hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Cash-in-Hand</span></span>
+        </button>
+        <button onclick="showCustomerAccounts()" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-user-gear hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Customer Account</span></span>
+        </button>
+        <a href="sky_tech_dashboard.html" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300 text-white no-underline">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-chart-pie hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Dashboard</span></span>
+        </a>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll(".sidebar-menu .nav-link");
+            const contentArea = document.getElementById("content-area");
+
+            if (navLinks.length > 0 && contentArea) {
+                navLinks.forEach(link => {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault(); 
+
+                        navLinks.forEach(l => l.classList.remove("active"));
+                        this.classList.add("active");
+
+                        const url = this.getAttribute("data-url");
+                        if (!url) return;
+
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Could not load ${url}`);
+                                }
+                                return response.text();
+                            })
+                            .then(html => {
+                                contentArea.innerHTML = html;
+                                history.pushState({ path: url }, "", `#${url.split('.')[0]}`);
+                            })
+                            .catch(error => {
+                                contentArea.innerHTML = `<div class="p-3 bg-rose-50 text-rose-800 rounded text-xs border border-rose-200">Error loading page: ${error.message}</div>`;
+                            });
+                    });
+                });
+            }
+
+            const ajaxForm = document.getElementById('ajax-form');
+            if (ajaxForm) {
+                ajaxForm.addEventListener('submit', async function(event) {
+                    event.preventDefault(); 
+                    const loaderBox = document.getElementById('page-loader-box');
+                    if (loaderBox) loaderBox.innerHTML = '<span class="text-slate-400">Loading content...</span>';
+
+                    const targetFile = 'add_product_form.html';
+                    
+                    try {
+                        let fetchUrl = targetFile;
+                        if (window.location.protocol === 'blob:' || window.location.protocol === 'file:') {
+                            throw new Error('Local fetch not supported in preview/blob environment');
+                        } else {
+                            fetchUrl = new URL(targetFile, window.location.href).href;
+                        }
+
+                        const response = await fetch(fetchUrl);
+                        if (!response.ok) throw new Error('HTTP network error ' + response.status);
+                        const html = await response.text();
+                        if (loaderBox) loaderBox.innerHTML = html;
+                    } catch (error) {
+                        console.warn('Fetch fallback triggered:', error.message);
+                        if (loaderBox) {
+                            loaderBox.innerHTML = `
+                                <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded">
+                                    <p class="font-medium text-xs">Loaded Sample Dynamic Content</p>
+                                    <p class="text-[11px] mt-1 text-emerald-600">Sample inner page content loaded successfully into target container.</p>
+                                </div>
+                            `;
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script type="module">
+        window.setActiveMenuItem = function(target) {
+            document.querySelectorAll('#sidebar-menu .sidebar-item, #sidebar-menu .submenu-link').forEach(el => {
+                el.classList.remove('active');
+            });
+            let el = null;
+            if (typeof target === 'string') {
+                el = document.getElementById(target);
+            } else if (target && target.nodeType) {
+                el = target;
+            }
+            if (el) {
+                el.classList.add('active');
+                const parentSubmenu = el.closest('.submenu-accordion');
+                if (parentSubmenu) {
+                    window.openSaleSubmenu();
+                }
+            }
+        };
+
+        window.showView = function(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                if (viewId === 'dashboard-view') {
+                    window.setActiveMenuItem('menu-dashboard');
+                    window.closeSaleSubmenu();
+                    setTimeout(window.drawCurveChart, 50);
+                } else if (viewId === 'manage-invoice-view') {
+                    window.setActiveMenuItem('menu-manage-invoice');
+                    window.openSaleSubmenu();
+                } else if (viewId === 'add-product-form-view') {
+                    window.setActiveMenuItem('menu-create-invoice');
+                    window.openSaleSubmenu();
+                }
+            }
+        };
+
+        window.openSaleSubmenu = function() {
+            const submenu = document.getElementById('sale-submenu');
+            const chevron = document.getElementById('sale-chevron');
+            const btn = document.getElementById('sale-menu-btn');
+            if (submenu) {
+                submenu.classList.remove('is-closed');
+                submenu.classList.add('is-open');
+                submenu.style.maxHeight = '220px';
+            }
+            if (btn) {
+                btn.classList.add('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                btn.classList.remove('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+            }
+        };
+
+        window.filterManageInvoices = function() {
+            const query = document.getElementById('manage-search-input')?.value.toLowerCase() || '';
+            const rows = document.querySelectorAll('#manage-invoices-tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        };
+
+        let currentFilterStatus = 'ALL';
+        window.setStatusFilter = function(status) {
+            currentFilterStatus = status;
+            ['ALL', 'Paid', 'Unpaid', 'Overdue'].forEach(s => {
+                const btn = document.getElementById(`filter-btn-${s}`);
+                if (btn) {
+                    if (s === status) {
+                        btn.className = 'px-2.5 py-1 rounded font-semibold bg-white text-slate-900 shadow-xs';
+                    } else {
+                        btn.className = 'px-2.5 py-1 rounded font-medium text-slate-600 hover:text-slate-900';
+                    }
+                }
+            });
+            const rows = document.querySelectorAll('#manage-invoices-tbody tr');
+            rows.forEach(row => {
+                if (status === 'ALL') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = row.innerText.includes(status) ? '' : 'none';
+                }
+            });
+        };
+
+        window.viewInvoiceModal = function(id, customer, amount) {
+            document.getElementById('modal-inv-id').innerText = 'Invoice ' + id;
+            document.getElementById('modal-inv-customer').innerText = customer;
+            document.getElementById('modal-inv-amount').innerText = '₹' + amount;
+            document.getElementById('invoice-modal').classList.remove('hidden');
+        };
+
+        window.printInvoice = function(id) {
+            alert('Printing Invoice ' + id + '...');
+        };
+
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar-menu');
+            if (sidebar) {
+                const isCollapsing = !sidebar.classList.contains('is-collapsed');
+                sidebar.classList.toggle('is-collapsed');
+                if (isCollapsing) {
+                    window.closeSaleSubmenu();
+                }
+            }
+        };
+
+        let isPrivacyHidden = false;
+        let activeTab = 'customer';
+
+        window.toggleDashboardPrivacy = function() {
+            isPrivacyHidden = !isPrivacyHidden;
+            const icon = document.getElementById('privacy-icon');
+            if (icon) {
+                icon.className = isPrivacyHidden ? 'fa-solid fa-eye-slash text-xs' : 'fa-solid fa-eye text-xs';
+            }
+            document.querySelectorAll('.stat-value').forEach(el => {
+                if (isPrivacyHidden) {
+                    el.dataset.original = el.innerText;
+                    el.innerText = '••••';
+                } else {
+                    if (el.dataset.original) el.innerText = el.dataset.original;
+                }
+            });
+        };
+
+        window.updateDashboardData = function() {
+            window.drawCurveChart();
+        };
+
+        window.triggerQuickAction = function(actionName) {
+            console.log("Quick Action Triggered:", actionName);
+        };
+
+        window.handleSearchSubmit = function() {
+            const query = document.getElementById('invoice-search-input')?.value;
+            const type = document.getElementById('search-type-select')?.value;
+            console.log(`Searching for "${query}" in ${type}`);
+        };
+
+        window.refreshVitalStats = function() {
+            window.drawCurveChart();
+        };
+
+        window.switchAnalyticsTab = function(tab) {
+            activeTab = tab;
+            ['activity', 'customer', 'supplier', 'received'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    if (t === tab) {
+                        btn.className = 'text-emerald-700 font-semibold border-b-2 border-emerald-600 pb-1 transition whitespace-nowrap';
+                    } else {
+                        btn.className = 'text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap';
+                    }
+                }
+            });
+            window.drawCurveChart();
+        };
+
+        window.drawCurveChart = function() {
+            const canvas = document.getElementById('curveChartCanvas');
+            if (!canvas || !canvas.parentElement) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const width = rect.width;
+            const height = rect.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            let phaseShift = 0;
+            if (activeTab === 'activity') phaseShift = 0.5;
+            if (activeTab === 'supplier') phaseShift = 1.0;
+            if (activeTab === 'received') phaseShift = 1.5;
+
+            function drawCurve(color, phase, baseY, amplitude) {
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+
+                const points = 80;
+                for (let i = 0; i <= points; i++) {
+                    const x = (i / points) * width;
+                    const trend = (1 - (i / points)) * (height * 0.35);
+                    const wave = Math.sin((i / 6) + phase + phaseShift) * amplitude;
+                    const y = baseY + trend + wave;
+
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            drawCurve('#6366f1', 0, height * 0.25, 6);
+            drawCurve('#fbbf24', 1.2, height * 0.42, 5);
+            drawCurve('#f43f5e', 2.4, height * 0.58, 4);
+        };
+
+        window.addEventListener('resize', window.drawCurveChart);
+        setTimeout(window.drawCurveChart, 100);
+
+        window.toggleSaleSubmenu = function(e) {
+            if (e) window.createWaterDrop(e);
+            const submenu = document.getElementById('sale-submenu');
+            const chevron = document.getElementById('sale-chevron');
+            const btn = document.getElementById('sale-menu-btn');
+            
+            if (submenu) {
+                const isOpen = submenu.classList.contains('is-open');
+                if (isOpen) {
+                    submenu.classList.remove('is-open');
+                    submenu.classList.add('is-closed');
+                    if (btn) {
+                        btn.classList.remove('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                        btn.classList.add('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+                    }
+                } else {
+                    submenu.classList.remove('is-closed');
+                    submenu.classList.add('is-open');
+                    if (btn) {
+                        btn.classList.add('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                        btn.classList.remove('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+                    }
+                }
+            }
+            if (chevron) {
+                chevron.classList.toggle('rotate-180');
+            }
+        };
+
+        window.closeSaleSubmenu = function() {
+            const submenu = document.getElementById('sale-submenu');
+            const chevron = document.getElementById('sale-chevron');
+            const btn = document.getElementById('sale-menu-btn');
+            if (submenu && submenu.classList.contains('is-open')) {
+                submenu.classList.remove('is-open');
+                submenu.classList.add('is-closed');
+            }
+            if (chevron && chevron.classList.contains('rotate-180')) {
+                chevron.classList.remove('rotate-180');
+            }
+            if (btn) {
+                btn.classList.remove('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                btn.classList.add('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+            }
+        };
+
+        window.handleOtherMenuClick = function(e) {
+            if (e) window.createWaterDrop(e);
+            const activeSubmenuItem = document.querySelector('#sale-submenu .active');
+            if (!activeSubmenuItem) {
+                window.closeSaleSubmenu();
+            } else {
+                window.openSaleSubmenu();
+            }
+        };
+
+        window.createWaterDrop = function(e) {
+            const target = e.currentTarget;
+            const rect = target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const drop = document.createElement('span');
+            drop.className = 'water-ripple';
+            drop.style.left = `${x}px`;
+            drop.style.top = `${y}px`;
+
+            target.appendChild(drop);
+
+            setTimeout(() => {
+                drop.remove();
+            }, 600);
+        };
+
+        window.handleAuthAction = function() {
+            try {
+                sessionStorage.setItem('skytech_logged_out', 'true');
+                sessionStorage.removeItem('skytech_authenticated');
+                localStorage.clear();
+                sessionStorage.clear();
+                sessionStorage.setItem('skytech_logged_out', 'true');
+            } catch (err) {
+                console.warn("Storage clearing error:", err);
+            }
+
+            try {
+                window.history.replaceState(null, "", window.location.href);
+                for (let i = 0; i < 5; i++) {
+                    window.history.pushState({ loggedOut: true }, "", window.location.href);
+                }
+            } catch (err) {
+                console.warn("History replaceState notice:", err);
+            }
+
+            try {
+                if (window.location.protocol !== 'blob:') {
+                    window.location.replace('index.html');
+                } else {
+                    window.location.reload();
+                }
+            } catch (err) {
+                console.warn("Navigation redirect notice:", err);
+            }
+        };
+
+        window.triggerBottomFooterAction = function(actionName) {
+            alert(actionName + ' view loaded successfully!');
+        };
+
+        window.showInfoModal = function(title, description) {
+            const modal = document.getElementById('invoice-modal');
+            const modalId = document.getElementById('modal-inv-id');
+            const modalCustomer = document.getElementById('modal-inv-customer');
+            const modalAmount = document.getElementById('modal-inv-amount');
+            
+            if (modalId) modalId.innerText = title;
+            if (modalCustomer) modalCustomer.innerText = description;
+            if (modalAmount) modalAmount.parentElement.style.display = 'none';
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.clearCart = function() {
+            window.showView('dashboard-view');
+        };
+
+        window.showCustomerAccounts = function() {
+            window.showView('manage-invoice-view');
+        };
+
+        window.smoothLoadPage = function(e, url) {
+            e.preventDefault();
+            window.createWaterDrop(e);
+            
+            // Fade out body smoothly for high-performance navigation
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 200);
+        };
+    </script>
+</body>
+</html>

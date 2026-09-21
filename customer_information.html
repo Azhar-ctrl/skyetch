@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Information</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: transparent !important;
+        }
+        .animated-bg {
+            background: linear-gradient(135deg, #e6f4ea, #ffffff, #cbf0d8, #f0fdf4);
+            background-size: 300% 300%;
+            animation: gradientAnimation 12s ease infinite;
+        }
+        @keyframes textGlow {
+            0% { transform: scale(1); text-shadow: 0 0 0 rgba(212, 175, 55, 0); }
+            50% { transform: scale(1.05); text-shadow: 0 0 8px rgba(255, 215, 0, 0.8); }
+            100% { transform: scale(1); text-shadow: 0 0 0 rgba(212, 175, 55, 0); }
+        }
+        .btn-save-hover:hover span {
+            animation: textGlow 0.8s ease infinite;
+        }
+        fieldset {
+            border: 1px solid #b0c4de;
+            border-radius: 4px;
+            padding: 4px 6px 6px 6px;
+            margin-bottom: 4px;
+            position: relative;
+            background-color: rgba(250, 251, 252, 0.9);
+        }
+        legend {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333333;
+            padding: 0 4px;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+            border: 1px solid #b9c7d4;
+            background-color: #ffffff;
+            font-size: 11px;
+            padding: 1px 4px;
+            border-radius: 2px;
+            color: #222;
+            outline: none;
+            height: 22px;
+        }
+        select {
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+        textarea {
+            height: auto !important;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #1b365d;
+            box-shadow: 0 0 0 1px #1b365d;
+        }
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+        .input-error::placeholder {
+            color: #ef4444 !important;
+        }
+        label {
+            font-size: 11px;
+            color: #222222;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center w-screen h-screen m-0 p-0 bg-transparent overflow-hidden">
+
+    <div class="w-full h-full animated-bg shadow-2xl border border-[#94a3b8] overflow-hidden flex flex-col">
+        
+        <!-- Window Title Bar -->
+        <div class="bg-[#f0f4f9] px-3 py-1 flex justify-between items-center border-b border-[#cbd5e1] shrink-0 select-none">
+            <div class="flex items-center space-x-2">
+                <span class="w-3.5 h-3.5 bg-[#1b365d] text-white rounded-full flex items-center justify-center text-[9px] font-bold">H</span>
+                <span class="text-[11px] font-medium text-slate-800">Customer Information</span>
+            </div>
+            <div class="flex items-center space-x-3 text-slate-600 text-xs">
+                <button class="hover:bg-slate-200 px-1.5 py-0.5 rounded"><i class="fa-solid fa-window-minimize text-[10px]"></i></button>
+                <button class="hover:bg-slate-200 px-1.5 py-0.5 rounded"><i class="fa-regular fa-window-maximize text-[10px]"></i></button>
+                <button class="hover:bg-red-500 hover:text-white px-1.5 py-0.5 rounded transition"><i class="fa-solid fa-xmark text-[10px]"></i></button>
+            </div>
+        </div>
+
+        <div class="p-2 sm:p-2.5 flex flex-col md:flex-row gap-2.5 bg-transparent flex-1 overflow-auto">
+            
+            <div class="w-full md:w-44 flex flex-col items-center shrink-0">
+                <fieldset class="w-full">
+                    <legend>Profile Pic</legend>
+                    <div class="w-full h-32 bg-white border border-[#b9c7d4] rounded flex items-center justify-center p-1 mb-1.5 shadow-inner relative overflow-hidden">
+                        <div id="profile-container" class="relative w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-white shadow">
+                            <i id="default-user-icon" class="fa-solid fa-user text-[#1b365d] text-[80px] absolute -bottom-3"></i>
+                            <img id="profile-img" src="" alt="Profile Preview" class="w-full h-full object-cover hidden">
+                        </div>
+                        <!-- Hidden file input for uploading -->
+                        <input type="file" id="upload-input" accept="image/*" class="hidden">
+                    </div>
+                    <!-- Action buttons under profile pic -->
+                    <div class="flex items-center justify-center space-x-1.5">
+                        <button type="button" id="btn-upload" class="w-6 h-6 rounded bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 shadow text-[10px]" title="Upload Image">
+                            <i class="fa-solid fa-upload"></i>
+                        </button>
+                        <button type="button" id="btn-camera" class="w-6 h-6 rounded bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 shadow text-[10px]" title="Take Photo">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+                        <button type="button" id="btn-refresh" class="w-6 h-6 rounded bg-red-500 text-white flex items-center justify-center hover:bg-red-600 shadow text-[10px]" title="Refresh/Reset">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                        <button type="button" id="btn-remove" class="w-6 h-6 rounded bg-red-600 text-white flex items-center justify-center hover:bg-red-700 shadow text-[10px]" title="Remove">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="flex-1 flex flex-col">
+                
+                <!-- Tab Header -->
+                <div class="flex border-b border-[#cbd5e1] mb-1.5 shrink-0">
+                    <div class="bg-white border-t-2 border-[#1b365d] px-3 py-0.5 text-[11px] font-semibold text-slate-800 rounded-t shadow-sm">
+                        Profile
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1">
+                    
+                    <div class="flex flex-col space-y-1">
+                        <!-- Customer Details -->
+                        <fieldset>
+                            <legend>Customer Details</legend>
+                            <div class="space-y-1">
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Full Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="field-fullname" class="col-span-2 w-full" value="">
+                                </div>
+                                <div class="grid grid-cols-3 items-start gap-2">
+                                    <label class="text-right pt-0.5">Billing Address <span class="text-red-500">*</span></label>
+                                    <textarea id="field-address" rows="2" class="col-span-2 w-full resize-none"></textarea>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">City</label>
+                                    <select class="col-span-2 w-full" id="city-select">
+                                        <option value="" selected></option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">State <span class="text-red-500">*</span></label>
+                                    <select class="col-span-2 w-full" id="state-select">
+                                        <option value="" selected></option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">PIN Code</label>
+                                    <input type="text" id="field-pincode" class="col-span-2 w-full" value="">
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Country</label>
+                                    <select class="col-span-2 w-full" id="country-select">
+                                        <option value="India" selected>India</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Email ID</label>
+                                    <input type="email" id="field-email" class="col-span-2 w-full" value="">
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Phone No</label>
+                                    <input type="tel" id="field-phone" class="col-span-2 w-full" value="">
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Contact No <span class="text-red-500">*</span></label>
+                                    <input type="tel" id="field-contact" class="col-span-2 w-full" value="">
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Tax Details -->
+                        <fieldset>
+                            <legend>Tax Details</legend>
+                            <div class="space-y-1">
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">PAN No.</label>
+                                    <input type="text" id="field-pan" class="col-span-2 w-full" value="">
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">GSTIN</label>
+                                    <input type="text" id="field-gstin" class="col-span-2 w-full" value="">
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">GST Type</label>
+                                    <select id="field-gsttype" class="col-span-2 w-full">
+                                        <option value="" selected></option>
+                                        <option value="Unregistered">Unregistered</option>
+                                        <option value="Registered">Registered</option>
+                                        <option value="Composition">Composition</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Trade Name</label>
+                                    <input type="text" id="field-tradename" class="col-span-2 w-full bg-slate-100" value="" disabled>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="flex flex-col space-y-1">
+                        <!-- Account Details -->
+                        <fieldset>
+                            <legend>Account Details</legend>
+                            <div class="space-y-1">
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Type</label>
+                                    <div class="col-span-2 flex items-center space-x-4">
+                                        <label class="flex items-center space-x-1 cursor-pointer">
+                                            <input type="radio" name="acc_type" value="Debit" class="text-[#1b365d] focus:ring-0">
+                                            <span>Debit</span>
+                                        </label>
+                                        <label class="flex items-center space-x-1 cursor-pointer">
+                                            <input type="radio" name="acc_type" value="Credit" class="text-[#1b365d] focus:ring-0">
+                                            <span>Credit</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Opening Balance</label>
+                                    <div class="col-span-2 flex items-center">
+                                        <span class="bg-[#1b365d] text-white px-2 py-0.5 text-[10px] rounded-l border border-[#1b365d] font-bold h-[22px] flex items-center">₹</span>
+                                        <input type="text" id="field-opbalance" class="w-full rounded-l-none" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Identity Details -->
+                        <fieldset>
+                            <legend>Identity Details</legend>
+                            <div class="space-y-1">
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Document Type</label>
+                                    <select id="field-doctype" class="col-span-2 w-full">
+                                        <option value="" selected></option>
+                                        <option value="Aadhaar">Aadhaar Card</option>
+                                        <option value="PAN">PAN Card</option>
+                                        <option value="Voter ID">Voter ID</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Document No.</label>
+                                    <input type="text" id="field-docno" class="col-span-2 w-full bg-slate-100" value="" disabled>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Anniversary / Date Details -->
+                        <fieldset>
+                            <legend>Anniversary</legend>
+                            <div class="space-y-1">
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Date of Birth</label>
+                                    <div class="col-span-2 flex items-center space-x-2">
+                                        <label class="flex items-center space-x-1">
+                                            <input type="checkbox" class="rounded text-[#1b365d]" id="dob-check">
+                                            <span>Applicable</span>
+                                        </label>
+                                        <div class="flex-1 flex items-center bg-white border border-[#b9c7d4] rounded px-1.5 py-0.5 text-[11px] text-slate-400 h-[22px]">
+                                            <span class="flex-1" id="dob-text"></span>
+                                            <i class="fa-regular fa-calendar text-slate-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Anniversary</label>
+                                    <div class="col-span-2 flex items-center space-x-2">
+                                        <label class="flex items-center space-x-1">
+                                            <input type="checkbox" class="rounded text-[#1b365d]" id="anniv-check">
+                                            <span>Applicable</span>
+                                        </label>
+                                        <div class="flex-1 flex items-center bg-white border border-[#b9c7d4] rounded px-1.5 py-0.5 text-[11px] text-slate-400 h-[22px]">
+                                            <span class="flex-1" id="anniv-text"></span>
+                                            <i class="fa-regular fa-calendar text-slate-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Other Details -->
+                        <fieldset>
+                            <legend>Other Details</legend>
+                            <div class="space-y-1">
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Credit Allowed</label>
+                                    <div class="col-span-2 flex items-center space-x-4">
+                                        <label class="flex items-center space-x-1 cursor-pointer">
+                                            <input type="radio" name="credit_allowed" value="Yes" class="text-[#1b365d] focus:ring-0">
+                                            <span>Yes</span>
+                                        </label>
+                                        <label class="flex items-center space-x-1 cursor-pointer">
+                                            <input type="radio" name="credit_allowed" value="No" class="text-[#1b365d] focus:ring-0">
+                                            <span>No</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 items-center gap-2">
+                                    <label class="text-right">Credit Limit</label>
+                                    <div class="col-span-2 flex items-center">
+                                        <span class="bg-[#1b365d] text-white px-2 py-0.5 text-[10px] rounded-l border border-[#1b365d] font-bold h-[22px] flex items-center">₹</span>
+                                        <input type="text" id="field-creditlimit" class="w-full rounded-l-none" value="">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 items-start gap-2">
+                                    <label class="text-right pt-0.5">Remark / Note</label>
+                                    <textarea id="field-remark" rows="2" class="col-span-2 w-full resize-none"></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                </div>
+
+                <!-- Footer Action Bar -->
+                <div class="flex items-center justify-between mt-1 pt-0.5 border-t border-[#cbd5e1] shrink-0 mb-[50px]">
+                    <a href="#" class="text-[#1b365d] hover:underline text-[11px] font-medium">Check GSTIN/UIN Status</a>
+                    <button type="button" id="btn-save" class="bg-[#1b365d] text-white px-7 py-1.5 rounded-full shadow text-[13px] font-semibold flex items-center space-x-2 transition-all duration-300 btn-save-hover">
+                        <i class="fa-solid fa-floppy-disk text-[12px]"></i>
+                        <span class="inline-block transition-transform duration-300">Save</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal for Live Photo Capture -->
+    <div id="camera-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl p-4 w-80 max-w-full flex flex-col items-center">
+            <h3 class="text-sm font-bold text-slate-800 mb-2">Take Photo</h3>
+            <div class="w-full h-48 bg-slate-900 rounded overflow-hidden relative mb-3 flex items-center justify-center">
+                <video id="camera-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                <canvas id="camera-canvas" class="hidden"></canvas>
+            </div>
+            <div class="flex space-x-2 w-full">
+                <button type="button" id="btn-capture" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-1.5 rounded text-xs font-semibold shadow">Capture</button>
+                <button type="button" id="btn-close-camera" class="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-800 py-1.5 rounded text-xs font-semibold">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Message Box Modal (for success/auth info) -->
+    <div id="msg-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl p-4 w-72 max-w-full flex flex-col items-center text-center">
+            <div id="msg-icon" class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 text-lg">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h4 id="msg-title" class="text-sm font-bold text-slate-800 mb-1">Success</h4>
+            <p id="msg-text" class="text-xs text-slate-600 mb-3">Action completed successfully.</p>
+            <button type="button" id="msg-ok-btn" class="w-full bg-[#1b365d] hover:bg-blue-700 text-white py-1.5 rounded text-xs font-semibold">OK</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
+            authDomain: "skytech-f813b.firebaseapp.com",
+            databaseURL: "https://skytech-f813b-default-rtdb.firebaseio.com",
+            projectId: "skytech-f813b",
+            storageBucket: "skytech-f813b.firebasestorage.app",
+            messagingSenderId: "300030506328",
+            appId: "1:300030506328:web:d3494afa60759d4dc7612d",
+            measurementId: "G-K3DVHBBDMM"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (customErr) {
+                        console.warn("Custom token sign-in failed, falling back to anonymous auth:", customErr);
+                        try {
+                            await signInAnonymously(auth);
+                        } catch (anonErr) {
+                            console.warn("Anonymous auth restricted or disabled in Firebase project. Continuing without auth session:", anonErr);
+                        }
+                    }
+                } else {
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (anonErr) {
+                        console.warn("Anonymous auth restricted or disabled in Firebase project. Continuing without auth session:", anonErr);
+                    }
+                }
+            } catch (err) {
+                console.warn("Auth initialization note:", err);
+            }
+        }
+        initAuth();
+
+        const states = [
+            "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+        ];
+
+        const cities = [
+            "Agra", "Ahmedabad", "Aizawl", "Ajmer", "Aligarh", "Allahabad", "Ambala", "Amritsar", "Aurangabad", "Ayodhya", "Bangalore", "Bareilly", "Belgaum", "Bhavnagar", "Bhilai", "Bhopal", "Bhubaneswar", "Bikaner", "Bokaro", "Calicut", "Chandigarh", "Chennai", "Coimbatore", "Cuttack", "Darbhanga", "Dehradun", "Delhi", "Dhanbad", "Durgapur", "Erode", "Faridabad", "Firozabad", "Gandhinagar", "Gangtok", "Gaya", "Ghaziabad", "Gorakhpur", "Gulbarga", "Guntur", "Guwahati", "Gwalior", "Haridwar", "Hubli", "Hyderabad", "Imphal", "Indore", "Itanagar", "Jabalpur", "Jaipur", "Jalandhar", "Jalgaon", "Jammu", "Jamnagar", "Jamshedpur", "Jhansi", "Jodhpur", "Junagadh", "Kakinada", "Kalyan", "Kanpur", "Karimnagar", "Kochi", "Kolhapur", "Kolkata", "Kota", "Kozhikode", "Kurnool", "Lucknow", "Ludhiana", "Madurai", "Malda", "Mangalore", "Mathura", "Meerut", "Mumbai", "Muzaffarnagar", "Muzaffarpur", "Mysore", "Nagpur", "Nanded", "Nashik", "Nellore", "Noida", "Patna", "Pondicherry", "Pune", "Raipur", "Rajahmundry", "Rajkot", "Ranchi", "Rourkela", "Saharanpur", "Salem", "Sangli", "Satara", "Secunderabad", "Shillong", "Shimla", "Siliguri", "Solapur", "Srinagar", "Surat", "Thane", "Thiruvananthapuram", "Tiruchirappalli", "Tirunelveli", "Tirupati", "Trichy", "Trivandrum", "Udaipur", "Ujjain", "Vadodara", "Varanasi", "Vellore", "Vijayawada", "Visakhapatnam", "Warangal"
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const countrySelect = document.getElementById('country-select');
+            countrySelect.innerHTML = '<option value="India" selected>India</option>';
+
+            const stateSelect = document.getElementById('state-select');
+            states.sort().forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.textContent = state;
+                stateSelect.appendChild(opt);
+            });
+            stateSelect.value = ""; 
+
+            const citySelect = document.getElementById('city-select');
+            cities.sort().forEach(city => {
+                const opt = document.createElement('option');
+                opt.value = city;
+                opt.textContent = city;
+                citySelect.appendChild(opt);
+            });
+            citySelect.value = "";
+
+            const uploadInput = document.getElementById('upload-input');
+            const profileImg = document.getElementById('profile-img');
+            const defaultUserIcon = document.getElementById('default-user-icon');
+            
+            const btnUpload = document.getElementById('btn-upload');
+            const btnCamera = document.getElementById('btn-camera');
+            const btnRefresh = document.getElementById('btn-refresh');
+            const btnRemove = document.getElementById('btn-remove');
+            const btnSave = document.getElementById('btn-save');
+
+            const cameraModal = document.getElementById('camera-modal');
+            const cameraVideo = document.getElementById('camera-video');
+            const cameraCanvas = document.getElementById('camera-canvas');
+            const btnCapture = document.getElementById('btn-capture');
+            const btnCloseCamera = document.getElementById('btn-close-camera');
+
+            let mediaStream = null;
+
+            function showMessage(title, text, isSuccess = true) {
+                const modal = document.getElementById('msg-modal');
+                document.getElementById('msg-title').textContent = title;
+                document.getElementById('msg-text').textContent = text;
+                const iconDiv = document.getElementById('msg-icon');
+                if (isSuccess) {
+                    iconDiv.className = "w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 text-lg";
+                    iconDiv.innerHTML = '<i class="fa-solid fa-check"></i>';
+                } else {
+                    iconDiv.className = "w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-2 text-lg";
+                    iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                }
+                modal.classList.remove('hidden');
+            }
+
+            document.getElementById('msg-ok-btn').addEventListener('click', () => {
+                document.getElementById('msg-modal').classList.add('hidden');
+            });
+
+            btnUpload.addEventListener('click', () => {
+                uploadInput.click();
+            });
+
+            uploadInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        profileImg.src = event.target.result;
+                        profileImg.classList.remove('hidden');
+                        defaultUserIcon.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            btnCamera.addEventListener('click', async () => {
+                cameraModal.classList.remove('hidden');
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    cameraVideo.srcObject = mediaStream;
+                } catch (err) {
+                    cameraModal.classList.add('hidden');
+                    showMessage("Camera Error", "Unable to access camera. Please check permissions.", false);
+                }
+            });
+
+            btnCapture.addEventListener('click', () => {
+                if (!mediaStream) return;
+                const width = cameraVideo.videoWidth || 320;
+                const height = cameraVideo.videoHeight || 240;
+                cameraCanvas.width = width;
+                cameraCanvas.height = height;
+                const ctx = cameraCanvas.getContext('2d');
+                ctx.drawImage(cameraVideo, 0, 0, width, height);
+                
+                const dataUrl = cameraCanvas.toDataURL('image/png');
+                profileImg.src = dataUrl;
+                profileImg.classList.remove('hidden');
+                defaultUserIcon.classList.add('hidden');
+
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+                cameraModal.classList.add('hidden');
+            });
+
+            btnCloseCamera.addEventListener('click', () => {
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    mediaStream = null;
+                }
+                cameraModal.classList.add('hidden');
+            });
+
+            btnRefresh.addEventListener('click', () => {
+                profileImg.src = "";
+                profileImg.classList.add('hidden');
+                defaultUserIcon.classList.remove('hidden');
+                uploadInput.value = "";
+            });
+
+            btnRemove.addEventListener('click', () => {
+                profileImg.src = "";
+                profileImg.classList.add('hidden');
+                defaultUserIcon.classList.remove('hidden');
+                uploadInput.value = "";
+            });
+
+            const fullnameField = document.getElementById('field-fullname');
+            const addressField = document.getElementById('field-address');
+            const contactField = document.getElementById('field-contact');
+
+            [fullnameField, addressField, stateSelect, contactField].forEach(el => {
+                el.addEventListener('input', () => {
+                    el.classList.remove('input-error');
+                    if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = "";
+                    }
+                });
+                el.addEventListener('change', () => {
+                    el.classList.remove('input-error');
+                });
+            });
+
+            btnSave.addEventListener('click', async () => {
+                const fullName = fullnameField.value.trim();
+                const billingAddress = addressField.value.trim();
+                const state = stateSelect.value;
+                const contactNo = contactField.value.trim();
+
+                let hasError = false;
+
+                if (!fullName) {
+                    fullnameField.classList.add('input-error');
+                    fullnameField.placeholder = "Full Name is required *";
+                    fullnameField.focus();
+                    hasError = true;
+                }
+                if (!billingAddress) {
+                    addressField.classList.add('input-error');
+                    addressField.placeholder = "Billing Address is required *";
+                    if (!hasError) addressField.focus();
+                    hasError = true;
+                }
+                if (!state) {
+                    stateSelect.classList.add('input-error');
+                    if (!hasError) stateSelect.focus();
+                    hasError = true;
+                }
+                if (!contactNo) {
+                    contactField.classList.add('input-error');
+                    contactField.placeholder = "Contact No is required *";
+                    if (!hasError) contactField.focus();
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    return;
+                }
+
+                const user = auth.currentUser;
+                const userId = user ? user.uid : 'anonymous-user';
+
+                const customerData = {
+                    fullName: fullName,
+                    billingAddress: billingAddress,
+                    city: document.getElementById('city-select').value,
+                    state: state,
+                    pinCode: document.getElementById('field-pincode').value,
+                    country: document.getElementById('country-select').value,
+                    emailId: document.getElementById('field-email').value,
+                    phoneNo: document.getElementById('field-phone').value,
+                    contactNo: contactNo,
+                    panNo: document.getElementById('field-pan').value,
+                    gstin: document.getElementById('field-gstin').value,
+                    gstType: document.getElementById('field-gsttype').value,
+                    accountType: document.querySelector('input[name="acc_type"]:checked')?.value || "",
+                    openingBalance: document.getElementById('field-opbalance').value,
+                    documentType: document.getElementById('field-doctype').value,
+                    creditAllowed: document.querySelector('input[name="credit_allowed"]:checked')?.value || "",
+                    creditLimit: document.getElementById('field-creditlimit').value,
+                    remark: document.getElementById('field-remark').value,
+                    profileImage: profileImg.classList.contains('hidden') ? "" : profileImg.src,
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    const colRef = collection(db, 'artifacts', appId, 'users', userId, 'customers');
+                    await addDoc(colRef, customerData);
+                    showMessage("Success", "Customer details and profile picture saved to Firebase successfully!");
+                } catch (err) {
+                    console.error("Firestore save error:", err);
+                    showMessage("Error", "Failed to save customer details to database.", false);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
