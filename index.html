@@ -255,8 +255,8 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-2 text-center text-md-start">
-                    <!-- Government of India National Emblem Logo -->
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="National Emblem of India" class="emblem-img">
+                    <!-- National Emblem of India (Govt of India Logo) -->
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="National Emblem of India" class="emblem-img" onerror="this.onerror=null; this.src='https://placehold.co/100x70/e67e22/ffffff?text=GoI+Logo';">
                 </div>
                 <div class="col-md-10 text-center text-md-start header-titles">
                     <h5>পশ্চিমবঙ্গ সরকার | Government of West Bengal</h5>
@@ -379,7 +379,7 @@
 
                     <div class="d-flex justify-content-between mb-3">
                         <button class="btn btn-notice-orange btn-sm px-3 fw-semibold"><i class="fa-regular fa-file-lines me-1"></i> View All NITs</button>
-                        <button class="btn btn-notice-orange btn-sm px-3 fw-semibold"><i class="fa-solid fa-bullhorn me-1"></i> <a href="">View All Notices</a></button>
+                        <button class="btn btn-notice-orange btn-sm px-3 fw-semibold"><i class="fa-solid fa-bullhorn me-1"></i> <a href="#" class="text-white text-decoration-none">View All Notices</a></button>
                     </div>
 
                     <div class="row g-4">
@@ -389,8 +389,8 @@
                                 <div class="notice-card-header-orange">
                                     <i class="fa-solid fa-file-contract me-2"></i> Latest NIT
                                 </div>
-                                <div class="notice-card-body d-flex justify-content-center align-items-start pt-4 bg-white">
-                                    <span class="text-muted small">No notices available at the moment.</span>
+                                <div class="notice-card-body" id="nit-container">
+                                    <div class="text-center text-muted small pt-4">Loading NITs from database...</div>
                                 </div>
                             </div>
                         </div>
@@ -401,19 +401,8 @@
                                 <div class="notice-card-header-orange">
                                     <i class="fa-solid fa-bell me-2"></i> Latest Notices
                                 </div>
-                                <div class="notice-card-body">
-                                    
-                                    <div class="notice-item">
-                                        <h6>Self Enumeration Work Flow</h6>
-                                        <a href="#">Download</a>
-                                    </div>
-
-                                    <div class="notice-item">
-                                        <h6>CESUS 2027 SELF ENUMERATION</h6>
-                                        <p>CESUS 2027 SELF ENUMERATION - TO BE STARTED ON 1ST AUGUST 2026</p>
-                                        <a href="#">Download</a>
-                                    </div>
-
+                                <div class="notice-card-body" id="notices-container">
+                                    <div class="text-center text-muted small pt-4">Loading notices from database...</div>
                                 </div>
                             </div>
                         </div>
@@ -476,9 +465,6 @@
 
     <!-- Custom Footer Implementation -->
     <footer style="background-color: #cd5a07; color: #ffffff; width: 100%; margin-top: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-        <!-- Top Links Area -->
-       
-        
         <!-- Bottom Info Area -->
         <div style="text-align: center; padding: 20px 20px 25px 20px; font-size: 14px; line-height: 1.8;">
             <div>
@@ -490,8 +476,137 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS Bundle CDN & JavaScript for Indian Date/Time -->
+    <!-- Modal for Adding Notice -->
+    <div class="modal fade" id="addNoticeModal" tabindex="-1" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-warning text-dark">
+            <h5 class="modal-title" id="addNoticeModalLabel"><i class="fa fa-plus-circle me-1"></i> Add New Notice or NIT</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="noticeForm">
+              <div class="mb-3">
+                <label for="noticeType" class="form-label">Category</label>
+                <select class="form-select" id="noticeType" required>
+                  <option value="notice">Notice</option>
+                  <option value="nit">NIT (Notice Inviting Tender)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="noticeTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="noticeTitle" required placeholder="e.g. Census 2027 Self Enumeration">
+              </div>
+              <div class="mb-3">
+                <label for="noticeDesc" class="form-label">Description / Details</label>
+                <textarea class="form-control" id="noticeDesc" rows="3" placeholder="Enter details or schedule..."></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="noticeLink" class="form-label">Document / Download Link URL</label>
+                <input type="text" class="form-control" id="noticeLink" value="#" placeholder="#">
+              </div>
+              <button type="submit" class="btn btn-warning w-100 fw-bold">Publish to Database</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle CDN & JavaScript for Indian Date/Time & Firebase -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
+            authDomain: "skytech-f813b.firebaseapp.com",
+            databaseURL: "https://skytech-f813b-default-rtdb.firebaseio.com",
+            projectId: "skytech-f813b",
+            storageBucket: "skytech-f813b.firebasestorage.app",
+            messagingSenderId: "300030506328",
+            appId: "1:300030506328:web:d3494afa60759d4dc7612d",
+            measurementId: "G-K3DVHBBDMM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        async function initFirebase() {
+            try {
+                // Do not attempt custom token sign-in with mismatched or empty sandbox tokens to prevent auth/custom-token-mismatch.
+                // We will proceed directly with Firestore listeners which rely on public security rules.
+                
+                // Reference to public collection
+                const noticesRef = collection(db, 'artifacts', appId, 'public', 'data', 'block_notices');
+
+                onSnapshot(noticesRef, (snapshot) => {
+                    const nitContainer = document.getElementById('nit-container');
+                    const noticesContainer = document.getElementById('notices-container');
+
+                    let nitHTML = '';
+                    let noticeHTML = '';
+
+                    let nitCount = 0;
+                    let noticeCount = 0;
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const itemType = data.type || 'notice';
+                        const title = data.title || 'Untitled Notice';
+                        const desc = data.desc || '';
+                        const link = data.link || '#';
+                        const dateStr = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-IN') : '';
+
+                        if (itemType === 'nit') {
+                            nitCount++;
+                            nitHTML += `
+                                <div class="notice-item">
+                                    <h6>${title}</h6>
+                                    ${desc ? `<p>${desc}</p>` : ''}
+                                    ${dateStr ? `<small class="text-muted d-block mb-1">Date: ${dateStr}</small>` : ''}
+                                    <a href="${link}" target="_blank"><i class="fa fa-download me-1"></i> Download NIT</a>
+                                </div>
+                            `;
+                        } else {
+                            noticeCount++;
+                            noticeHTML += `
+                                <div class="notice-item">
+                                    <h6>${title}</h6>
+                                    ${desc ? `<p>${desc}</p>` : ''}
+                                    ${dateStr ? `<small class="text-muted d-block mb-1">Date: ${dateStr}</small>` : ''}
+                                    <a href="${link}" target="_blank"><i class="fa fa-download me-1"></i> Download</a>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    if (nitCount === 0) {
+                        nitHTML = '<div class="text-center text-muted small pt-4">No NIT notices available at the moment.</div>';
+                    }
+                    if (noticeCount === 0) {
+                        noticeHTML = '<div class="text-center text-muted small pt-4">No general notices available at the moment.</div>';
+                    }
+
+                    nitContainer.innerHTML = nitHTML;
+                    noticesContainer.innerHTML = noticeHTML;
+                }, (error) => {
+                    console.error("Firestore listener error:", error);
+                });
+
+            } catch (e) {
+                console.error("Firebase init error:", e);
+                document.getElementById('nit-container').innerHTML = '<div class="text-center text-danger small pt-4">Error loading from database.</div>';
+                document.getElementById('notices-container').innerHTML = '<div class="text-center text-danger small pt-4">Error loading from database.</div>';
+            }
+        }
+
+        initFirebase();
+    </script>
     <script>
         function updateDateTime() {
             const options = {
