@@ -3,48 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sky Tech Dashboard</title>
-    <!-- Tailwind CSS -->
+    <title>Sky Tech</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for interactive analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'sky-brand': '#044d3a',
-                        'sky-dark': '#02382a',
-                        'sky-menu': '#1D2225',
-                        'sky-teal': '#008767',
-                        'sky-indigo': '#2c295b',
-                        'sky-red': '#dd3737',
-                        'sky-light': '#e6f2ed',
-                        'sky-dropdown': '#155263',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        times: ['"Times New Roman"', 'Times', 'serif'],
-                        sharp: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    
     <style>
-       body { font-family: 'Inter', sans-serif; }
-       aside, aside * { font-family: "Times New Roman", Times, serif !important; }
-       aside .submenu-collapse, aside .submenu-collapse * { 
-           font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; 
-           letter-spacing: -0.01em;
-       }
+        * {
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+        #sidebar-menu::-webkit-scrollbar {
+            width: 4px;
+        }
+        #sidebar-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+        #sidebar-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        #sidebar-menu {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
         .nav-link { position: relative; }
         .nav-link.active { color: #6EE7B7; }
         .nav-link.active::before {
@@ -78,1431 +73,1132 @@
             background-color: #ffffff !important;
             color: #111827 !important;
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1D2225;
+        .status-dot-active {
+            animation: pulseGlow 2s infinite ease-in-out;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #008767;
-            border-radius: 4px;
-        }
-        .submenu-collapse {
-            max-height: 0;
-            opacity: 0;
-            transform: scaleY(0.95) translateY(-6px);
-            transform-origin: top center;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-                        opacity 0.3s ease, 
-                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform, opacity, max-height;
-        }
-        .submenu-collapse.is-open {
-            opacity: 1;
-            transform: scaleY(1) translateY(0);
-            padding-top: 0.25rem;
-            padding-bottom: 0.25rem;
-        }
-        .submenu-collapse a, .submenu-collapse button {
+
+        .water-drop-container {
             position: relative;
+            overflow: hidden;
+        }
+        @keyframes waterRipple {
+            0% {
+                width: 0px;
+                height: 0px;
+                opacity: 0.8;
+            }
+            100% {
+                width: 220px;
+                height: 220px;
+                opacity: 0;
+            }
+        }
+        .water-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(52, 211, 153, 0.7) 0%, rgba(16, 185, 129, 0.2) 60%, transparent 100%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: waterRipple 0.6s cubic-bezier(0, 0.2, 0.8, 1) forwards;
+        }
+
+        .submenu-accordion {
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s ease, padding 0.3s ease;
+            overflow: hidden;
+            transform-origin: top;
+        }
+        .submenu-accordion.is-closed {
+            max-height: 0 !important;
+            opacity: 0;
+            transform: scaleY(0.92);
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            pointer-events: none;
+        }
+        .submenu-accordion.is-open {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        .sidebar-item.active,
+        .submenu-link.active {
+            background-color: #374151 !important;
             color: #ffffff !important;
+        }
+        .sidebar-item.active i,
+        .submenu-link.active i,
+        .sidebar-item.active .sidebar-text,
+        .submenu-link.active .sidebar-text {
+            color: #ffffff !important;
+        }
+        .submenu-link.active::before {
+            transform: translateY(-50%) scale(1) !important;
+            opacity: 1 !important;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.8) !important;
+        }
+        .submenu-link.active {
+            padding-left: 3.25rem !important;
+        }
+
+        #sale-submenu {
+            max-height: 220px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        #sale-submenu::-webkit-scrollbar {
+            width: 3px;
+        }
+        #sale-submenu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #sale-submenu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        #sidebar-menu {
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #sidebar-menu.is-collapsed {
+            width: 4rem;
+        }
+        .sidebar-text {
+            display: inline-block;
+            transition: opacity 0.25s ease, max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
+            max-width: 160px;
+            opacity: 1;
+            white-space: nowrap;
+        }
+        #sidebar-menu.is-collapsed .sidebar-text {
+            opacity: 0;
+            max-width: 0px;
+            transform: translateX(-8px);
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .sidebar-text {
+            white-space: normal !important;
+            word-break: break-word;
+            line-height: 1.25;
+        }
+        .sidebar-item {
+            transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, color 0.2s ease;
+        }
+        #sidebar-menu.is-collapsed .sidebar-item {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .submenu-link {
+            position: relative;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .submenu-collapse a:hover, .submenu-collapse button:hover {
-            transform: translateX(6px);
-            background-color: #2c383e !important;
-            color: #34D399 !important;
-            padding-left: 1rem !important;
+        .submenu-link::before {
+            content: '';
+            position: absolute;
+            left: 1.75rem;
+            top: 50%;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #34D399;
+            transform: translateY(-50%) scale(0);
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, box-shadow 0.25s ease;
+        }
+        .submenu-link:hover::before {
+            transform: translateY(-50%) scale(1);
+            opacity: 1;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+        }
+        .submenu-link:hover {
+            background-color: #1f2937;
+            color: #ffffff !important;
+            padding-left: 3.25rem;
+        }
+        .submenu-link .sidebar-text {
+            display: inline-block;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .submenu-link:hover .sidebar-text {
+            transform: translateX(3px);
+        }
+
+        @keyframes swiftPageFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(12px) scale(0.99);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .view-section {
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .view-section:not(.hidden) {
+            animation: swiftPageFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes goldShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gold-animated-text {
+            background: linear-gradient(90deg, #d4af37, #fff1a8, #f59e0b, #ffd700, #d4af37);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShimmer 2.5s ease-in-out infinite;
+            font-weight: 700;
+            display: inline-block;
+            filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4));
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #auth-btn:hover .gold-animated-text {
+            animation: goldShimmer 0.7s ease-in-out infinite;
+            letter-spacing: 0.05em;
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+        }
+
+        .footer-gold-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            color: #94a3b8;
+        }
+        .footer-gold-link:hover, .footer-gold-link:focus {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShimmer 1.5s linear infinite;
+            font-weight: 600;
+            transform: translateY(-1px) scale(1.05);
+            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7));
+            outline: none;
         }
     </style>
 </head>
-<body class="bg-slate-100 h-screen flex flex-col overflow-hidden select-none text-slate-800">
-    <header class="bg-white border-b border-slate-200 h-14 flex items-center justify-between px-4 shrink-0 shadow-sm">
-        <div class="flex items-center space-x-4">
-            <div class="flex items-center gap-2.5 select-none group cursor-pointer">
-                <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white shadow-md animated-logo relative overflow-hidden">
+<body class="bg-slate-50 h-screen w-screen overflow-hidden font-['Inter'] antialiased text-slate-800 flex flex-col justify-between">
+
+    <header class="bg-white border-b border-slate-200 h-12 flex items-center justify-between px-3.5 shrink-0 shadow-sm relative z-50 w-full">
+        <div class="flex items-center space-x-3">
+            <button id="menu-toggle-btn" onclick="window.toggleSidebar()" class="text-slate-700 hover:text-black focus:outline-none p-1 rounded-md hover:bg-slate-100 transition" title="Toggle Menu">
+                <i class="fa-solid fa-bars text-base"></i>
+            </button>
+            <div onclick="window.showView('dashboard-view')" class="flex items-center gap-2 select-none group cursor-pointer" title="Go to Dashboard">
+                <div class="w-7 h-7 rounded-lg bg-black flex items-center justify-center text-white shadow-md animated-logo relative overflow-hidden">
                     <div class="logo-shimmer"></div>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/>
                         <path d="M9 9h6v6H9z" fill="currentColor" fill-opacity="0.3"/>
                         <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
                     </svg>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-slate-900 font-black text-lg tracking-tight leading-none flex items-center">
-                        Sky<span class="text-emerald-700 ml-1">Tech</span>
+                <div class="flex items-center space-x-1.5">
+                    <span class="text-slate-900 font-black text-base tracking-tight leading-none flex items-center">
+                        Sky<span class="text-emerald-700 ml-0.5">Tech</span>
                     </span>
                 </div>
             </div>
         </div>
 
-        <div class="flex items-center space-x-6 text-xs text-gray-600">
-            <div class="hidden lg:block">
-                Helpline: <a href="tel:+916262989804" class="font-semibold text-sky-teal">+91-6262 9898 04</a>
+        <div class="flex items-center space-x-4 text-xs text-gray-600">
+            <div class="hidden sm:block">
+                Helpline: <a href="tel:+916262989804" class="font-semibold text-emerald-700 hover:underline">+91-6262 98904</a>
             </div>
-            <button id="auth-btn" onclick="window.handleAuthAction()" class="bg-black hover:bg-zinc-800 text-white font-medium px-3 py-1.5 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
-                <i class="fa-solid fa-right-from-bracket text-[10px]"></i>
-                <span id="auth-btn-text">Log Out</span>
+              
+            <button id="auth-btn" onclick="window.handleAuthAction()" class="group bg-black hover:bg-zinc-900 text-white font-medium px-3.5 py-1.5 rounded-full text-xs transition-all duration-300 shadow-sm flex items-center space-x-2 border border-amber-500/30 hover:border-amber-400 hover:shadow-amber-500/20 hover:shadow-lg">
+                <i class="fa-solid fa-right-from-bracket text-[11px] text-amber-400 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:rotate-12"></i>
+                <span id="auth-btn-text" class="gold-animated-text">Log Out</span>
             </button>
-        </div>
+        </div>         
     </header>
 
-    <div class="flex flex-1 overflow-hidden">
-        <aside class="w-72 bg-[#0C0C0C] text-gray-200 flex flex-col flex-shrink-0 select-none custom-scrollbar overflow-y-auto">
-            <nav class="flex-1 py-1 space-y-0.5" id="sidebar-menu">
-                <div>
-                    <button onclick="toggleSaleMenu(); setActiveNav(this, 'Sale')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
-                        <span>Sale</span>
-                    </button>
-                    <div id="sale-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
-                        <div>
-                            <button onclick="toggleGroup('grp-invoice')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
-                                <span>Invoice</span>
-                            </button>
-                            <div id="grp-invoice" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
-                                <a href="new_invoice.html" onclick="setActiveNav(this, 'New_Invoice'); closeAllSubmenus(); showToast('Opening New Invoice...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Invoice</a>
-                                <a href="" onclick="setActiveNav(this, 'Search and Manage Invoices'); closeAllSubmenus(); showToast('Opening Manage Invoices...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Invoices</a>
-                            </div>
-                        </div>
-                        <div>
-                            <button onclick="toggleGroup('grp-salereturn')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
-                                <span>Sale Return</span>
-                            </button>
-                            <div id="grp-salereturn" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
-                                <a href="" onclick="setActiveNav(this, 'New Sale Return'); closeAllSubmenus(); showToast('Opening New Sale Return...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Sale Return</a>
-                                <a href="" onclick="setActiveNav(this, 'Search and Manage Sale Returns'); closeAllSubmenus(); showToast('Opening Manage Returns...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Sale Returns</a>
-                            </div>
-                        </div>
-                        <div>
-                            <button onclick="toggleGroup('grp-quotation')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
-                                <span>Quotation</span>
-                            </button>
-                            <div id="grp-quotation" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
-                                <a href="" onclick="setActiveNav(this, 'New Quotation'); openActionModal('Quotation'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Quotation</a>
-                                <a href="" onclick="setActiveNav(this, 'Search and Manage Quotations'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Quotations</a>
-                                <a href="" onclick="setActiveNav(this, 'Delivery Note'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Delivery Note</a>
-                                <a href="" onclick="setActiveNav(this, 'Sale Order'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Sale Order</a>
-                            </div>
-                        </div>
+    <div class="flex flex-1 overflow-hidden relative w-full">
+        <aside id="sidebar-menu" class="w-52 bg-black text-slate-300 flex-shrink-0 flex flex-col py-2 space-y-0 text-[13px] font-medium tracking-normal shadow-xl transition-all duration-300 ease-in-out select-none overflow-y-auto relative z-40 max-h-full">
+            <a href="#" id="menu-dashboard" title="Dashboard" onclick="window.showView('dashboard-view'); window.handleOtherMenuClick(event)" class="sidebar-item active water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-chart-pie w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate font-medium">Dashboard</span>
+            </a>
+
+            <!-- Sale Menu Group with Submenu -->
+            <div class="w-full">
+                <button id="sale-menu-btn" onclick="window.toggleSaleSubmenu(event)" title="Sale" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 flex items-center justify-between w-full text-left text-slate-300 hover:bg-gray-800 border-l-[3px] border-transparent">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-cart-shopping w-5 text-center text-sm shrink-0"></i>
+                        <span class="sidebar-text font-medium text-[13px]">Sale</span>
                     </div>
-                </div>
+                </button>
 
-                <div>
-                    <button onclick="togglePurchaseMenu(); setActiveNav(this, 'Purchase')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
-                        <span>Purchase</span>
-                    </button>
-                    <div id="purchase-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
-                        <div>
-                            <button onclick="toggleGroup('grp-purchase-bill')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
-                                <span>Purchase Bill</span>
-                            </button>
-                            <div id="grp-purchase-bill" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
-                                <a href="" onclick="setActiveNav(this, 'New Purchase Bill'); openActionModal('Purchase'); closeAllSubmenus()" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Purchase Bill</a>
-                                <a href="" onclick="setActiveNav(this, 'Search and Manage Purchase Bills'); closeAllSubmenus(); showToast('Opening Manage Purchase Bills...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Purchase Bills</a>
+                <div id="sale-submenu" class="submenu-accordion is-closed bg-black py-0 flex flex-col w-full">
+                    <a href="new_invoice.html" id="menu-create-invoice" title="Create New Invoice" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-2 block w-full text-slate-300 hover:text-emerald-400 font-medium text-[12px]">
+                        <i class="fa-solid fa-plus text-[10px] text-emerald-400 shrink-0"></i>
+                        <span class="sidebar-text">Create New Invoice</span>
+                    </a>
+           
+                    <a href="#" id="search-manage-invoices" onclick="window.handleMenuClick(event, 'search-manage-invoices')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-2 block w-full text-slate-300 hover:text-sky-400 font-medium text-[12px]">
+                        <i class="fa-solid fa-magnifying-glass text-[10px] text-sky-400 shrink-0"></i>
+                        <span class="sidebar-text">Search & Manage Invoices</span>
+                    </a>
+                 
+                    <a href="#" id="menu-manage-invoice" title="Search & Manage Invoices" onclick="window.showView('manage-invoice-view'); window.createWaterDrop(event)" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-2 block w-full text-slate-300 hover:text-sky-400 font-medium text-[12px] hidden">
+                        <i class="fa-solid fa-list-check text-[10px] text-sky-400 shrink-0"></i>
+                        <span class="sidebar-text">Search invoices</span>
+                    </a>
+                    <!-- Sale Return Group with Nested Submenu -->
+                    <div class="w-full">
+                        <button id="sale-return-menu-btn" onclick="window.toggleSaleReturnSubmenu(event)" title="Sale Return" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center justify-between w-full text-left text-slate-300 hover:text-amber-400 font-medium text-[12px]">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-rotate-left text-[10px] text-amber-400 shrink-0"></i>
+                                <span class="sidebar-text">Sale Return</span>
                             </div>
-                        </div>
-                        <div>
-                            <button onclick="toggleGroup('grp-purchase-return')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
-                                <span>Purchase Return</span>
-                            </button>
-                            <div id="grp-purchase-return" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
-                                <a href="" onclick="setActiveNav(this, 'New Purchase Return'); closeAllSubmenus(); showToast('Opening New Purchase Return...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Purchase Return</a>
-                                <a href="" onclick="setActiveNav(this, 'Search and Manage Purchase Returns'); closeAllSubmenus(); showToast('Opening Manage Purchase Returns...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Purchase Returns</a>
-                            </div>
-                        </div>
-                        <div>
-                            <button onclick="toggleGroup('grp-purchase-order')" class="w-full flex items-center justify-between py-1 px-2 rounded text-xs font-normal text-white hover:bg-[#404A50] hover:text-white transition duration-150 active:scale-[0.98]">
-                                <span>Purchase Order</span>
-                            </button>
-                            <div id="grp-purchase-order" class="submenu-collapse pl-2 space-y-1 text-xs text-white font-normal">
-                                <a href="" onclick="setActiveNav(this, 'New Purchase Order'); closeAllSubmenus(); showToast('Opening New Purchase Order...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">New Purchase Order</a>
-                                <a href="" onclick="setActiveNav(this, 'Search and Manage Purchase Orders'); closeAllSubmenus(); showToast('Opening Manage Purchase Orders...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Purchase Orders</a>
-                                <a href="" onclick="setActiveNav(this, 'GRN (Goods Receipt Note)'); closeAllSubmenus(); showToast('Opening GRN...')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">GRN (Goods Receipt Note)</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <button onclick="toggleInventoryMenu(); setActiveNav(this, 'Inventory')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
-                        <span>Inventory</span>
-                    </button>
-                    <div id="inventory-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
-                        <a href="" onclick="setActiveNav(this, 'Add Stock Adjustment'); openStockAdjustmentModal(); closeAllMenuDropdowns();" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Add Stock Adjustment</a>
-                        <a href="" onclick="setActiveNav(this, 'Search and Manage Stock Adjustments'); showToast('Opening Stock Adjustments list...'); closeAllMenuDropdowns();" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Stock Adjustments</a>
-                        <a href="" onclick="setActiveNav(this, 'Physical Stock Reconciliation'); closeAllMenuDropdowns();" class="flex items-center py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">
-                            <i class="fa-solid fa-lock text-[10px] mr-2 opacity-70"></i>
-                            <span>Physical Stock Reconciliation</span>
-                        </a>
-                    </div>
-                </div>
-
-                <a href="" onclick="setActiveNav(this, 'Manufacture')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Manufacture</span>
-                </a>
-                <a href="javascript:void(0)" onclick="setActiveNav(this, 'Accounts')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Accounts</span>
-                </a>
-                <a href="" onclick="setActiveNav(this, 'Expense')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Expense</span>
-                </a>
-                <a href="" onclick="setActiveNav(this, 'Customer')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Customer</span>
-                </a>
-                <a href="" onclick="setActiveNav(this, 'Reports')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Reports</span>
-                </a>
-                <a href="" onclick="setActiveNav(this, 'Staff')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Staff</span>
-                </a>
-                <a href="" onclick="setActiveNav(this, 'Tools')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Tools</span>
-                </a>
-
-                <div>
-                    <button onclick="toggleMasterMenu(); setActiveNav(this, 'Master')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-semibold hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent text-left group">
-                        <span>Master</span>
-                    </button>
-                    <div id="master-submenu" class="submenu-collapse pl-4 pr-2 space-y-1 text-xs text-white font-normal">
-                        <a href="add_product_form.html" onclick="setActiveNav(this, 'Add Product'); openActionModal('Add Product')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Add Product</a>
-                        <a href="" onclick="setActiveNav(this, 'Add Service'); openActionModal('Add Service')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Add Service</a>
-                        <a href="" onclick="setActiveNav(this, 'Search and Manage Items')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Search and Manage Items</a>
-                        <div class="border-t border-gray-700/50 pt-1 space-y-1">
-                            <a href="" onclick="setActiveNav(this, 'Brand Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Brand Master</a>
-                            <a href="" onclick="setActiveNav(this, 'Group Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Group Master</a>
-                            <a href="" onclick="setActiveNav(this, 'Bank Master')" class="block py-1 px-2 rounded hover:bg-[#404A50] hover:text-white font-normal transition duration-150">Bank Master</a>
-                        </div>
-                    </div>
-                </div>
-
-                <a href="" onclick="setActiveNav(this, 'Settings')" class="sidebar-item flex items-center justify-between px-4 py-2 text-sm hover:bg-[#404A50] hover:text-white transition border-l-4 border-transparent group">
-                    <span>Settings</span>
-                </a>
-            </nav>
-        </aside>
-
-        <main class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden bg-gray-100">
-            <div class="w-full md:w-1/2 flex flex-col p-2.5 border-r border-gray-200 overflow-y-auto md:overflow-hidden custom-scrollbar space-y-2.5 h-full">
-                <div class="bg-white p-2.5 rounded-md shadow-sm border border-gray-200 flex justify-between items-center flex-shrink-0">
-                    <div class="flex items-center space-x-2">
-                        <h1 class="font-bold text-gray-800 text-sm md:text-base" id="dashboard-heading">Dashboard</h1>
-                        <button title="Toggle Privacy" class="text-gray-400 hover:text-gray-600 transition">
-                            <i class="fa-regular fa-eye text-xs"></i>
                         </button>
-                    </div>
-
-                    <div class="flex items-center space-x-2">
-                        <select id="date-filter" onchange="updateDashboardMetrics()" class="border border-[#155263] rounded px-2 py-0.5 text-xs bg-[#155263] text-white outline-none focus:ring-1 focus:ring-sky-teal cursor-pointer font-medium">
-                            <option value="today" selected>Today</option>
-                            <option value="yesterday">Yesterday</option>
-                            <option value="this_week">This Week</option>
-                            <option value="this_month">This Month</option>
-                        </select>
-                        <button onclick="refreshDashboard()" title="Refresh" class="text-gray-500 hover:text-sky-teal transition p-1">
-                            <i class="fa-solid fa-rotate text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white p-3 rounded-md shadow-sm border border-gray-200 flex-shrink-0">
-                    <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 text-xs md:text-sm">
-                        <div>
-                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Gross Sale</div>
-                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-gross-sale">₹0</div>
-                        </div>
-                        <div>
-                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">No. of Invoices</div>
-                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-invoices">0</div>
-                        </div>
-                        <div class="pt-1.5 border-t border-gray-100">
-                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Amount Received</div>
-                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-received">₹0</div>
-                        </div>
-                        <div class="pt-1.5 border-t border-gray-100">
-                            <div class="text-[10px] md:text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Amount Paid</div>
-                            <div class="text-sky-teal font-bold text-base md:text-lg mt-0.5" id="val-paid">₹0</div>
+                        <div id="sale-return-submenu" class="submenu-accordion is-closed bg-zinc-950 py-0 flex flex-col w-full">
+                            <a href="#" id="menu-new-sale-return" title="New Sale Return" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('New Sale Return', 'Create and process customer sale return notes.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-14 flex items-center space-x-2 block w-full text-slate-300 hover:text-emerald-400 font-medium text-[11px]">
+                                <i class="fa-solid fa-plus text-[9px] text-emerald-400 shrink-0"></i>
+                                <span class="sidebar-text">New Sale Return</span>
+                            </a>
+                            <a href="#" id="menu-manage-sale-return" title="Search and Manage Returns" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('Search and Manage Returns', 'Search, view and manage previous sale return records.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-14 flex items-center space-x-2 block w-full text-slate-300 hover:text-sky-400 font-medium text-[11px]">
+                                <i class="fa-solid fa-magnifying-glass text-[9px] text-sky-400 shrink-0"></i>
+                                <span class="sidebar-text">Search and Manage Returns</span>
+                            </a>
                         </div>
                     </div>
-                </div>
-
-                <div class="grid grid-cols-4 gap-1.5 flex-shrink-0">
-                    <button onclick="openActionModal('New Invoice')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-regular fa-file-lines text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">New Invoice</span>
-                    </button>
-                    <button onclick="openActionModal('Quotation')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-regular fa-paste text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">Quotation</span>
-                    </button>
-                    <button onclick="openActionModal('Purchase')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-solid fa-bag-shopping text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">Purchase</span>
-                    </button>
-                    <button onclick="openActionModal('Expense')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-regular fa-receipt text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">Expense</span>
-                    </button>
-                    <button onclick="openActionModal('Customer')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-regular fa-user text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">Customer</span>
-                    </button>
-                    <button onclick="openActionModal('Reminder')" class="bg-sky-teal hover:bg-emerald-700 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-regular fa-bell text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">Reminder</span>
-                    </button>
-                    <button onclick="openActionModal('Payment In')" class="bg-blue-900 hover:bg-blue-950 text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-regular fa-circle-plus text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">Payment In</span>
-                    </button>
-                    <button onclick="openActionModal('Payment Out')" class="bg-[#E53935] hover:bg-[#EF5350] text-white rounded p-1 flex flex-col items-center justify-center text-[10px] md:text-[11px] font-medium shadow-md transition h-10 md:h-11 group">
-                        <i class="fa-regular fa-circle-minus text-[11px] md:text-xs mb-0.5 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-center leading-tight">Payment Out</span>
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-md shadow-sm border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-                    <div class="bg-zinc-800 text-white px-3 py-1.5 text-xs font-semibold rounded-t-md flex justify-between items-center flex-shrink-0">
-                        <span>Business Insights</span>
-                        <i class="fa-solid fa-chart-pie text-xs opacity-75"></i>
-                    </div>
-                    <div class="flex-1 flex flex-col p-3 overflow-y-auto custom-scrollbar space-y-3" id="business-insights-body">
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div class="bg-emerald-50/70 border border-emerald-100 p-2.5 rounded-md flex flex-col justify-between">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Sale Insights</span>
-                                    <i class="fa-solid fa-arrow-trend-up text-emerald-600 text-xs"></i>
-                                </div>
-                                <div class="mt-1.5">
-                                    <div class="text-xs font-bold text-emerald-900" id="insight-sale-val">₹2,48,500</div>
-                                    <div class="text-[9px] text-emerald-700 mt-0.5">Conversion: <span class="font-semibold">78.4%</span></div>
-                                </div>
-                            </div>
-                            <div class="bg-rose-50/70 border border-rose-100 p-2.5 rounded-md flex flex-col justify-between">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] font-bold text-rose-800 uppercase tracking-wider">Purchase Flow</span>
-                                    <i class="fa-solid fa-bag-shopping text-rose-600 text-xs"></i>
-                                </div>
-                                <div class="mt-1.5">
-                                    <div class="text-xs font-bold text-rose-900" id="insight-purchase-val">₹1,12,000</div>
-                                    <div class="text-[9px] text-rose-700 mt-0.5">Payable Ratio: <span class="font-semibold">32%</span></div>
-                                </div>
-                            </div>
-                            <div class="bg-blue-50/70 border border-blue-100 p-2.5 rounded-md flex flex-col justify-between">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] font-bold text-blue-800 uppercase tracking-wider">Stock Valuation</span>
-                                    <i class="fa-solid fa-boxes-stacked text-blue-600 text-xs"></i>
-                                </div>
-                                <div class="mt-1.5">
-                                    <div class="text-xs font-bold text-blue-900" id="insight-stock-val">₹10,65,500</div>
-                                    <div class="text-[9px] text-blue-700 mt-0.5">Low Stock Items: <span class="font-semibold">3 items</span></div>
-                                </div>
-                            </div>
-                            <div class="bg-amber-50/70 border border-amber-100 p-2.5 rounded-md flex flex-col justify-between">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Total Expenses</span>
-                                    <i class="fa-solid fa-receipt text-amber-600 text-xs"></i>
-                                </div>
-                                <div class="mt-1.5">
-                                    <div class="text-xs font-bold text-amber-900" id="insight-expense-val">₹38,400</div>
-                                    <div class="text-[9px] text-amber-700 mt-0.5">Top Category: <span class="font-semibold">Logistics</span></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 border border-gray-200 p-2.5 rounded-md space-y-2">
-                            <div class="flex justify-between items-center text-[11px] font-bold text-gray-700">
-                                <span>Net Profitability Ratio</span>
-                                <span class="text-emerald-700 font-extrabold" id="insight-profit-margin">54.2%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-sky-teal h-full rounded-full transition-all duration-500" style="width: 54.2%" id="insight-profit-bar"></div>
-                            </div>
-                            <div class="flex justify-between text-[10px] text-gray-500 pt-0.5">
-                                <span>Revenue: <strong class="text-gray-700" id="insight-rev-summary">₹2.48L</strong></span>
-                                <span>Costs: <strong class="text-gray-700" id="insight-cost-summary">₹1.50L</strong></span>
-                            </div>
-                        </div>
-                    </div>
+                    <a href="#" id="menu-quotation" title="Quotation" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event)" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center space-x-3 block w-full text-slate-300 font-medium text-[13px]">
+                        <span class="sidebar-text">Quotation</span>
+                    </a>
                 </div>
             </div>
-
-            <div class="w-full md:w-1/2 flex flex-col p-2.5 border-r border-gray-200 overflow-y-auto md:overflow-hidden custom-scrollbar space-y-2.5 h-full">
-                <div class="flex items-center bg-white rounded border border-gray-300 overflow-hidden shadow-sm flex-shrink-0">
-                    <input type="text" id="invoice-search-input" onkeyup="filterInvoices(this.value)" placeholder="Invoice No or Customer Name or Mobile No" class="flex-1 px-2.5 py-1.5 text-xs text-gray-700 outline-none">
-                    <div class="border-l border-gray-200 px-1.5 py-0.5 text-xs text-white bg-[#155263] cursor-pointer flex items-center space-x-1">
-                        <select class="bg-[#155263] text-white text-xs border-none outline-none cursor-pointer py-0.5 px-1">
-                            <option value="invoice">Search in Invoice</option>
-                            <option value="customer">Search in Customer</option>
-                            <option value="item">Search in Item</option>
-                        </select>
+            
+            <!-- Purchase Menu Group with Submenu -->
+            <div class="w-full">
+                <button id="purchase-menu-btn" onclick="window.togglePurchaseSubmenu(event)" title="Purchase" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 flex items-center justify-between w-full text-left text-slate-300 hover:bg-gray-800 border-l-[3px] border-transparent">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-bag-shopping w-5 text-center text-sm shrink-0"></i>
+                        <span class="sidebar-text font-medium text-[13px]">Purchase</span>
                     </div>
-                    <button onclick="triggerSearch()" class="bg-sky-teal hover:bg-emerald-700 text-white px-3 py-1.5 transition flex items-center justify-center">
-                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                    </button>
+                </button>
+
+                <div id="purchase-submenu" class="submenu-accordion is-closed bg-black py-0 flex flex-col w-full">
+                    <a href="#" id="menu-purchase-bill" title="Purchase Bill" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('Purchase Bill', 'Create and manage purchase bills and supplier invoices.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center justify-between w-full text-slate-300 hover:text-emerald-400 font-medium text-[12px]">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-file-invoice text-[10px] text-emerald-400 shrink-0"></i>
+                            <span class="sidebar-text">Purchase Bill</span>
+                        </div>
+                    </a>
+                    
+                    <a href="#" id="menu-purchase-return" title="Purchase Return" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('Purchase Return', 'Process returns of goods to suppliers.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center justify-between w-full text-slate-300 hover:text-sky-400 font-medium text-[12px]">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-rotate-right text-[10px] text-sky-400 shrink-0"></i>
+                            <span class="sidebar-text">Purchase Return</span>
+                        </div>
+                    </a>
+
+                    <a href="#" id="menu-purchase-order" title="Purchase Order" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('Purchase Order', 'Create purchase orders to procure stock.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center justify-between w-full text-slate-300 hover:text-amber-400 font-medium text-[12px]">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-lock text-[10px] text-amber-400 shrink-0"></i>
+                            <span class="sidebar-text">Purchase Order</span>
+                        </div>
+                    </a>
+
+                    <a href="#" id="menu-debit-note" title="Debit Note" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('Debit Note', 'Manage debit notes issued to suppliers.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center justify-between w-full text-slate-300 hover:text-purple-400 font-medium text-[12px]">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-lock text-[10px] text-purple-400 shrink-0"></i>
+                            <span class="sidebar-text">Debit Note</span>
+                        </div>
+                    </a>
+
+                    <a href="#" id="menu-credit-note" title="Credit Note" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('Credit Note', 'Manage credit notes received or issued.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center justify-between w-full text-slate-300 hover:text-rose-400 font-medium text-[12px]">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-lock text-[10px] text-rose-400 shrink-0"></i>
+                            <span class="sidebar-text">Credit Note</span>
+                        </div>
+                    </a>
+
+                    <a href="#" id="menu-supplier" title="Supplier" onclick="window.setActiveMenuItem(this); window.createWaterDrop(event); window.showInfoModal('Supplier', 'Manage supplier accounts and ledger.')" class="sidebar-item submenu-link water-drop-container py-1.5 px-4 pl-10 flex items-center justify-between w-full text-slate-300 hover:text-emerald-400 font-medium text-[12px]">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-truck text-[10px] text-emerald-400 shrink-0"></i>
+                            <span class="sidebar-text">Supplier</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <a href="#" title="Inventory" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-boxes-stacked w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Inventory</span>
+            </a>
+            <a href="#" title="Manufacture" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-industry w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Manufacture</span>
+            </a>
+            <a href="#" title="Accounts" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-calculator w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Accounts</span>
+            </a>
+            <a href="#" title="Expense" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-receipt w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Expense</span>
+            </a>
+            <a href="#" title="Customer" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-users w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Customer</span>
+            </a>
+            <a href="#" title="Reports" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-chart-column w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Reports</span>
+            </a>
+            <a href="#" title="Staff" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-user-tie w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Staff</span>
+            </a>
+            <a href="#" title="Tools" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-wrench w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Tools</span>
+            </a>
+            <a href="#" title="Master" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-database w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Master</span>
+            </a>
+            <a href="#" title="Settings" onclick="window.setActiveMenuItem(this); window.handleOtherMenuClick(event)" class="sidebar-item water-drop-container hover:text-white transition-colors py-2 px-4 hover:bg-gray-800 flex items-center space-x-3 block w-full">
+                <i class="fa-solid fa-gear w-5 text-center text-sm shrink-0"></i>
+                <span class="sidebar-text truncate">Settings</span>
+            </a>
+        </aside>
+
+        <main class="flex-1 p-3 lg:p-4 bg-slate-100/70 overflow-y-auto h-full flex flex-col justify-between">
+            <div class="space-y-3.5 w-full">
+                <!-- Dashboard View -->
+                <div id="dashboard-view" class="view-section grid grid-cols-1 lg:grid-cols-12 gap-3.5 max-w-[1600px] mx-auto">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-6 space-y-3">
+                        <!-- Dashboard Header Card -->
+                        <div class="bg-white rounded-lg border border-slate-200/80 p-2.5 shadow-sm flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <h2 class="text-sm font-bold text-slate-900 tracking-tight">Dashboard</h2>
+                                <button id="toggle-privacy-btn" onclick="window.toggleDashboardPrivacy()" title="Toggle Visibility" class="text-slate-400 hover:text-slate-600 transition p-0.5 rounded-full">
+                                    <i id="privacy-icon" class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <select id="time-filter-select" onchange="window.updateDashboardData()" class="bg-slate-800 text-white text-[11px] font-medium px-2.5 py-1 rounded focus:outline-none cursor-pointer">
+                                    <option value="today" selected>Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="year">This Year</option>
+                                </select>
+                                <button onclick="window.updateDashboardData()" class="text-slate-500 hover:text-slate-800 p-1 rounded hover:bg-slate-100 transition" title="Refresh Data">
+                                    <i class="fa-solid fa-rotate text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Gross Sale & Invoice Summary Box -->
+                        <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm">
+                            <div class="grid grid-cols-2 gap-y-2.5 gap-x-4">
+                                <div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">GROSS SALE</span>
+                                    <span id="stat-gross-sale" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">₹2,48,500</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">NO. OF INVOICES</span>
+                                    <span id="stat-no-invoices" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">18</span>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">AMOUNT RECEIVED</span>
+                                    <span id="stat-amount-received" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">₹1,95,000</span>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">AMOUNT PAID</span>
+                                    <span id="stat-amount-paid" class="stat-value text-lg font-extrabold text-emerald-600 tracking-tight">₹82,400</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                            <a href="new_invoice.html" onclick="window.openNewInvoicePage(event)" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group no-underline">
+                                <i class="fa-solid fa-file-circle-plus text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">New Invoice</span>
+                            </a>
+                            <button onclick="window.triggerQuickAction('Quotation')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                                <i class="fa-solid fa-file-lines text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">Quotation</span>
+                            </button>
+                            <button onclick="window.triggerQuickAction('Purchase')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                                <i class="fa-solid fa-bag-shopping text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">Purchase</span>
+                            </button>
+                            <button onclick="window.triggerQuickAction('Expense')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                                <i class="fa-solid fa-receipt text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">Expense</span>
+                            </button>
+                            
+                            <button onclick="window.triggerQuickAction('Customer')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                                <i class="fa-solid fa-user text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">Customer</span>
+                            </button>
+                            <button onclick="window.triggerQuickAction('Reminder')" class="bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                                <i class="fa-solid fa-bell text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">Reminder</span>
+                            </button>
+                            <button onclick="window.triggerQuickAction('Payment In')" class="bg-indigo-900 hover:bg-indigo-950 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                                <i class="fa-solid fa-money-bill-wave text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">Payment In</span>
+                            </button>
+                            <button onclick="window.triggerQuickAction('Payment Out')" class="bg-rose-600 hover:bg-rose-700 text-white py-1.5 px-2 rounded-md flex flex-col items-center justify-center space-y-0.5 transition-all shadow-sm group">
+                                <i class="fa-solid fa-hand-holding-dollar text-xs group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[11px] font-medium">Payment Out</span>
+                            </button>
+                        </div>
+
+                        <!-- Business Insights Panel -->
+                        <div class="bg-white rounded-lg border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div class="bg-slate-900 text-white px-3 py-2 flex items-center justify-between">
+                                <h3 class="text-xs font-bold tracking-tight">Business Insights</h3>
+                                <i class="fa-solid fa-chart-pie text-slate-300 text-xs"></i>
+                            </div>
+                            <div class="p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div class="bg-emerald-50/60 border border-emerald-100/80 p-2.5 rounded-lg flex flex-col justify-between">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-[10px] font-bold text-emerald-800 tracking-wider uppercase">SALE INSIGHTS</span>
+                                        <i class="fa-solid fa-arrow-trend-up text-emerald-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="stat-value text-base font-black text-slate-800 block">₹2,48,500</span>
+                                        <span class="text-[10px] font-medium text-emerald-700">Conversion: 78.4%</span>
+                                    </div>
+                                </div>
+                                <div class="bg-rose-50/60 border border-rose-100/80 p-2.5 rounded-lg flex flex-col justify-between">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-[10px] font-bold text-rose-800 tracking-wider uppercase">PURCHASE FLOW</span>
+                                        <i class="fa-solid fa-bag-shopping text-rose-500 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <span class="stat-value text-base font-black text-slate-800 block">₹1,12,000</span>
+                                        <span class="text-[10px] font-medium text-rose-700">Payout Rate: 62.1%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="lg:col-span-6 space-y-3">
+                        <!-- Search Bar Section -->
+                        <div class="flex rounded-md shadow-sm">
+                            <input type="text" id="invoice-search-input" placeholder="Invoice No or Customer Name or Mobile No" class="flex-1 bg-white border border-slate-300 border-r-0 rounded-l-md px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                            <select id="search-type-select" class="bg-slate-800 text-white text-[11px] px-2.5 py-1.5 border-y border-slate-800 focus:outline-none cursor-pointer">
+                                <option>Search in Invoice</option>
+                                <option>Search in Customer</option>
+                                <option>Search in Item</option>
+                            </select>
+                            <button onclick="window.showView('search-manage-invoices-view')" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-r-md flex items-center justify-center transition">
+                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- Vital Stats Box -->
+                        <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">VITAL STATS</h3>
+                                <button onclick="window.refreshVitalStats()" class="text-slate-400 hover:text-slate-600 transition" title="Refresh Vital Stats">
+                                    <i class="fa-solid fa-rotate text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-slate-50/80 border border-slate-100 rounded-lg p-2">
+                                    <div id="vital-amount-outstanding" class="stat-value text-sm font-extrabold text-slate-900">₹53,500</div>
+                                    <div class="text-[10px] text-slate-500 mt-0.5">Amount Outstanding</div>
+                                </div>
+                                <div class="bg-slate-50/80 border border-slate-100 rounded-lg p-2">
+                                    <div id="vital-unpaid-invoices" class="stat-value text-sm font-extrabold text-slate-900">4</div>
+                                    <div class="text-[10px] text-slate-500 mt-0.5">Unpaid Invoices</div>
+                                </div>
+                                <div class="bg-slate-50/80 border border-slate-100 rounded-lg p-2">
+                                    <div id="vital-unpaid-purchases" class="stat-value text-sm font-extrabold text-slate-900">2</div>
+                                    <div class="text-[10px] text-slate-500 mt-0.5">Unpaid Purchases</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Curve Analytics Graph Card -->
+                        <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <!-- Tabs -->
+                                <div class="flex items-center space-x-4 border-b border-slate-200 pb-2 text-[11px] overflow-x-auto">
+                                    <button onclick="window.switchAnalyticsTab('activity')" id="tab-activity" class="text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap">Recent Activity</button>
+                                    <button onclick="window.switchAnalyticsTab('customer')" id="tab-customer" class="text-emerald-700 font-semibold border-b-2 border-emerald-600 pb-1 transition whitespace-nowrap">Customer Due</button>
+                                    <button onclick="window.switchAnalyticsTab('supplier')" id="tab-supplier" class="text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap">Supplier Due</button>
+                                    <button onclick="window.switchAnalyticsTab('received')" id="tab-received" class="text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap">Amount Received</button>
+                                </div>
+
+                                <!-- Filter & Legends -->
+                                <div class="flex flex-wrap items-center justify-between gap-2 mt-2 mb-1">
+                                    <select id="graph-period-select" onchange="window.drawCurveChart()" class="bg-slate-800 text-white text-[10px] font-medium px-2 py-0.5 rounded focus:outline-none cursor-pointer">
+                                        <option value="30">Last 30 days</option>
+                                        <option value="7">Last 7 days</option>
+                                        <option value="90">Last 90 days</option>
+                                    </select>
+                                    <div class="flex items-center space-x-3 text-[10px] text-slate-600">
+                                        <div class="flex items-center space-x-1">
+                                            <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
+                                            <span>Overdue 0-30d</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>
+                                            <span>Overdue &gt;30d</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <span class="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span>
+                                            <span>Total Outstanding</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Canvas Curve Chart -->
+                            <div class="relative w-full h-36 lg:h-44 mt-1">
+                                <canvas id="curveChartCanvas" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="bg-white p-2.5 rounded-md shadow-sm border border-gray-200 space-y-2 flex-shrink-0">
-                    <div class="flex justify-between items-center border-b border-gray-100 pb-1.5">
-                        <span class="text-[11px] font-bold text-gray-700 tracking-wider uppercase">Vital Stats</span>
-                        <button onclick="refreshDashboard()" class="text-gray-400 hover:text-sky-teal transition">
-                            <i class="fa-solid fa-rotate text-xs"></i>
+                <!-- New Invoice Full Page View -->
+                <div id="new-invoice-page-view" class="view-section hidden max-w-[1600px] mx-auto space-y-3.5 pb-8">
+                    <div class="bg-white rounded-lg border border-slate-200/80 p-3 shadow-sm flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="window.showView('dashboard-view')" class="text-slate-500 hover:text-slate-900 bg-slate-100 p-1.5 rounded-md transition" title="Back to Dashboard">
+                                <i class="fa-solid fa-arrow-left text-xs"></i>
+                            </button>
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                    <i class="fa-solid fa-file-circle-plus text-emerald-600"></i> New Invoice (new_invoice.html)
+                                </h2>
+                                <p class="text-[11px] text-slate-500">Create and issue a new sales bill to a customer</p>
+                            </div>
+                        </div>
+                        <button onclick="window.showView('dashboard-view')" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-1.5 rounded-md text-xs font-semibold transition shadow-sm">
+                            Back to Dashboard
                         </button>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-gray-50 p-1.5 md:p-2 rounded border border-gray-100">
-                            <div class="text-xs md:text-sm font-bold text-gray-800" id="stat-outstanding">₹0</div>
-                            <div class="text-[9px] md:text-[10px] text-gray-500 mt-0.5">Amount Outstanding</div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3.5">
+                        <div class="bg-white rounded-lg border border-slate-200/80 p-3.5 shadow-sm space-y-3">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2">Customer Details</h3>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Customer Name</label>
+                                <input type="text" placeholder="Enter customer name..." class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Mobile Number</label>
+                                <input type="text" placeholder="10-digit mobile number" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Billing Address</label>
+                                <textarea rows="2" placeholder="Full address..." class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
+                            </div>
                         </div>
-                        <div class="bg-gray-50 p-1.5 md:p-2 rounded border border-gray-100">
-                            <div class="text-xs md:text-sm font-bold text-gray-800" id="stat-unpaid-inv">0</div>
-                            <div class="text-[9px] md:text-[10px] text-gray-500 mt-0.5">Unpaid Invoices</div>
-                        </div>
-                        <div class="bg-gray-50 p-1.5 md:p-2 rounded border border-gray-100">
-                            <div class="text-xs md:text-sm font-bold text-gray-800" id="stat-unpaid-pur">0</div>
-                            <div class="text-[9px] md:text-[10px] text-gray-500 mt-0.5">Unpaid Purchases</div>
+
+                        <div class="lg:col-span-2 bg-white rounded-lg border border-slate-200/80 p-3.5 shadow-sm space-y-3 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between border-b pb-2">
+                                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Invoice Items</h3>
+                                    <span class="text-xs text-emerald-700 font-bold">Invoice #: INV-2026-0892</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="grid grid-cols-12 gap-2 text-[11px] font-bold text-slate-500 uppercase">
+                                        <div class="col-span-6">Item Description</div>
+                                        <div class="col-span-2 text-center">Qty</div>
+                                        <div class="col-span-2 text-right">Price (₹)</div>
+                                        <div class="col-span-2 text-right">Total (₹)</div>
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-2 items-center text-xs">
+                                        <div class="col-span-6 font-medium text-slate-800">Smart Classroom LED Panel</div>
+                                        <div class="col-span-2 text-center font-semibold">1</div>
+                                        <div class="col-span-2 text-right text-slate-600">35,000.00</div>
+                                        <div class="col-span-2 text-right font-bold text-slate-900">35,000.00</div>
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-2 items-center text-xs pt-2 border-t border-slate-100">
+                                        <div class="col-span-6 font-medium text-slate-800">Interactive Stylus Set</div>
+                                        <div class="col-span-2 text-center font-semibold">2</div>
+                                        <div class="col-span-2 text-right text-slate-600">3,900.00</div>
+                                        <div class="col-span-2 text-right font-bold text-slate-900">7,800.00</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-500 block">Total Payable Amount</span>
+                                    <span class="text-lg font-extrabold text-emerald-600">₹42,800.00</span>
+                                </div>
+                                <div class="space-x-2">
+                                    <button onclick="window.showView('dashboard-view')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold">Cancel</button>
+                                    <button onclick="window.showInfoModal('Success', 'New invoice successfully created and saved!'); window.showView('dashboard-view');" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-bold shadow-sm">Save & Print</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-md shadow-sm border border-gray-200 flex-1 flex flex-col p-2.5 min-h-0 overflow-hidden">
-                    <div class="flex flex-wrap items-center justify-between border-b border-gray-200 pb-1.5 gap-2 text-xs flex-shrink-0">
-                        <div class="flex space-x-2 md:space-x-3 font-medium text-[11px] md:text-xs">
-                            <button onclick="switchChartTab('activity')" id="tab-activity" class="text-sky-teal font-bold border-b-2 border-sky-teal pb-0.5">Recent Activity</button>
-                            <button onclick="switchChartTab('cust-due')" id="tab-cust-due" class="text-gray-500 hover:text-gray-700 pb-0.5">Customer Due</button>
-                            <button onclick="switchChartTab('supp-due')" id="tab-supp-due" class="text-gray-500 hover:text-gray-700 pb-0.5">Supplier Due</button>
-                            <button onclick="switchChartTab('rec-amount')" id="tab-rec-amount" class="text-gray-500 hover:text-gray-700 pb-0.5">Amount Received</button>
-                        </div>
-                        <select id="chart-timeframe" onchange="updateChartData()" class="border border-[#155263] rounded px-1.5 py-0.5 text-[10px] md:text-[11px] text-white bg-[#155263] outline-none cursor-pointer">
-                            <option value="30" selected>Last 30 days</option>
-                            <option value="7">Last 7 days</option>
-                            <option value="90">Last 90 days</option>
-                        </select>
-                    </div>
-
-                    <div id="chart-legend-container" class="flex items-center space-x-4 my-1.5 text-[10px] md:text-[11px] text-gray-600 flex-shrink-0">
-                        <div class="flex items-center space-x-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                            <span id="legend-1">Sale</span>
-                        </div>
-                        <div class="flex items-center space-x-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
-                            <span id="legend-2">Purchase</span>
-                        </div>
-                        <div class="flex items-center space-x-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
-                            <span id="legend-3">Expense</span>
-                        </div>
-                    </div>
-
-                    <div class="relative flex-1 min-h-0 w-full">
-                        <canvas id="vitalChart"></canvas>
-                    </div>
-
-                    <div id="search-results-list" class="mt-2 hidden border-t border-gray-100 pt-1.5 text-xs max-h-32 overflow-y-auto custom-scrollbar flex-shrink-0">
-                        <div class="font-semibold text-gray-600 mb-1">Search Results</div>
-                        <div id="search-items-container" class="space-y-1"></div>
+                <!-- Search & Manage Invoices Full Page View -->
+                <div id="search-manage-invoices-view" class="view-section hidden max-w-[1600px] mx-auto space-y-3.5 pb-8">
+                    <div class="bg-white rounded-lg border border-slate-200/80 shadow-sm overflow-hidden w-full" style="height: calc(100vh - 100px); min-height: 550px;">
+                        <iframe
+                            src="search_and_manage_invoices.html"
+                            title="Search & Manage Invoices"
+                            class="w-full h-full border-0 block"
+                            loading="eager">
+                        </iframe>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <footer class="bg-[#1D2225] border-t border-gray-700 h-12 flex items-center justify-around px-4 shrink-0 text-white text-xs select-none shadow-inner z-30">
-        <button onclick="openPortalModal('Daily Summary')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
-            <i class="fa-solid fa-chart-pie text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
-            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Daily Summary</span>
+    <footer class="bg-[#0C0C0C] text-white h-12 flex items-center justify-around px-2 text-[11px] font-medium shrink-0 border-t border-neutral-800 shadow-inner">
+        <button onclick="showInfoModal('History', 'View past transactions and receipts history.')" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300 ml-[190px]">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-clock-rotate-left hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>History</span></span>
         </button>
-        <button onclick="openPortalModal('Stock Summary')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
-            <i class="fa-solid fa-boxes-stacked text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
-            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Stock Summary</span>
+        <button onclick="clearCart()" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-xmark hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Cancel</span></span>
         </button>
-        <button onclick="openPortalModal('Business Analysis')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
-            <i class="fa-solid fa-chart-line text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
-            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Business Analysis</span>
+        <button onclick="showInfoModal('Closing Report', 'Daily sales closing and cash drawer reconciliation report.')" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-file-lines hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Closing Report</span></span>
         </button>
-        <button onclick="openPortalModal('Cash Book')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
-            <i class="fa-solid fa-wallet text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
-            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Cash Book</span>
+        <button onclick="showInfoModal('Cash-in-Hand', 'Manage cash drawer denomination balance and float.')" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-wallet hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Cash-in-Hand</span></span>
         </button>
-        <button onclick="openPortalModal('Ledgers')" class="flex items-center space-x-2 transition group py-1 px-2 rounded hover:text-emerald-400">
-            <i class="fa-solid fa-book text-sky-teal group-hover:text-emerald-400 transition-colors"></i>
-            <span class="font-medium text-white group-hover:text-emerald-400 transition-colors">Ledgers</span>
+        <button onclick="showCustomerAccounts()" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-user-gear hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Customer Account</span></span>
         </button>
+        <a href="sky_tech_dashboard.html" class="flex flex-col items-center hover:text-amber-400 hover:scale-105 transition-all duration-300 text-white no-underline">
+            <span class="flex items-center space-x-1"><i class="fa-solid fa-chart-pie hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]"></i><span>Dashboard</span></span>
+        </a>
     </footer>
 
-    <!-- Portal Data Modal Window -->
-    <div id="portalModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all scale-95 opacity-0 duration-200 border border-gray-300 flex flex-col max-h-[85vh]" id="portalModalContainer">
-            <div class="bg-[#1D2225] text-white px-4 py-3 flex justify-between items-center border-b border-gray-700">
-                <div class="flex items-center space-x-2.5">
-                    <div id="portalModalIcon" class="w-6 h-6 rounded bg-sky-teal flex items-center justify-center text-white text-xs">
-                        <i class="fa-solid fa-folder"></i>
-                    </div>
-                    <h3 class="font-bold text-sm" id="portalModalTitle">Portal Data Summary</h3>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button onclick="refreshPortalData()" title="Refresh Data" class="text-gray-300 hover:text-white transition">
-                        <i class="fa-solid fa-rotate text-xs"></i>
-                    </button>
-                    <button onclick="closePortalModal()" class="text-gray-300 hover:text-white transition">
-                        <i class="fa-solid fa-xmark text-base font-bold"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center flex-shrink-0 text-xs">
-                <div id="portalModalSubtitle" class="text-gray-600 font-medium">Real-time synced portal records</div>
-                <div class="flex items-center space-x-2">
-                    <input type="text" id="portalSearchInput" onkeyup="filterPortalTable(this.value)" placeholder="Search records..." class="border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-sky-teal bg-white w-48">
-                    <button onclick="exportPortalData()" class="bg-[#155263] hover:bg-sky-brand text-white px-3 py-1 rounded transition font-medium flex items-center space-x-1">
-                        <i class="fa-solid fa-download text-[10px]"></i>
-                        <span>Export</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-4 bg-white custom-scrollbar" id="portalModalContent">
-                <!-- Dynamic table or content loaded here -->
-            </div>
-
-            <div class="bg-gray-100 px-4 py-2.5 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500 flex-shrink-0">
-                <span id="portalRecordCount">Total Records: 0</span>
-                <button onclick="closePortalModal()" class="bg-gray-800 hover:bg-black text-white px-4 py-1.5 rounded transition font-medium">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stock Adjustment Modal -->
-    <div id="stockAdjustmentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden transform transition-all scale-95 opacity-0 duration-200 border border-gray-300" id="stockModalContainer">
-            <div class="bg-zinc-100 text-gray-800 px-4 py-2.5 flex justify-between items-center border-b border-gray-200">
-                <div class="flex items-center space-x-2">
-                    <div class="w-5 h-5 rounded bg-sky-brand flex items-center justify-center text-white text-[10px]">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                    </div>
-                    <h3 class="font-bold text-xs text-gray-800">Unsaved Stock Adjustment</h3>
-                </div>
-                <button onclick="closeStockAdjustmentModal()" class="text-gray-500 hover:text-gray-800 transition">
-                    <i class="fa-solid fa-xmark text-sm font-bold"></i>
-                </button>
-            </div>
-
-            <div class="flex border-b border-gray-200 px-4 pt-2 bg-gray-50 text-xs font-semibold text-gray-600 space-x-6">
-                <button onclick="switchStockTab('info')" id="stock-tab-info" class="border-b-2 border-sky-teal text-sky-teal pb-1">Item Info</button>
-                <button onclick="switchStockTab('serials')" id="stock-tab-serials" class="text-gray-500 hover:text-gray-700 pb-1">Serial Numbers</button>
-            </div>
-
-            <form id="stockAdjustmentForm" onsubmit="handleStockFormSubmit(event, false)" class="p-5 space-y-4 text-xs bg-white">
-                <div class="text-[11px] font-bold text-gray-700 border-b border-gray-200 pb-1 mb-2">Item information</div>
-                
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Adjustment Date</label>
-                    <div class="col-span-2 relative">
-                        <input type="date" id="adj-date" onclick="this.showPicker && this.showPicker()" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal bg-white cursor-pointer">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Adjustment Type</label>
-                    <div class="col-span-2 flex items-center space-x-6">
-                        <label class="flex items-center space-x-2 cursor-pointer font-medium text-gray-800">
-                            <input type="radio" name="adjustmentType" value="Credit" checked class="text-sky-teal focus:ring-0">
-                            <span>Credit (+)</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer font-medium text-gray-800">
-                            <input type="radio" name="adjustmentType" value="Debit" class="text-sky-teal focus:ring-0">
-                            <span>Debit (-)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Adjustment Reason</label>
-                    <div class="col-span-2">
-                        <select id="adj-reason" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs bg-white outline-none focus:border-sky-teal">
-                            <option value="Stock Takeoff" selected>Stock Takeoff</option>
-                            <option value="Stock Reconcile">Stock Reconcile</option>
-                            <option value="Stock Verification">Stock Verification</option>
-                            <option value="Product Lost">Product Lost</option>
-                            <option value="Product Stolen">Product Stolen</option>
-                            <option value="Donation">Donation</option>
-                            <option value="Write-Off">Write-Off</option>
-                            <option value="Others">Others</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Item Code</label>
-                    <div class="col-span-2">
-                        <input type="text" id="adj-item-code" placeholder="Enter or scan item code" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Item Name <span class="text-rose-500">*</span></label>
-                    <div class="col-span-2 flex items-center space-x-2">
-                        <input type="text" required id="adj-item-name" placeholder="Select or type item name" class="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal">
-                        <button type="button" onclick="showToast('Opening Item master selector...')" class="text-sky-teal font-semibold hover:underline text-[11px] whitespace-nowrap">Add Item</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Quantity <span class="text-rose-500">*</span></label>
-                    <div class="col-span-2">
-                        <input type="number" required id="adj-quantity" value="1" min="1" oninput="calculateStockAmount()" class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Unit Price <span class="text-rose-500">*</span></label>
-                    <div class="col-span-2 flex items-center border border-gray-300 rounded overflow-hidden focus-within:border-sky-teal bg-white">
-                        <span class="bg-[#155263] text-white px-3 py-1.5 font-semibold text-xs flex items-center justify-center">₹</span>
-                        <input type="number" required id="adj-unit-price" value="0" min="0" step="0.01" oninput="calculateStockAmount()" class="flex-1 px-2.5 py-1.5 text-xs outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-center gap-2">
-                    <label class="font-medium text-gray-700">Amount <span class="text-rose-500">*</span></label>
-                    <div class="col-span-2 flex items-center border border-gray-300 rounded overflow-hidden bg-gray-50">
-                        <span class="bg-[#155263] text-white px-3 py-1.5 font-semibold text-xs flex items-center justify-center">₹</span>
-                        <input type="number" readonly id="adj-amount" value="0.00" class="flex-1 px-2.5 py-1.5 text-xs bg-gray-50 outline-none font-semibold text-gray-800">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 items-start gap-2 pt-1">
-                    <label class="font-medium text-gray-700 pt-1.5">Remarks</label>
-                    <div class="col-span-2">
-                        <textarea id="adj-remarks" rows="2" placeholder="Optional notes regarding stock adjustment..." class="w-full border border-gray-300 rounded px-2.5 py-1.5 text-xs outline-none focus:border-sky-teal"></textarea>
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-gray-200 flex justify-end space-x-2.5">
-                    <button type="button" onclick="handleStockFormSubmit(event, true)" class="bg-[#0D6EFD] hover:bg-blue-700 text-white font-medium px-4 py-2 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
-                        <i class="fa-solid fa-floppy-disk text-xs"></i>
-                        <span>Save N New</span>
-                    </button>
-                    <button type="submit" class="bg-[#0D6EFD] hover:bg-blue-700 text-white font-medium px-5 py-2 rounded text-xs transition shadow-sm flex items-center space-x-1.5">
-                        <i class="fa-solid fa-floppy-disk text-xs"></i>
-                        <span>Save</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Generic Action Modal -->
-    <div id="actionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden transform transition-all scale-95 opacity-0 duration-200" id="modalContainer">
-            <div class="bg-sky-brand text-white px-4 py-3 flex justify-between items-center">
-                <h3 class="font-semibold text-sm" id="modalTitle">Create Action</h3>
-                <button onclick="closeModal()" class="text-gray-300 hover:text-white transition">
-                    <i class="fa-solid fa-xmark text-base"></i>
-                </button>
-            </div>
-            <form id="actionForm" onsubmit="handleFormSubmit(event)" class="p-4 space-y-3 text-xs">
-                <div>
-                    <label class="block font-medium text-gray-700 mb-1">Party / Customer Name</label>
-                    <input type="text" required id="modal-party" placeholder="e.g. Acme Corp / John Doe" class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:border-sky-teal outline-none">
-                </div>
-                <div>
-                    <label class="block font-medium text-gray-700 mb-1">Amount (₹)</label>
-                    <input type="number" required id="modal-amount" placeholder="0.00" class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:border-sky-teal outline-none">
-                </div>
-                <div>
-                    <label class="block font-medium text-gray-700 mb-1">Notes / Description</label>
-                    <textarea id="modal-notes" rows="2" placeholder="Optional details..." class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:border-sky-teal outline-none"></textarea>
-                </div>
-                <div class="pt-2 flex justify-end space-x-2">
-                    <button type="button" onclick="closeModal()" class="px-3 py-1.5 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 transition">Cancel</button>
-                    <button type="submit" class="px-4 py-1.5 rounded bg-sky-teal hover:bg-emerald-700 text-white font-medium transition shadow-sm">Save Entry</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2.5 rounded-md shadow-lg text-xs flex items-center space-x-2 transform translate-y-10 opacity-0 transition-all duration-300 z-50">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
-        <span id="toast-message">Action completed successfully!</span>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'skytech-default';
-        let firebaseConfig = {};
-        try {
-            if (typeof __firebase_config !== 'undefined') {
-                firebaseConfig = JSON.parse(__firebase_config);
-            }
-        } catch (e) {
-            console.warn("Failed to parse firebase config:", e);
-        }
-
-        let app, db, auth;
-        let currentUser = null;
-
-        try {
-            if (Object.keys(firebaseConfig).length > 0) {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) {
-                    signInWithCustomToken(auth, token).catch((err) => {
-                        console.warn("Custom token auth failed, falling back to anonymous:", err);
-                        signInAnonymously(auth).catch(e => console.warn("Anonymous auth failed:", e));
-                    });
-                } else {
-                    signInAnonymously(auth).catch(e => console.warn("Anonymous auth failed:", e));
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    const authBtnText = document.getElementById('auth-btn-text');
-                    if (user) {
-                        if (authBtnText) authBtnText.innerText = "Log Out";
-                        loadUserData(user.uid);
-                    }
-                });
-            } else {
-                console.warn("No Firebase config provided. Operating in offline standalone mode.");
-            }
-        } catch (err) {
-            console.warn("Firebase initialization error:", err);
-        }
-
-        async function loadUserData(userId) {
-            if (!db) return;
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'dashboardState', 'metrics');
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if (data && typeof data.grossSale === 'number') {
-                        sampleMetrics.grossSale = data.grossSale;
-                        sampleMetrics.invoices = data.invoices;
-                        sampleMetrics.received = data.received;
-                        sampleMetrics.paid = data.paid;
-                        sampleMetrics.outstanding = data.outstanding;
-                        sampleMetrics.unpaidInv = data.unpaidInv;
-                        sampleMetrics.unpaidPur = data.unpaidPur;
-                        if (data.chartDataDatasets) {
-                            backendChartDatasets = data.chartDataDatasets;
-                        }
-                        updateMetricsUI(sampleMetrics);
-                        updateChartData();
-                    }
-                } else {
-                    await setDoc(docRef, { ...sampleMetrics, chartDataDatasets: backendChartDatasets });
-                }
-
-                const stockColRef = collection(db, 'artifacts', appId, 'users', userId, 'stockAdjustments');
-                const stockSnap = await getDocs(stockColRef);
-                stockAdjustmentsList = [];
-                stockSnap.forEach(docSnap => {
-                    stockAdjustmentsList.push({ id: docSnap.id, ...docSnap.data() });
-                });
-            } catch (err) {
-                console.error("Error loading user data:", err);
-            }
-        }
-
-        window.saveUserDataToBackend = async function() {
-            if (!db || !currentUser) return;
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'dashboardState', 'metrics');
-                await setDoc(docRef, { ...sampleMetrics, chartDataDatasets: backendChartDatasets });
-            } catch (err) {
-                console.error("Error saving data:", err);
+    <script>
+        window.menuConfig = {
+            'search-manage-invoices': {
+                submenu: 'sale-submenu',
+                page: 'search_and_manage_invoices.html'
+            },
+            'create-new-invoice': {
+                submenu: 'sale-submenu',
+                page: 'add_product_form.html'
+            },
+            'add-product': {
+                submenu: 'master-submenu',
+                page: 'add_product.html'
             }
         };
 
-        window.saveStockAdjustmentToBackend = async function(adjustmentData) {
-            if (!db || !currentUser) {
-                stockAdjustmentsList.push(adjustmentData);
-                showToast(`Stock Adjustment saved locally for ${adjustmentData.itemName}!`);
+        window.handleMenuClick = function(event, menuId) {
+            if (event) event.preventDefault();
+
+            const config = window.menuConfig[menuId];
+            if (!config) return;
+
+            window.setActiveMenuItem(menuId);
+
+            if (menuId === 'search-manage-invoices') {
+                window.openSaleSubmenu();
+                window.showView('search-manage-invoices-view');
                 return;
             }
-            try {
-                const stockColRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'stockAdjustments');
-                await addDoc(stockColRef, { ...adjustmentData, timestamp: new Date().toISOString() });
-                stockAdjustmentsList.push(adjustmentData);
-                showToast(`Stock Adjustment saved securely to cloud database for ${adjustmentData.itemName}!`);
-            } catch (err) {
-                console.error("Error saving stock adjustment:", err);
-                stockAdjustmentsList.push(adjustmentData);
-                showToast(`Stock Adjustment saved locally (offline mode) for ${adjustmentData.itemName}!`);
+
+            if (config.page) {
+                console.log("Loading page: " + config.page);
             }
         };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll(".sidebar-menu .nav-link");
+            const contentArea = document.getElementById("content-area");
 
-        window.handleAuthAction = async function() {
-            showToast("Syncing final state to backend & redirecting...");
-            if (db && currentUser) {
-                try {
-                    await window.saveUserDataToBackend();
-                } catch (e) {
-                    console.warn("Backend final sync warning:", e);
-                }
-            }
-            
-            setTimeout(async () => {
-                if (auth && currentUser) {
-                    try {
-                        await signOut(auth);
-                    } catch (err) {
-                        console.error("Sign out error:", err);
-                    }
-                }
-
-                localStorage.removeItem('skytech_session');
-                sessionStorage.clear();
-
-                // Safe redirection check preventing empty URL syntax errors
-                const targetUrl = 'index.html';
-                if (targetUrl && targetUrl.trim() !== '') {
-                    window.location.href = targetUrl;
-                }
-            }, 600);
-        };
-    </script>
-
-    <script>
-        window.addEventListener("pageshow", function(event) {
-            if (event.persisted) {
-                const targetUrl = 'index.html';
-                if (targetUrl && targetUrl.trim() !== '') {
-                    window.location.replace(targetUrl);
-                }
+            if (navLinks.length > 0 && contentArea) {
+                navLinks.forEach(link => {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault(); 
+                        navLinks.forEach(l => l.classList.remove("active"));
+                        this.classList.add("active");
+                        const url = this.getAttribute("data-url");
+                        if (!url) return;
+                        
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) throw new Error(`Could not load ${url}`);
+                                return response.text();
+                            })
+                            .then(html => {
+                                contentArea.innerHTML = html;
+                                history.pushState({ path: url }, "", `#${url.split('.')[0]}`);
+                            })
+                            .catch(error => {
+                                contentArea.innerHTML = `<div class="p-3 bg-rose-50 text-rose-800 rounded text-xs border border-rose-200">Error loading page: ${error.message}</div>`;
+                            });
+                    });
+                });
             }
         });
+    </script>
 
-        let chartInstance = null;
-        let currentActiveTab = 'activity';
-        let stockAdjustmentsList = [];
-        let portalActiveModule = '';
-        
-        let backendChartDatasets = {
-            activity: {
-                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
-                datasets: [
-                    { label: 'Sale', data: [12, 18, 15, 22, 14, 28, 30, 25, 35, 22, 29, 34, 40, 38, 45, 42, 39, 48, 52, 47, 50, 55, 58, 62, 59, 65, 70, 68, 75, 82], color: '#10b981' },
-                    { label: 'Purchase', data: [10, 14, 12, 19, 15, 20, 24, 21, 28, 25, 22, 30, 33, 29, 36, 40, 35, 42, 45, 41, 46, 49, 52, 55, 50, 58, 60, 57, 64, 69], color: '#f43f5e' },
-                    { label: 'Expense', data: [8, 10, 9, 12, 11, 14, 15, 13, 18, 16, 15, 19, 21, 18, 22, 25, 20, 24, 27, 23, 26, 28, 30, 32, 29, 34, 36, 33, 38, 41], color: '#94a3b8' }
-                ]
-            },
-            'cust-due': {
-                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
-                datasets: [
-                    { label: 'Overdue 0-30d', data: [25, 28, 30, 35, 32, 40, 45, 42, 48, 50, 46, 52, 58, 55, 60, 63, 59, 66, 70, 65, 72, 75, 78, 82, 80, 85, 90, 88, 95, 102], color: '#f59e0b' },
-                    { label: 'Overdue 30-60d', data: [15, 18, 16, 20, 22, 25, 28, 24, 30, 32, 29, 34, 38, 35, 40, 43, 39, 45, 48, 44, 50, 53, 55, 58, 54, 60, 64, 61, 68, 72], color: '#ef4444' },
-                    { label: 'Total Outstanding', data: [40, 46, 46, 55, 54, 65, 73, 66, 78, 82, 75, 86, 96, 90, 100, 106, 98, 111, 118, 109, 122, 128, 133, 140, 134, 145, 154, 149, 163, 174], color: '#6366f1' }
-                ]
-            },
-            'supp-due': {
-                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
-                datasets: [
-                    { label: 'Payable 0-30d', data: [18, 20, 22, 25, 23, 29, 32, 30, 35, 38, 34, 40, 45, 42, 48, 51, 47, 53, 58, 54, 60, 63, 66, 70, 67, 72, 78, 75, 82, 88], color: '#3b82f6' },
-                    { label: 'Payable >30d', data: [10, 12, 11, 14, 13, 17, 19, 18, 22, 24, 21, 26, 29, 27, 31, 34, 30, 36, 39, 35, 41, 44, 46, 50, 47, 52, 57, 54, 60, 65], color: '#ec4899' }
-                ]
-            },
-            'rec-amount': {
-                labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
-                datasets: [
-                    { label: 'Bank Receipts', data: [35, 40, 48, 52, 60, 58, 70, 75, 82, 80, 88, 95, 92, 102, 110, 108, 118, 125, 122, 132, 140, 138, 148, 155, 152, 162, 170, 168, 178, 190], color: '#059669' },
-                    { label: 'Cash Receipts', data: [15, 18, 20, 23, 25, 24, 28, 30, 34, 32, 36, 40, 38, 44, 48, 46, 52, 56, 54, 60, 65, 63, 69, 74, 72, 78, 84, 82, 89, 96], color: '#10b981' }
-                ]
+    <script type="module">
+        window.setActiveMenuItem = function(target) {
+            document.querySelectorAll('#sidebar-menu .sidebar-item, #sidebar-menu .submenu-link').forEach(el => {
+                el.classList.remove('active');
+            });
+            let el = null;
+            if (typeof target === 'string') {
+                el = document.getElementById(target);
+            } else if (target && target.nodeType) {
+                el = target;
+            }
+            if (el) {
+                el.classList.add('active');
             }
         };
 
-        function closeAllSubmenus() {
-            ['grp-invoice', 'grp-salereturn', 'grp-quotation', 'grp-purchase-bill', 'grp-purchase-return', 'grp-purchase-order'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.style.maxHeight = '0px';
-                    el.classList.remove('is-open');
-                }
-            });
-        }
-
-        function closeAllMenuDropdowns() {
-            closeAllSubmenus();
-            ['sale-submenu', 'purchase-submenu', 'inventory-submenu', 'master-submenu'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.style.maxHeight = '0px';
-                    el.classList.remove('is-open');
-                }
-            });
-        }
-
-        function toggleSaleMenu() {
-            const saleSub = document.getElementById('sale-submenu');
-            if (!saleSub) return;
-            const isOpen = saleSub.classList.contains('is-open');
-            closeAllMenuDropdowns();
-            if (!isOpen) {
-                saleSub.classList.add('is-open');
-                saleSub.style.maxHeight = (saleSub.scrollHeight + 350) + 'px';
-            }
-        }
-
-        function togglePurchaseMenu() {
-            const purchaseSub = document.getElementById('purchase-submenu');
-            if (!purchaseSub) return;
-            const isOpen = purchaseSub.classList.contains('is-open');
-            closeAllMenuDropdowns();
-            if (!isOpen) {
-                purchaseSub.classList.add('is-open');
-                purchaseSub.style.maxHeight = (purchaseSub.scrollHeight + 350) + 'px';
-            }
-        }
-
-        function toggleInventoryMenu() {
-            const invSub = document.getElementById('inventory-submenu');
-            if (!invSub) return;
-            const isOpen = invSub.classList.contains('is-open');
-            closeAllMenuDropdowns();
-            if (!isOpen) {
-                invSub.classList.add('is-open');
-                invSub.style.maxHeight = (invSub.scrollHeight + 200) + 'px';
-            }
-        }
-
-        function toggleMasterMenu() {
-            const masterSub = document.getElementById('master-submenu');
-            if (!masterSub) return;
-            const isOpen = masterSub.classList.contains('is-open');
-            closeAllMenuDropdowns();
-            if (!isOpen) {
-                masterSub.classList.add('is-open');
-                masterSub.style.maxHeight = (masterSub.scrollHeight + 250) + 'px';
-            }
-        }
-
-        function toggleGroup(groupId) {
-            const target = document.getElementById(groupId);
-            if (!target) return;
-            const isOpen = target.classList.contains('is-open');
-            closeAllSubmenus();
-            if (!isOpen) {
-                target.classList.add('is-open');
-                target.style.maxHeight = (target.scrollHeight + 50) + 'px';
-            }
-            const saleSub = document.getElementById('sale-submenu');
-            if (saleSub && saleSub.classList.contains('is-open')) {
-                setTimeout(() => {
-                    saleSub.style.maxHeight = (saleSub.scrollHeight + 350) + 'px';
-                }, 350);
-            }
-            const purchaseSub = document.getElementById('purchase-submenu');
-            if (purchaseSub && purchaseSub.classList.contains('is-open')) {
-                setTimeout(() => {
-                    purchaseSub.style.maxHeight = (purchaseSub.scrollHeight + 350) + 'px';
-                }, 350);
-            }
-        }
-
-        const sampleMetrics = {
-            grossSale: 248500,
-            invoices: 42,
-            received: 185000,
-            paid: 62000,
-            outstanding: 63500,
-            unpaidInv: 8,
-            unpaidPur: 3
-        };
-
-        const mockInvoices = [
-            { id: "INV-2026-001", name: "Rahul Sharma", mobile: "9876543210", amount: "₹12,400", status: "Paid" },
-            { id: "INV-2026-002", name: "Tech Solutions Pvt Ltd", mobile: "9123456789", amount: "₹45,000", status: "Unpaid" },
-            { id: "INV-2026-003", name: "Anita Roy", mobile: "9988776655", amount: "₹8,200", status: "Paid" },
-            { id: "INV-2026-004", name: "Apex Global Traders", mobile: "9443322110", amount: "₹18,900", status: "Unpaid" },
-            { id: "INV-2026-005", name: "Vikram Malhotra", mobile: "9776655443", amount: "₹5,600", status: "Paid" }
-        ];
-
-        window.onload = function() {
-            initChart();
-            const dateInput = document.getElementById('adj-date');
-            if (dateInput) {
-                dateInput.value = new Date().toISOString().split('T')[0];
-            }
-        };
-
-        function initChart() {
-            const ctx = document.getElementById('vitalChart').getContext('2d');
-            
-            const verticalLinePlugin = {
-                id: 'verticalLineOnHover',
-                afterDraw: (chart) => {
-                    if (chart.tooltip._active && chart.tooltip._active.length) {
-                        const ctx = chart.ctx;
-                        const activePoint = chart.tooltip._active[0];
-                        const x = activePoint.element.x;
-                        const topY = chart.scales.y.top;
-                        const bottomY = chart.scales.y.bottom;
-
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.moveTo(x, topY);
-                        ctx.lineTo(x, bottomY);
-                        ctx.lineWidth = 1;
-                        ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
-                        ctx.setLineDash([3, 3]);
-                        ctx.stroke();
-                        ctx.restore();
-                    }
-                }
-            };
-
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: { labels: [], datasets: [] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#1e293b', padding: 8, titleFont: { size: 10 }, bodyFont: { size: 11 } }
-                    },
-                    scales: {
-                        x: { display: false },
-                        y: { display: false, grid: { display: false } }
-                    }
-                },
-                plugins: [verticalLinePlugin]
-            });
-
-            updateChartData();
-        }
-
-        function updateMetricsUI(m) {
-            document.getElementById('val-gross-sale').innerText = `₹${m.grossSale.toLocaleString()}`;
-            document.getElementById('val-invoices').innerText = m.invoices;
-            document.getElementById('val-received').innerText = `₹${m.received.toLocaleString()}`;
-            document.getElementById('val-paid').innerText = `₹${m.paid.toLocaleString()}`;
-            document.getElementById('stat-outstanding').innerText = `₹${m.outstanding.toLocaleString()}`;
-            document.getElementById('stat-unpaid-inv').innerText = m.unpaidInv;
-            document.getElementById('stat-unpaid-pur').innerText = m.unpaidPur;
-
-            const saleEl = document.getElementById('insight-sale-val');
-            if (saleEl) saleEl.innerText = `₹${m.grossSale.toLocaleString()}`;
-            
-            const purchaseEl = document.getElementById('insight-purchase-val');
-            if (purchaseEl) purchaseEl.innerText = `₹${Math.round(m.grossSale * 0.45).toLocaleString()}`;
-            
-            const expenseEl = document.getElementById('insight-expense-val');
-            if (expenseEl) expenseEl.innerText = `₹${Math.round(m.paid * 0.6).toLocaleString()}`;
-
-            const revSummary = document.getElementById('insight-rev-summary');
-            if (revSummary) revSummary.innerText = `₹${(m.grossSale / 100000).toFixed(2)}L`;
-        }
-
-        function refreshDashboard() {
-            showToast("Dashboard refreshed!");
-            if (chartInstance) chartInstance.update();
-        }
-
-        function setActiveNav(element, title) {
-            document.querySelectorAll('.sidebar-item').forEach(el => {
-                el.classList.remove('active', 'border-emerald-400', 'bg-[#404A50]', 'font-medium', 'text-white');
-                el.classList.add('border-transparent');
-            });
-            element.classList.add('active', 'border-emerald-400', 'bg-[#404A50]', 'font-medium', 'text-white');
-            element.classList.remove('border-transparent');
-            if (title !== 'Sale' && title !== 'Purchase' && title !== 'Inventory' && title !== 'Master') {
-                closeAllMenuDropdowns();
+        window.handleMenuClick = function(e, id) {
+            if (e) e.preventDefault();
+            window.setActiveMenuItem(id);
+            if (id === 'search-manage-invoices') {
+                window.showView('search-manage-invoices-view');
             } else {
-                closeAllSubmenus();
+                window.showView('manage-invoice-view');
             }
-        }
+        };
 
-        function switchChartTab(tab) {
-            currentActiveTab = tab;
-            const tabs = ['activity', 'cust-due', 'supp-due', 'rec-amount'];
-            tabs.forEach(t => {
+        window.togglePurchaseSubmenu = function(e) {
+            if (e) {
+                e.stopPropagation();
+                window.createWaterDrop(e);
+            }
+            // Close sale submenu and sale return submenu when opening purchase submenu
+            window.closeSaleSubmenu();
+            
+            const submenu = document.getElementById('purchase-submenu');
+            const btn = document.getElementById('purchase-menu-btn');
+            if (submenu) {
+                const isOpen = submenu.classList.contains('is-open');
+                if (isOpen) {
+                    submenu.classList.remove('is-open');
+                    submenu.classList.add('is-closed');
+                    if (btn) {
+                        btn.classList.remove('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                        btn.classList.add('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+                    }
+                } else {
+                    submenu.classList.remove('is-closed');
+                    submenu.classList.add('is-open');
+                    if (btn) {
+                        btn.classList.add('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                        btn.classList.remove('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+                    }
+                }
+            }
+        };
+
+        window.closePurchaseSubmenu = function() {
+            const submenu = document.getElementById('purchase-submenu');
+            const btn = document.getElementById('purchase-menu-btn');
+            if (submenu && submenu.classList.contains('is-open')) {
+                submenu.classList.remove('is-open');
+                submenu.classList.add('is-closed');
+            }
+            if (btn) {
+                btn.classList.remove('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                btn.classList.add('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+            }
+        };
+
+        window.showView = function(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.add('hidden');
+                el.style.opacity = '0';
+            });
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    targetView.style.opacity = '1';
+                });
+                if (viewId === 'dashboard-view') {
+                    window.setActiveMenuItem('menu-dashboard');
+                    window.closeSaleSubmenu();
+                    setTimeout(window.drawCurveChart, 50);
+                } else if (viewId === 'new-invoice-page-view') {
+                    window.setActiveMenuItem('menu-create-invoice');
+                    window.openSaleSubmenu();
+                } else if (viewId === 'search-manage-invoices-view') {
+                    window.setActiveMenuItem('search-manage-invoices');
+                    window.openSaleSubmenu();
+                }
+            }
+        };
+
+        window.openNewInvoicePage = function(e) {
+            if (e) {
+                e.preventDefault();
+                window.createWaterDrop(e);
+            }
+            window.showView('new-invoice-page-view');
+        };
+
+        window.openSaleSubmenu = function() {
+            const submenu = document.getElementById('sale-submenu');
+            const btn = document.getElementById('sale-menu-btn');
+            if (submenu) {
+                submenu.classList.remove('is-closed');
+                submenu.classList.add('is-open');
+                submenu.style.maxHeight = '280px';
+            }
+            if (btn) {
+                btn.classList.add('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                btn.classList.remove('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+            }
+        };
+
+        window.toggleSaleReturnSubmenu = function(e) {
+            if (e) {
+                e.stopPropagation();
+                window.createWaterDrop(e);
+            }
+            const submenu = document.getElementById('sale-return-submenu');
+            if (submenu) {
+                const isOpen = submenu.classList.contains('is-open');
+                if (isOpen) {
+                    submenu.classList.remove('is-open');
+                    submenu.classList.add('is-closed');
+                } else {
+                    submenu.classList.remove('is-closed');
+                    submenu.classList.add('is-open');
+                    const parentSub = document.getElementById('sale-submenu');
+                    if (parentSub) parentSub.style.maxHeight = '350px';
+                }
+            }
+        };
+
+        window.printInvoice = function(id) {
+            console.log('Printing Invoice ' + id);
+        };
+
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar-menu');
+            if (sidebar) {
+                const isCollapsing = !sidebar.classList.contains('is-collapsed');
+                sidebar.classList.toggle('is-collapsed');
+                if (isCollapsing) {
+                    window.closeSaleSubmenu();
+                }
+            }
+        };
+
+        let isPrivacyHidden = false;
+        let activeTab = 'customer';
+
+        window.toggleDashboardPrivacy = function() {
+            isPrivacyHidden = !isPrivacyHidden;
+            const icon = document.getElementById('privacy-icon');
+            if (icon) {
+                icon.className = isPrivacyHidden ? 'fa-solid fa-eye-slash text-xs' : 'fa-solid fa-eye text-xs';
+            }
+            document.querySelectorAll('.stat-value').forEach(el => {
+                if (isPrivacyHidden) {
+                    el.dataset.original = el.innerText;
+                    el.innerText = '••••';
+                } else {
+                    if (el.dataset.original) el.innerText = el.dataset.original;
+                }
+            });
+        };
+
+        window.updateDashboardData = function() {
+            window.drawCurveChart();
+        };
+
+        window.triggerQuickAction = function(actionName) {
+            console.log("Quick Action Triggered:", actionName);
+        };
+
+        window.refreshVitalStats = function() {
+            window.drawCurveChart();
+        };
+
+        window.switchAnalyticsTab = function(tab) {
+            activeTab = tab;
+            ['activity', 'customer', 'supplier', 'received'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 if (btn) {
                     if (t === tab) {
-                        btn.className = "text-sky-teal font-bold border-b-2 border-sky-teal pb-1";
+                        btn.className = 'text-emerald-700 font-semibold border-b-2 border-emerald-600 pb-1 transition whitespace-nowrap';
                     } else {
-                        btn.className = "text-gray-500 hover:text-gray-700 pb-1";
+                        btn.className = 'text-slate-500 hover:text-slate-800 font-medium transition pb-1 whitespace-nowrap';
                     }
                 }
             });
-            updateChartLegend(tab);
-            updateChartData();
-        }
+            window.drawCurveChart();
+        };
 
-        function updateChartLegend(tab) {
-            const legendContainer = document.getElementById('chart-legend-container');
-            if (!legendContainer) return;
-            if (tab === 'activity') {
-                legendContainer.innerHTML = `
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span>Sale</span></div>
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span><span>Purchase</span></div>
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span><span>Expense</span></div>
-                `;
-            } else if (tab === 'cust-due') {
-                legendContainer.innerHTML = `
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span><span>Overdue 0-30d</span></div>
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span><span>Overdue >30d</span></div>
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span><span>Total Outstanding</span></div>
-                `;
-            } else if (tab === 'supp-due') {
-                legendContainer.innerHTML = `
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span><span>Payable 0-30d</span></div>
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-pink-500 inline-block"></span><span>Payable >30d</span></div>
-                `;
-            } else if (tab === 'rec-amount') {
-                legendContainer.innerHTML = `
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-700 inline-block"></span><span>Bank Receipts</span></div>
-                    <div class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span>Cash Receipts</span></div>
-                `;
-            }
-        }
-
-        function updateChartData() {
-            if (!chartInstance) return;
-            const timeframeEl = document.getElementById('chart-timeframe');
-            const timeframeVal = timeframeEl ? parseInt(timeframeEl.value) || 30 : 30;
-            const tabData = backendChartDatasets[currentActiveTab];
-            if (!tabData) return;
+        window.drawCurveChart = function() {
+            const canvas = document.getElementById('curveChartCanvas');
+            if (!canvas || !canvas.parentElement) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
             
-            const sliceCount = timeframeVal === 7 ? 7 : (timeframeVal === 90 ? 30 : 30);
-            const rawLabels = tabData.labels.slice(-sliceCount);
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const width = rect.width;
+            const height = rect.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            let phaseShift = 0;
+            if (activeTab === 'activity') phaseShift = 0.5;
+            if (activeTab === 'supplier') phaseShift = 1.0;
+            if (activeTab === 'received') phaseShift = 1.5;
+
+            function drawCurve(color, phase, baseY, amplitude) {
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+
+                const points = 80;
+                for (let i = 0; i <= points; i++) {
+                    const x = (i / points) * width;
+                    const trend = (1 - (i / points)) * (height * 0.35);
+                    const wave = Math.sin((i / 6) + phase + phaseShift) * amplitude;
+                    const y = baseY + trend + wave;
+
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            drawCurve('#6366f1', 0, height * 0.25, 6);
+            drawCurve('#fbbf24', 1.2, height * 0.42, 5);
+            drawCurve('#f43f5e', 2.4, height * 0.58, 4);
+        };
+
+        window.addEventListener('resize', window.drawCurveChart);
+        setTimeout(window.drawCurveChart, 100);
+
+        window.toggleSaleSubmenu = function(e) {
+            if (e) window.createWaterDrop(e);
             
-            chartInstance.data.labels = rawLabels;
-            chartInstance.data.datasets = tabData.datasets.map(ds => ({
-                label: ds.label,
-                data: ds.data.slice(-sliceCount),
-                borderColor: ds.color,
-                borderWidth: 2,
-                tension: 0.4,
-                pointRadius: 0,
-                pointHoverRadius: 4,
-                fill: false
-            }));
-            chartInstance.update();
-        }
+            // Close purchase submenu when opening sale submenu
+            window.closePurchaseSubmenu();
 
-        function filterInvoices(query) {
-            const container = document.getElementById('search-items-container');
-            const wrapper = document.getElementById('search-results-list');
-            if (!query.trim()) {
-                wrapper.classList.add('hidden');
-                return;
-            }
-            const filtered = mockInvoices.filter(inv => 
-                inv.id.toLowerCase().includes(query.toLowerCase()) ||
-                inv.name.toLowerCase().includes(query.toLowerCase()) ||
-                inv.mobile.includes(query)
-            );
-            wrapper.classList.remove('hidden');
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-gray-400 italic py-1">No matching invoices found</div>`;
-            } else {
-                container.innerHTML = filtered.map(inv => `
-                    <div class="flex justify-between items-center p-1.5 bg-gray-50 hover:bg-emerald-50 rounded border border-gray-100 transition">
-                        <div>
-                            <span class="font-bold text-gray-700">${inv.id}</span> - 
-                            <span class="text-gray-600">${inv.name}</span>
-                        </div>
-                        <div class="space-x-2">
-                            <span class="font-semibold text-gray-800">${inv.amount}</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] ${inv.status === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${inv.status}</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function triggerSearch() {
-            const val = document.getElementById('invoice-search-input').value;
-            filterInvoices(val);
-        }
-
-        function openStockAdjustmentModal() {
-            const modal = document.getElementById('stockAdjustmentModal');
-            const container = document.getElementById('stockModalContainer');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                container.classList.remove('scale-95', 'opacity-0');
-                container.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeStockAdjustmentModal() {
-            const modal = document.getElementById('stockAdjustmentModal');
-            const container = document.getElementById('stockModalContainer');
-            container.classList.remove('scale-100', 'opacity-100');
-            container.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.getElementById('stockAdjustmentForm').reset();
-                document.getElementById('adj-amount').value = "0.00";
-            }, 150);
-        }
-
-        function switchStockTab(tabName) {
-            const infoBtn = document.getElementById('stock-tab-info');
-            const serialsBtn = document.getElementById('stock-tab-serials');
-            if (tabName === 'info') {
-                infoBtn.className = "border-b-2 border-sky-teal text-sky-teal pb-1 font-semibold";
-                serialsBtn.className = "text-gray-500 hover:text-gray-700 pb-1";
-                showToast("Switched to Item Info");
-            } else {
-                serialsBtn.className = "border-b-2 border-sky-teal text-sky-teal pb-1 font-semibold";
-                infoBtn.className = "text-gray-500 hover:text-gray-700 pb-1";
-                showToast("Switched to Serial Numbers");
-            }
-        }
-
-        function calculateStockAmount() {
-            const qty = parseFloat(document.getElementById('adj-quantity').value) || 0;
-            const price = parseFloat(document.getElementById('adj-unit-price').value) || 0;
-            document.getElementById('adj-amount').value = (qty * price).toFixed(2);
-        }
-
-        function handleStockFormSubmit(e, isSaveAndNew) {
-            e.preventDefault();
-            const typeEl = document.querySelector('input[name="adjustmentType"]:checked');
-            const type = typeEl ? typeEl.value : 'Credit';
-            const reason = document.getElementById('adj-reason').value;
-            const itemCode = document.getElementById('adj-item-code').value || 'N/A';
-            const itemName = document.getElementById('adj-item-name').value;
-            const quantity = parseFloat(document.getElementById('adj-quantity').value) || 0;
-            const unitPrice = parseFloat(document.getElementById('adj-unit-price').value) || 0;
-            const amount = parseFloat(document.getElementById('adj-amount').value) || 0;
-            const remarks = document.getElementById('adj-remarks').value;
-
-            const adjustmentRecord = {
-                date: new Date().toLocaleDateString(),
-                type,
-                reason,
-                itemCode,
-                itemName,
-                quantity,
-                unitPrice,
-                amount,
-                remarks
-            };
-
-            if (typeof window.saveStockAdjustmentToBackend === 'function') {
-                window.saveStockAdjustmentToBackend(adjustmentRecord);
-            } else {
-                stockAdjustmentsList.push(adjustmentRecord);
-                showToast(`Stock Adjustment saved for ${itemName}!`);
-            }
-
-            if (isSaveAndNew) {
-                document.getElementById('stockAdjustmentForm').reset();
-                document.getElementById('adj-amount').value = "0.00";
-            } else {
-                closeStockAdjustmentModal();
-            }
-        }
-
-        function openActionModal(actionTitle) {
-            document.getElementById('modalTitle').innerText = "Create " + actionTitle;
-            const modal = document.getElementById('actionModal');
-            const container = document.getElementById('modalContainer');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                container.classList.remove('scale-95', 'opacity-0');
-                container.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('actionModal');
-            const container = document.getElementById('modalContainer');
-            container.classList.remove('scale-100', 'opacity-100');
-            container.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.getElementById('actionForm').reset();
-            }, 150);
-        }
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            const party = document.getElementById('modal-party').value;
-            const amount = parseFloat(document.getElementById('modal-amount').value) || 0;
+            const submenu = document.getElementById('sale-submenu');
+            const btn = document.getElementById('sale-menu-btn');
             
-            sampleMetrics.grossSale += amount;
-            sampleMetrics.invoices += 1;
-            sampleMetrics.received += amount;
+            if (submenu) {
+                const isOpen = submenu.classList.contains('is-open');
+                if (isOpen) {
+                    submenu.classList.remove('is-open');
+                    submenu.classList.add('is-closed');
+                    const returnSub = document.getElementById('sale-return-submenu');
+                    if (returnSub) {
+                        returnSub.classList.remove('is-open');
+                        returnSub.classList.add('is-closed');
+                    }
 
-            updateMetricsUI(sampleMetrics);
-            updateChartData();
-
-            if (typeof window.saveUserDataToBackend === 'function') {
-                window.saveUserDataToBackend();
+                    if (btn) {
+                        btn.classList.remove('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                        btn.classList.add('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+                    }
+                } else {
+                    submenu.classList.remove('is-closed');
+                    submenu.classList.add('is-open');
+                    submenu.style.maxHeight = '280px';
+                    if (btn) {
+                        btn.classList.add('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                        btn.classList.remove('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+                    }
+                }
             }
+        };
 
-            closeModal();
-            showToast(`Entry recorded for ${party} (₹${amount.toLocaleString()}) and synced!`);
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const msg = document.getElementById('toast-message');
-            msg.innerText = message;
-            toast.classList.remove('translate-y-10', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-10', 'opacity-0');
-            }, 3000);
-        }
-
-        function openPortalModal(moduleName) {
-            portalActiveModule = moduleName;
-            const modal = document.getElementById('portalModal');
-            const container = document.getElementById('portalModalContainer');
-            const titleEl = document.getElementById('portalModalTitle');
-            const subtitleEl = document.getElementById('portalModalSubtitle');
-            const iconEl = document.getElementById('portalModalIcon');
-
-            titleEl.innerText = `${moduleName} - Portal Data View`;
-            subtitleEl.innerText = `Detailed logs and live backend database analytics for ${moduleName}`;
-            
-            let iconClass = "fa-solid fa-folder";
-            if (moduleName === 'Daily Summary') iconClass = "fa-solid fa-chart-pie";
-            else if (moduleName === 'Stock Summary') iconClass = "fa-solid fa-boxes-stacked";
-            else if (moduleName === 'Business Analysis') iconClass = "fa-solid fa-chart-line";
-            else if (moduleName === 'Cash Book') iconClass = "fa-solid fa-wallet";
-            else if (moduleName === 'Ledgers') iconClass = "fa-solid fa-book";
-            iconEl.innerHTML = `<i class="${iconClass}"></i>`;
-
-            renderPortalTableContent(moduleName);
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                container.classList.remove('scale-95', 'opacity-0');
-                container.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closePortalModal() {
-            const modal = document.getElementById('portalModal');
-            const container = document.getElementById('portalModalContainer');
-            container.classList.remove('scale-100', 'opacity-100');
-            container.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 150);
-        }
-
-        function refreshPortalData() {
-            showToast(`Refreshing data for ${portalActiveModule}...`);
-            renderPortalTableContent(portalActiveModule);
-        }
-
-        function renderPortalTableContent(moduleName) {
-            const contentContainer = document.getElementById('portalModalContent');
-            const countEl = document.getElementById('portalRecordCount');
-            
-            let html = '';
-            let recordCount = 0;
-
-            if (moduleName === 'Daily Summary') {
-                const rows = [
-                    { date: '17 Sep 2026', gross: '₹24,850', invoices: '5', received: '₹18,500', paid: '₹6,200', status: 'Balanced' },
-                    { date: '16 Sep 2026', gross: '₹32,100', invoices: '7', received: '₹28,000', paid: '₹4,500', status: 'Balanced' }
-                ];
-                recordCount = rows.length;
-                html = `
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-700 border-b border-gray-200">
-                                <th class="p-2.5 font-semibold">Date</th>
-                                <th class="p-2.5 font-semibold">Gross Sale</th>
-                                <th class="p-2.5 font-semibold">No. Invoices</th>
-                                <th class="p-2.5 font-semibold">Amount Received</th>
-                                <th class="p-2.5 font-semibold">Amount Paid</th>
-                                <th class="p-2.5 font-semibold">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            ${rows.map(r => `
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="p-2.5 font-medium text-gray-800">${r.date}</td>
-                                    <td class="p-2.5 text-sky-teal font-bold">${r.gross}</td>
-                                    <td class="p-2.5 text-gray-700">${r.invoices}</td>
-                                    <td class="p-2.5 text-emerald-600 font-semibold">${r.received}</td>
-                                    <td class="p-2.5 text-rose-600 font-semibold">${r.paid}</td>
-                                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-700 font-medium">${r.status}</span></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } else if (moduleName === 'Stock Summary') {
-                const items = [
-                    { code: 'SKU-101', name: 'Dell Latitude 5420 Laptop', qty: '18 pcs', price: '₹52,000', val: '₹9,36,000' },
-                    { code: 'SKU-102', name: 'HP LaserJet Pro M404n', qty: '7 pcs', price: '₹18,500', val: '₹1,29,500' }
-                ];
-                recordCount = items.length + stockAdjustmentsList.length;
-                html = `
-                    <div class="mb-3 text-[11px] text-gray-500 font-semibold">Live Inventory & Stock Adjustments Log (${stockAdjustmentsList.length} custom adjustments registered)</div>
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-700 border-b border-gray-200">
-                                <th class="p-2.5 font-semibold">Item Code</th>
-                                <th class="p-2.5 font-semibold">Item Name</th>
-                                <th class="p-2.5 font-semibold">Available Stock</th>
-                                <th class="p-2.5 font-semibold">Unit Price</th>
-                                <th class="p-2.5 font-semibold">Total Value</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            ${items.map(i => `
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="p-2.5 font-mono text-gray-600">${i.code}</td>
-                                    <td class="p-2.5 font-bold text-gray-800">${i.name}</td>
-                                    <td class="p-2.5 text-sky-teal font-semibold">${i.qty}</td>
-                                    <td class="p-2.5 text-gray-700">${i.price}</td>
-                                    <td class="p-2.5 text-emerald-700 font-bold">${i.val}</td>
-                                </tr>
-                            `).join('')}
-                            ${stockAdjustmentsList.map(sa => `
-                                <tr class="hover:bg-emerald-50 transition bg-emerald-50/30">
-                                    <td class="p-2.5 font-mono text-gray-600">${sa.itemCode}</td>
-                                    <td class="p-2.5 font-bold text-gray-800">${sa.itemName} <span class="text-[10px] text-sky-teal font-normal">(${sa.reason})</span></td>
-                                    <td class="p-2.5 text-sky-teal font-semibold">${sa.quantity} pcs (${sa.type})</td>
-                                    <td class="p-2.5 text-gray-700">₹${sa.unitPrice.toLocaleString()}</td>
-                                    <td class="p-2.5 text-emerald-700 font-bold">₹${sa.amount.toLocaleString()}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } else {
-                recordCount = 3;
-                html = `
-                    <div class="p-4 text-center text-gray-500">
-                        <i class="fa-solid fa-database text-3xl text-sky-teal mb-2"></i>
-                        <p class="text-xs font-medium">Cloud database records successfully synchronized for ${moduleName}.</p>
-                    </div>
-                `;
+        window.closeSaleSubmenu = function() {
+            const submenu = document.getElementById('sale-submenu');
+            const btn = document.getElementById('sale-menu-btn');
+            const returnSub = document.getElementById('sale-return-submenu');
+            if (submenu && submenu.classList.contains('is-open')) {
+                submenu.classList.remove('is-open');
+                submenu.classList.add('is-closed');
             }
+            if (returnSub) {
+                returnSub.classList.remove('is-open');
+                returnSub.classList.add('is-closed');
+            }
+            if (btn) {
+                btn.classList.remove('bg-[#353E43]', 'text-white', 'border-[#34D399]');
+                btn.classList.add('text-slate-300', 'hover:bg-gray-800', 'border-transparent');
+            }
+        };
 
-            contentContainer.innerHTML = html;
-            countEl.innerText = `Total Records: ${recordCount}`;
-        }
+        window.handleOtherMenuClick = function(e) {
+            if (e) window.createWaterDrop(e);
+            // Close all dropdown submenus when clicking other standalone menu items
+            window.closeSaleSubmenu();
+            window.closePurchaseSubmenu();
+        };
+
+        window.createWaterDrop = function(e) {
+            const target = e.currentTarget;
+            const rect = target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const drop = document.createElement('span');
+            drop.className = 'water-ripple';
+            drop.style.left = `${x}px`;
+            drop.style.top = `${y}px`;
+
+            target.appendChild(drop);
+            setTimeout(() => drop.remove(), 600);
+        };
+
+        window.handleAuthAction = function() {
+            try {
+                sessionStorage.clear();
+                localStorage.clear();
+            } catch (err) {
+                console.warn("Storage clearing error:", err);
+            }
+            window.location.reload();
+        };
+
+        window.showInfoModal = function(title, description) {
+            console.log("Info Modal:", title, description);
+        };
+
+        window.clearCart = function() {
+            window.showView('dashboard-view');
+        };
+
+        window.showCustomerAccounts = function() {
+            window.showView('dashboard-view');
+        };
     </script>
 </body>
 </html>

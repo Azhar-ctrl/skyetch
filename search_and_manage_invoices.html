@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search and Manage Invoices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .light-white-green-animated-bg {
+            background: linear-gradient(135deg, #f0fdf4, #ffffff, #ecfdf5, #f4fff7, #ffffff);
+            background-size: 300% 300%;
+            animation: gradientMove 14s ease infinite;
+        }
+        .win-border {
+            border: 1px solid #0055ea;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        .win-titlebar {
+            background: linear-gradient(to bottom, #ffffff, #f0f3f9);
+            border-bottom: 1px solid #c0c0c0;
+        }
+        .win-toolbar {
+            background-color: #f0f3f9;
+            border-bottom: 1px solid #dcdcdc;
+        }
+        .win-input {
+            border: 1px solid #a0a0a0;
+            background-color: #ffffff;
+        }
+        .win-input:focus {
+            border-color: #0055ea;
+            outline: none;
+        }
+        .win-btn {
+            background: linear-gradient(to bottom, #ffffff, #e1e6ee);
+            border: 1px solid #adbad0;
+        }
+        .win-btn:hover {
+            background: linear-gradient(to bottom, #fffefc, #d5e0f3);
+            border-color: #7a9deb;
+        }
+        .win-search-btn {
+            background-color: #0078d4;
+            color: white;
+        }
+        .win-search-btn:hover {
+            background-color: #106ebe;
+        }
+        .win-statusbar {
+            background-color: #f0f3f9;
+            border-top: 1px solid #dcdcdc;
+        }
+    </style>
+</head>
+<body class="flex flex-col w-screen h-screen overflow-hidden">
+
+    <div id="app-window" class="w-full h-full light-white-green-animated-bg flex flex-col overflow-hidden relative transition-all duration-200">
+        
+        <!-- Windows Title Bar (Without min/max/close buttons) -->
+        <div class="win-titlebar h-8 px-3 flex items-center justify-between select-none shrink-0">
+            <div class="flex items-center space-x-2 text-xs text-gray-800">
+                <i class="fa-solid fa-file-invoice text-blue-600"></i>
+                <span class="font-normal">Search and Manage Invoices</span>
+            </div>
+        </div>
+
+        <!-- Toolbar / Filter Section -->
+        <div class="win-toolbar px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-700 relative shrink-0">
+            
+            <!-- Left Filters -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Select Dropdown -->
+                <div class="flex items-center space-x-1">
+                    <span class="text-gray-800">Select</span>
+                    <div class="relative">
+                        <select id="dateRangeSelect" class="win-input px-2 py-1 pr-6 rounded-sm text-xs bg-white cursor-pointer w-28">
+                            <option value="last7" selected>Last 7 days</option>
+                            <option value="last30">Last 30 days</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                        <i class="fa-solid fa-caret-down absolute right-2 top-2 text-gray-500 pointer-events-none text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- From Date Picker -->
+                <div class="flex items-center space-x-1 sm:ml-2 relative">
+                    <span class="text-gray-800">From</span>
+                    <div id="fromDateContainer" class="relative flex items-center cursor-pointer">
+                        <input type="text" id="fromDateInput" value="24-September-2026" class="win-input px-2 py-1 pr-7 rounded-sm text-xs w-32 bg-white cursor-pointer" readonly />
+                        <i class="fa-regular fa-calendar absolute right-2 text-gray-600 text-xs pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- To Date Picker -->
+                <div class="flex items-center space-x-1 sm:ml-2 relative">
+                    <span class="text-gray-800">To</span>
+                    <div id="toDateContainer" class="relative flex items-center cursor-pointer">
+                        <input type="text" id="toDateInput" value="01-October-2026" class="win-input px-2 py-1 pr-7 rounded-sm text-xs w-32 bg-white cursor-pointer" readonly />
+                        <i class="fa-regular fa-calendar absolute right-2 text-gray-600 text-xs pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Search Bar -->
+            <div class="flex items-center space-x-1 w-full md:w-auto justify-end">
+                <div class="relative flex items-center w-full md:w-auto">
+                    <input type="text" id="searchInput" placeholder="Search keyword . . ." class="win-input px-3 py-1 pr-8 rounded-sm text-xs w-full md:w-64 text-gray-600 placeholder-gray-400" />
+                    <button id="searchBtn" class="win-search-btn px-3 py-1 text-xs rounded-r-sm absolute right-0 h-full flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Interactive Calendar Popup Modal / Dropdown -->
+        <div id="calendarPopup" class="hidden absolute top-24 z-50 bg-white border border-gray-400 shadow-xl rounded w-72 p-3 text-xs select-none">
+            <div class="flex items-center justify-between mb-2 pb-1 border-b">
+                <div class="flex items-center space-x-1">
+                    <button id="prevMonth" class="win-btn px-2 py-1 rounded text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="calMonthYear" class="font-bold text-gray-800 w-32 text-center">September 2026</span>
+                    <button id="nextMonth" class="win-btn px-2 py-1 rounded text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <button id="closeCalendar" class="text-gray-500 hover:text-red-600 px-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-cols-7 gap-1 text-center font-semibold text-gray-600 mb-1">
+                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div id="calDaysGrid" class="grid grid-cols-7 gap-1 text-center">
+                <!-- Dynamically populated days -->
+            </div>
+            <div class="mt-2 pt-2 border-t flex justify-between items-center text-[11px]">
+                <span id="calTargetLabel" class="text-gray-500 italic">Selecting for: From</span>
+                <button id="todayBtn" class="win-btn px-2 py-0.5 rounded text-gray-700 font-medium">Today</button>
+            </div>
+        </div>
+
+        <!-- Main Content Area / Invoice Table Placeholder -->
+        <div class="flex-1 bg-transparent relative flex flex-col overflow-hidden">
+            
+            <!-- Table Header Bar -->
+            <div class="px-3 py-1 border-b border-gray-200 flex items-center justify-between text-xs text-gray-600 bg-white/70 backdrop-blur-sm shrink-0">
+                <div class="flex items-center space-x-3">
+                    <span>Invoice(s)</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <select id="statusFilter" class="win-input px-2 py-0.5 pr-6 rounded-sm text-xs bg-white cursor-pointer">
+                            <option value="All">All</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Unpaid">Unpaid</option>
+                            <option value="Overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <button id="exportExcelBtn" class="win-btn px-2.5 py-0.5 rounded text-[11px] flex items-center space-x-1.5 shadow-sm text-gray-800 cursor-pointer">
+                        <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                        <span class="font-medium">Export 2 Excel</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Content Area: Either Table or Empty State -->
+            <div id="contentArea" class="flex-1 flex flex-col relative overflow-hidden">
+                <!-- Empty State Illustration -->
+                <div id="emptyState" class="flex-1 flex flex-col items-center justify-center select-none pb-12">
+                    <div class="relative w-36 h-36 flex items-center justify-center">
+                        <div class="absolute -left-6 -top-2 w-20 h-24 bg-gray-100 border border-gray-300 rounded shadow-sm transform -rotate-12 opacity-70 flex flex-col p-1.5 space-y-1">
+                            <div class="w-full h-1 bg-gray-300 rounded"></div>
+                            <div class="w-3/4 h-1 bg-gray-300 rounded"></div>
+                            <div class="w-1/2 h-1 bg-gray-300 rounded"></div>
+                        </div>
+                        <div class="absolute -left-2 -top-4 w-20 h-24 bg-gray-100 border border-gray-300 rounded shadow-sm transform -rotate-6 opacity-85 flex flex-col p-1.5 space-y-1">
+                            <div class="w-full h-1 bg-gray-300 rounded"></div>
+                            <div class="w-2/3 h-1 bg-gray-300 rounded"></div>
+                            <div class="w-4/5 h-1 bg-gray-300 rounded"></div>
+                        </div>
+                        
+                        <div class="relative z-10 w-24 h-24 bg-amber-400 rounded-full flex flex-col items-center justify-center shadow-md border-2 border-amber-300">
+                            <div class="flex space-x-4 mb-1">
+                                <div class="w-2.5 h-3 bg-gray-800 rounded-full"></div>
+                                <div class="w-2.5 h-3 bg-gray-800 rounded-full"></div>
+                            </div>
+                            <div class="w-5 h-2.5 border-b-2 border-gray-800 rounded-full mt-1"></div>
+                        </div>
+
+                        <div class="absolute bottom-1 right-1 z-20 transform rotate-45">
+                            <div class="w-10 h-10 border-4 border-amber-400 rounded-full bg-transparent flex items-center justify-center shadow"></div>
+                            <div class="w-5 h-1.5 bg-amber-400 absolute -bottom-1 -right-4 transform rotate-45 rounded-r"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoice Table View -->
+                <div id="tableView" class="hidden flex-1 overflow-auto bg-white/60 backdrop-blur-sm">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-gray-100/90 border-b text-gray-700 sticky top-0">
+                                <th class="p-2 border-r">Invoice No</th>
+                                <th class="p-2 border-r">Date</th>
+                                <th class="p-2 border-r">Customer</th>
+                                <th class="p-2 border-r">Status</th>
+                                <th class="p-2 text-right">Amount (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody" class="divide-y divide-gray-200">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Status Bar -->
+        <div class="win-statusbar h-7 px-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-700 select-none shrink-0">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <span id="totalLabel" class="font-semibold text-gray-900">Total : ₹ 0.00</span>
+                <span id="paidLabel">Paid : 0</span>
+                <span id="unpaidLabel">Unpaid : 0</span>
+                <span id="overdueLabel">Overdue : 0</span>
+            </div>
+            <div class="flex items-center">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs and Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmAtlwwM0edu0ffnVJBYqhE9II9buG-Fg",
+            authDomain: "skytech-f813b.firebaseapp.com",
+            databaseURL: "https://skytech-f813b-default-rtdb.firebaseio.com",
+            projectId: "skytech-f813b",
+            storageBucket: "skytech-f813b.firebasestorage.app",
+            messagingSenderId: "300030506328",
+            appId: "1:300030506328:web:d3494afa60759d4dc7612d",
+            measurementId: "G-K3DVHBBDMM"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let liveInvoices = [];
+
+        async function initFirebase() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (customTokenErr) {
+                        console.warn("Custom token sign-in failed:", customTokenErr);
+                    }
+                } else {
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (anonErr) {
+                        console.warn("Anonymous auth restricted or disabled in Firebase project. Proceeding with public Firestore read access if rules permit.", anonErr);
+                    }
+                }
+                
+                const invoicesCol = collection(db, 'artifacts', appId, 'public', 'data', 'invoices');
+                
+                onSnapshot(invoicesCol, (snapshot) => {
+                    liveInvoices = [];
+                    snapshot.forEach(docSnap => {
+                        let data = docSnap.data();
+                        let parsedDate;
+                        if (data.date && typeof data.date.toDate === 'function') {
+                            parsedDate = data.date.toDate();
+                        } else if (data.date) {
+                            parsedDate = new Date(data.date);
+                        } else {
+                            parsedDate = new Date();
+                        }
+
+                        liveInvoices.push({
+                            id: data.invoiceNo || docSnap.id,
+                            date: parsedDate,
+                            customer: data.customer || 'Unknown Customer',
+                            status: data.status || 'Unpaid',
+                            amount: Number(data.amount) || 0
+                        });
+                    });
+                    filterAndRenderInvoices();
+                }, (error) => {
+                    console.error("Firestore snapshot error:", error);
+                });
+
+            } catch (err) {
+                console.error("Auth/Firebase initialization error:", err);
+            }
+        }
+
+        let activeTargetInput = 'from'; 
+        let currentCalDate = new Date(2026, 8, 1); 
+        
+        let fromDate = new Date(2026, 8, 24); 
+        let toDate = new Date(2026, 9, 1);     
+
+        const monthsNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        const calendarPopup = document.getElementById('calendarPopup');
+        const calMonthYear = document.getElementById('calMonthYear');
+        const calDaysGrid = document.getElementById('calDaysGrid');
+        const calTargetLabel = document.getElementById('calTargetLabel');
+
+        function formatDate(d) {
+            let day = String(d.getDate()).padStart(2, '0');
+            let month = monthsNames[d.getMonth()];
+            let year = d.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        window.updateInputFields = function() {
+            document.getElementById('fromDateInput').value = formatDate(fromDate);
+            document.getElementById('toDateInput').value = formatDate(toDate);
+            filterAndRenderInvoices();
+        }
+
+        window.filterAndRenderInvoices = function() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = liveInvoices.filter(inv => {
+                const matchDate = inv.date >= fromDate && inv.date <= toDate;
+                const matchKeyword = keyword === "" || 
+                    inv.id.toLowerCase().includes(keyword) || 
+                    inv.customer.toLowerCase().includes(keyword) || 
+                    inv.amount.toString().includes(keyword);
+                const matchStatus = statusFilter === "All" || inv.status === statusFilter;
+
+                return matchDate && matchKeyword && matchStatus;
+            });
+
+            const emptyState = document.getElementById('emptyState');
+            const tableView = document.getElementById('tableView');
+            const tbody = document.getElementById('invoiceTableBody');
+
+            let totalAmount = 0;
+            let paidCount = 0;
+            let unpaidCount = 0;
+            let overdueCount = 0;
+
+            filtered.forEach(inv => {
+                totalAmount += inv.amount;
+                if (inv.status === 'Paid') paidCount++;
+                if (inv.status === 'Unpaid') unpaidCount++;
+                if (inv.status === 'Overdue') overdueCount++;
+            });
+
+            document.getElementById('totalLabel').innerText = `Total : ₹ ${totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('paidLabel').innerText = `Paid : ${paidCount}`;
+            document.getElementById('unpaidLabel').innerText = `Unpaid : ${unpaidCount}`;
+            document.getElementById('overdueLabel').innerText = `Overdue : ${overdueCount}`;
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                tableView.classList.add('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                tableView.classList.remove('hidden');
+
+                tbody.innerHTML = '';
+                filtered.forEach(inv => {
+                    let tr = document.createElement('tr');
+                    tr.className = 'hover:bg-emerald-50';
+                    
+                    let badgeColor = 'bg-gray-100 text-gray-800';
+                    if (inv.status === 'Paid') badgeColor = 'bg-green-100 text-green-700 font-medium';
+                    if (inv.status === 'Unpaid') badgeColor = 'bg-amber-100 text-amber-800 font-medium';
+                    if (inv.status === 'Overdue') badgeColor = 'bg-red-100 text-red-700 font-medium';
+
+                    tr.innerHTML = `
+                        <td class="p-2 border-r font-medium text-emerald-700">${inv.id}</td>
+                        <td class="p-2 border-r text-gray-600">${formatDate(inv.date)}</td>
+                        <td class="p-2 border-r text-gray-800">${inv.customer}</td>
+                        <td class="p-2 border-r"><span class="px-2 py-0.5 rounded text-[10px] ${badgeColor}">${inv.status}</span></td>
+                        <td class="p-2 text-right font-medium">₹ ${inv.amount.toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        document.getElementById('searchBtn').addEventListener('click', filterAndRenderInvoices);
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                filterAndRenderInvoices();
+            }
+        });
+        document.getElementById('statusFilter').addEventListener('change', filterAndRenderInvoices);
+
+        // Export to Excel functionality
+        document.getElementById('exportExcelBtn').addEventListener('click', () => {
+            let csvContent = "data:text/csv;charset=utf-8,Invoice No,Date,Customer,Status,Amount (INR)\n";
+            
+            const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = liveInvoices.filter(inv => {
+                const matchDate = inv.date >= fromDate && inv.date <= toDate;
+                const matchKeyword = keyword === "" || 
+                    inv.id.toLowerCase().includes(keyword) || 
+                    inv.customer.toLowerCase().includes(keyword) || 
+                    inv.amount.toString().includes(keyword);
+                const matchStatus = statusFilter === "All" || inv.status === statusFilter;
+
+                return matchDate && matchKeyword && matchStatus;
+            });
+
+            filtered.forEach(inv => {
+                let row = `"${inv.id}","${formatDate(inv.date)}","${inv.customer}","${inv.status}",${inv.amount}`;
+                csvContent += row + "\n";
+            });
+
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `invoices_${formatDate(fromDate)}_to_${formatDate(toDate)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        function renderCalendar() {
+            calMonthYear.innerText = `${monthsNames[currentCalDate.getMonth()]} ${currentCalDate.getFullYear()}`;
+            calTargetLabel.innerText = `Selecting for: ${activeTargetInput === 'from' ? 'From Date' : 'To Date'}`;
+            
+            calDaysGrid.innerHTML = '';
+            let year = currentCalDate.getFullYear();
+            let month = currentCalDate.getMonth();
+
+            let firstDayIndex = new Date(year, month, 1).getDay();
+            let totalDays = new Date(year, month + 1, 0).getDate();
+            let prevTotalDays = new Date(year, month, 0).getDate();
+
+            for (let i = firstDayIndex - 1; i >= 0; i--) {
+                let dayEl = document.createElement('div');
+                dayEl.innerText = prevTotalDays - i;
+                dayEl.className = 'py-1 text-gray-300 text-xs';
+                calDaysGrid.appendChild(dayEl);
+            }
+
+            let activeSelectedDate = activeTargetInput === 'from' ? fromDate : toDate;
+
+            for (let d = 1; d <= totalDays; d++) {
+                let dayEl = document.createElement('div');
+                dayEl.innerText = d;
+                dayEl.className = 'py-1 rounded text-xs cursor-pointer hover:bg-emerald-100 text-gray-800';
+
+                let isSelected = activeSelectedDate.getDate() === d && 
+                                 activeSelectedDate.getMonth() === month && 
+                                 activeSelectedDate.getFullYear() === year;
+
+                if (isSelected) {
+                    dayEl.className += ' bg-emerald-600 text-white font-bold hover:bg-emerald-700';
+                }
+
+                dayEl.addEventListener('click', () => {
+                    let selected = new Date(year, month, d);
+                    if (activeTargetInput === 'from') {
+                        fromDate = selected;
+                        if (fromDate > toDate) toDate = new Date(fromDate);
+                    } else {
+                        toDate = selected;
+                        if (toDate < fromDate) fromDate = new Date(toDate);
+                    }
+                    updateInputFields();
+                    calendarPopup.classList.add('hidden');
+                });
+
+                calDaysGrid.appendChild(dayEl);
+            }
+        }
+
+        document.getElementById('fromDateContainer').addEventListener('click', (e) => {
+            e.stopPropagation();
+            activeTargetInput = 'from';
+            currentCalDate = new Date(fromDate.getTime());
+            calendarPopup.style.left = document.getElementById('fromDateContainer').offsetLeft + 'px';
+            renderCalendar();
+            calendarPopup.classList.toggle('hidden');
+            document.getElementById('dateRangeSelect').value = 'custom';
+        });
+
+        document.getElementById('toDateContainer').addEventListener('click', (e) => {
+            e.stopPropagation();
+            activeTargetInput = 'to';
+            currentCalDate = new Date(toDate.getTime());
+            calendarPopup.style.left = (document.getElementById('toDateContainer').offsetLeft + 20) + 'px';
+            renderCalendar();
+            calendarPopup.classList.toggle('hidden');
+            document.getElementById('dateRangeSelect').value = 'custom';
+        });
+
+        document.getElementById('prevMonth').addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        document.getElementById('closeCalendar').addEventListener('click', () => {
+            calendarPopup.classList.add('hidden');
+        });
+
+        document.getElementById('todayBtn').addEventListener('click', () => {
+            let now = new Date();
+            if (activeTargetInput === 'from') {
+                fromDate = now;
+            } else {
+                toDate = now;
+            }
+            currentCalDate = new Date(now.getTime());
+            updateInputFields();
+            renderCalendar();
+            calendarPopup.classList.add('hidden');
+        });
+
+        document.getElementById('dateRangeSelect').addEventListener('change', (e) => {
+            let val = e.target.value;
+            let now = new Date();
+            if (val === 'last7') {
+                fromDate = new Date();
+                fromDate.setDate(now.getDate() - 7);
+                toDate = now;
+                updateInputFields();
+            } else if (val === 'last30') {
+                fromDate = new Date();
+                fromDate.setDate(now.getDate() - 30);
+                toDate = now;
+                updateInputFields();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!calendarPopup.contains(e.target) && !document.getElementById('fromDateContainer').contains(e.target) && !document.getElementById('toDateContainer').contains(e.target)) {
+                calendarPopup.classList.add('hidden');
+            }
+        });
+
+        initFirebase();
+    </script>
+</body>
+</html>
